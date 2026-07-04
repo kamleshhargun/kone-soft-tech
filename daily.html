@@ -26,7 +26,14 @@
         .input { height: 46px; padding: 0 14px; border: 1px solid #dbe2ea; border-radius: 12px; outline: none; background: #fff; font-size: 14px; width: 100%; }
         .input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .12) }
         #reader { display: none; width: 100%; overflow: hidden; border-radius: 12px; margin-bottom: 5px; border: 1px dashed #cbd5e1; }
+        
+        /* Data Preview Card Style */
         .result-card { padding: 14px; border: 1px solid #e5e7eb; border-radius: 14px; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .03); display: none; font-size: 13px; line-height: 1.6; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        .data-table td { padding: 4px 0; border-bottom: 1px solid #f3f4f6; }
+        .data-table td.label { color: #6b7280; font-weight: 500; width: 35%; }
+        .data-table td.val { color: #111827; font-weight: 600; }
+
         .btn { border: none; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; text-align: center; }
         .btn:hover { transform: translateY(-1px); opacity: .95 }
         .btn-camera { background: #2563eb; color: #fff }
@@ -62,6 +69,7 @@
                     <input id="awbInput" class="input" placeholder="Scan AWB or Type & Press Enter">
                     <input id="orderInput" class="input" placeholder="Order ID (Manual Fallback)" style="display: none;">
                     
+                    <!-- Preview Area displaying Date, Type, AWB, Order ID, Courier -->
                     <div id="resultCard" class="result-card"></div>
                     
                     <div class="action-row" style="margin-top: 5px;">
@@ -235,9 +243,18 @@
 
         function openManualFallback() {
             currentTracking = null;
+            const todayStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy format
+            
+            // Displaying 5 Columns for Manual Fallback Entry
             showResultStatus(`
-                <div style="color:#dc2626; font-weight:600;">Tracking Not Found</div>
-                <div style="margin-top:5px; color:#4b5563;">Please write the Order ID manually below.</div>
+                <div style="color:#dc2626; font-weight:600; border-bottom: 1px solid #e5e7eb; padding-bottom:4px; margin-bottom:6px;">⚠️ Tracking Not Found</div>
+                <table class="data-table">
+                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">AWB:</td><td class="val">${document.getElementById("awbInput").value.trim()}</td></tr>
+                    <tr><td class="label">Order ID:</td><td class="val" style="color:#dc2626;">Manual Input Required</td></tr>
+                    <tr><td class="label">Courier:</td><td class="val">MANUAL</td></tr>
+                </table>
             `);
             document.getElementById("orderInput").style.display = "block";
             document.getElementById("orderInput").focus();
@@ -246,20 +263,25 @@
         function renderTrackingCard(data) {
             const card = document.getElementById("resultCard");
             card.style.display = "block";
+            const todayStr = new Date().toLocaleDateString('en-GB');
+
+            // Displaying Exact 5 Columns Grid
             card.innerHTML = `
-                <b>AWB:</b> ${data.awb || ""}<br>
-                <b>Order ID:</b> ${data.orderId || ""}<br>
-                <b>Status:</b> ${data.status || ""}<br>
-                <b>Courier:</b> ${data.courier || ""}<br>
-                <b>Customer:</b> ${data.customerName || ""}<br>
-                <b>City:</b> ${data.city || ""}
+                <div style="color:#10b981; font-weight:600; border-bottom: 1px solid #e5e7eb; padding-bottom:4px; margin-bottom:6px;">✅ Tracking Data Fetched</div>
+                <table class="data-table">
+                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">AWB:</td><td class="val">${data.awb || ""}</td></tr>
+                    <tr><td class="label">Order ID:</td><td class="val">${data.orderId || ""}</td></tr>
+                    <tr><td class="label">Courier:</td><td class="val">${data.courier || ""}</td></tr>
+                </table>
             `;
             document.getElementById("orderInput").value = data.orderId || "";
             document.getElementById("orderInput").style.display = "block";
         }
 
         /* ===================================
-        SAVE DATA (POST REQUEST TO SHEET)
+        SAVE DATA (POST REQUEST TO SHEET WITH BLOCK DUPLICATE)
         =================================== */
         async function saveEntry() {
             if (!currentType) {
@@ -312,8 +334,9 @@
 
                 hideLoader();
 
+                // If code.gs detects duplicate, block and show error
                 if (result.duplicate) {
-                    toast("❌ Duplicate AWB found!");
+                    toast("❌ Blocked: Duplicate AWB detected for this type!");
                     document.getElementById("awbInput").select();
                     return;
                 }
