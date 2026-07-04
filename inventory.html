@@ -1,132 +1,101 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Harsidhi Ventures - Inventory Management</title>
+    <title>Harsidhi Ventures - Labor Job Inward</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif }
         body { background: #f3f6fb; min-height: 100vh; color: #1f2937; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-        
-        /* Layout Grid */
-        .grid-layout { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
-        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
-
-        /* Panels & Cards */
+        .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        .grid-layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
         .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,.02); }
-        .panel-header { font-size: 16px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; border-bottom: 1px solid #eef2f7; padding-bottom: 8px; }
-        
-        /* Form Inputs */
-        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .panel-header { font-size: 15px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; border-bottom: 1px solid #eef2f7; padding-bottom: 8px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; position: relative; }
         .form-group label { font-size: 12px; font-weight: 600; color: #475569; }
         .input, select { height: 42px; padding: 0 12px; border: 1px solid #dbe2ea; border-radius: 10px; outline: none; background: #fff; font-size: 14px; width: 100%; }
         .input:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .12) }
         
-        /* Stats Dashboard Bar */
-        .summary-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-        .stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.01); border-left: 4px solid #2563eb; }
-        .stat-card h3 { font-size: 12px; color: #64748b; text-transform: uppercase; }
-        .stat-card .val { font-size: 22px; font-weight: 700; margin-top: 4px; color: #0f172a; }
-
-        /* Table UI */
-        .table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; }
+        /* Master Fuzzy Suggestions Style Box */
+        .search-suggestions { position: absolute; top: 64px; left: 0; right: 0; background: white; border: 1px solid #cbd5e1; border-radius: 10px; max-height: 180px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .suggestion-item { padding: 10px 14px; cursor: pointer; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f1f5f9; }
+        .suggestion-item:hover { background: #f1f5f9; color: #2563eb; }
+        
+        .table-wrapper { overflow-x: auto; max-height: 500px; border: 1px solid #e5e7eb; border-radius: 12px; }
         table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; background: #fff; }
-        th { background: #f8fafc; color: #475569; font-weight: 600; padding: 12px 14px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 5; }
-        td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
-        tr:hover { background: #f8fafc; }
-        
-        /* Image Preview Box */
-        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; background: #f8fafc; display: block; }
-        
-        /* Buttons */
-        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; text-align: center; display: block; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; padding: 12px 14px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; }
+        td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; }
+        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; }
+        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; text-align: center; }
         .btn-primary { background: #2563eb; color: #fff; }
-        .btn-primary:hover { background: #1d4ed8; }
-        
+        .btn-advance { background: #e2e8f0; color: #475569; margin-top: 5px; font-size: 12px; padding: 6px; }
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 12px 16px; border-radius: 12px; z-index: 9999; box-shadow: 0 8px 20px rgba(0, 0, 0, .2); font-size: 13px; }
         #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #2563eb }
     </style>
 </head>
-
 <body>
 
     <div class="container">
-        <!-- Dashboard Summary Top Cards -->
-        <div class="summary-bar">
-            <div class="stat-card" style="border-left-color: #2563eb;">
-                <h3>Total SKU Types</h3>
-                <div class="val" id="sumTotalSkus">0</div>
-            </div>
-            <div class="stat-card" style="border-left-color: #10b981;">
-                <h3>Total Stock Items</h3>
-                <div class="val" id="sumTotalStock">0</div>
-            </div>
-            <div class="stat-card" style="border-left-color: #f59e0b;">
-                <h3>Total Inwards</h3>
-                <div class="val" id="sumTotalInward">0</div>
-            </div>
-        </div>
-
         <div class="grid-layout">
-            <!-- Left Side: Input Data Transaction Form -->
+            <!-- Left Panel: Job Submission Form -->
             <div class="panel">
-                <div class="panel-header">📥 Update SKU Stock Entry</div>
-                <form id="inventoryForm" onsubmit="submitInventoryUpdate(event)">
+                <div class="panel-header">🔨 Labour Work Allocation Inward</div>
+                <form id="labourJobForm" onsubmit="submitLabourTx(event)">
+                    
                     <div class="form-group">
-                        <label>Select Target SKU</label>
-                        <select id="inputSkuSelect" required onchange="fetchSingleSkuPreview()">
-                            <option value="">-- Choose SKU --</option>
-                        </select>
-                    </div>
-
-                    <div style="text-align: center; display: flex; justify-content: center; margin: 10px 0;">
-                        <img id="skuPreviewImage" class="prod-img" style="width: 120px; height: 120px; display: none;" src="" alt="Preview">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Transaction / Entry Type</label>
-                        <select id="inputActionType" required>
-                            <option value="Inward">Inward (Stock Aaya)</option>
-                            <option value="Reject">Reject (Kharab/Damage)</option>
-                            <option value="Sales">Sales (Bik Gaya)</option>
-                            <option value="SalesReturn">Sales Return (Wapas Aaya)</option>
+                        <label>Labour Operator Name</label>
+                        <select id="laborNameSelect" required>
+                            <option value="">-- Choose Labour Name --</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Quantity (Pcs)</label>
-                        <input type="number" id="inputQty" class="input" placeholder="Enter quantity" min="1" required>
+                        <label>Master SKU Search (Fuzzy/Ignore Dash)</label>
+                        <input type="text" id="masterSkuSearch" class="input" placeholder="Type pattern (e.g. JPR20 or JPR-20)" oninput="handleFuzzySearch(this.value)">
+                        <div id="suggestionsBox" class="search-suggestions"></div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">💾 Save Stock Entry</button>
+                    <div class="form-group">
+                        <label>Selected Action Entry Type</label>
+                        <select id="txType" onchange="toggleTxMode(this.value)">
+                            <option value="Inward">Only Inward for Labour (Stock Recd)</option>
+                            <option value="Advance">Give Advance Payment (Cash out)</option>
+                        </select>
+                    </div>
+
+                    <div style="text-align: center; margin: 5px 0;"><img id="skuPreviewImg" class="prod-img" style="width: 80px; height: 80px; display: none;"></div>
+
+                    <div class="form-group" id="qtyGroup">
+                        <label id="qtyLabel">Inward Quantity (Pcs)</label>
+                        <input type="number" id="txQty" class="input" min="1" required placeholder="Pcs amount">
+                    </div>
+
+                    <div class="form-group" id="rateGroup">
+                        <label>Labour Stitching Rate / Piece (₹)</label>
+                        <input type="number" id="txRate" class="input" min="0" step="0.01" placeholder="₹ per piece rate">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">💾 Document Labour Entry</button>
                 </form>
             </div>
 
-            <!-- Right Side: Realtime Product Grid Output Table -->
+            <!-- Right Panel: Live Inventory Base Review Table -->
             <div class="panel">
-                <div class="panel-header">📊 Live Inventory Report Grid (Columns A to H Calculation)</div>
+                <div class="panel-header">📦 Live Inventory Directory</div>
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
                                 <th>Image</th>
-                                <th>SKU</th>
+                                <th>SKU Code</th>
                                 <th>Opening</th>
-                                <th>Inward</th>
-                                <th>Reject</th>
-                                <th>Sales</th>
-                                <th>Returns</th>
-                                <th style="background: #eff6ff; font-weight:700; color:#1e40af;">Final Stock</th>
+                                <th>Total Inward</th>
+                                <th>Final Available Stock</th>
                             </tr>
                         </thead>
-                        <tbody id="inventoryTableBody">
-                            <tr>
-                                <td colspan="8" style="text-align: center; color: gray; padding: 25px; font-style: italic;">Loading inventory sheet items...</td>
-                            </tr>
+                        <tbody id="invGridBody">
+                            <tr><td colspan="5" style="text-align:center; padding:20px; color:gray;">Pulling catalog matrix...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -134,125 +103,93 @@
         </div>
     </div>
 
-    <div id="loadingOverlay">Connecting Inventory Nodes...</div>
+    <div id="loadingOverlay">Syncing Nodes...</div>
 
     <script>
-        /* ===================================
-        CONFIG
-        =================================== */
-        const API_URL = "https://script.google.com/macros/s/AKfycbwm5eAitkilHqFdEKNNVDtc89r6dv8HtacsLhN9nG8aqc5y-YC21yADQBZzZM-HEPoy/exec"; 
+        const API_URL = "YOUR_SPREADSHEET_WEB_APP_URL_HERE";
+        let productsDirectoryCache = [];
 
-        let globalProductsCache = [];
-
-        /* ===================================
-        FETCH MASTER DATA DATASET
-        =================================== */
-        async function loadInventorySystem() {
+        async function initPage() {
             showLoader();
             try {
-                // 1. Fetch live summary aggregation counters
-                const summaryRes = await fetch(`${API_URL}?action=inventorySummary`);
-                const summaryData = await summaryRes.json();
-
-                // 2. Fetch all raw inventory items mapped inside rows
-                const productsRes = await fetch(`${API_URL}?action=inventoryProducts`);
-                const productsData = await productsRes.json();
-
-                hideLoader();
-
-                if (productsData.success) {
-                    globalProductsCache = productsData.products || [];
-                    
-                    // Render Metrics Bar
-                    document.getElementById("sumTotalSkus").innerText = globalProductsCache.length;
-                    document.getElementById("sumTotalStock").innerText = summaryData.totalStock || 0;
-                    document.getElementById("sumTotalInward").innerText = summaryData.totalInward || 0;
-
-                    renderInventoryTable(globalProductsCache);
-                    populateSkuDropdown(globalProductsCache);
-                } else {
-                    toast("Failed to build array sets.");
+                const namesRes = await fetch(`${API_URL}?action=getLabourNames`);
+                const namesData = await namesRes.json();
+                const select = document.getElementById("laborNameSelect");
+                if(namesData.names) {
+                    namesData.names.forEach(n => select.innerHTML += `<option value="${n}">${n}</option>`);
                 }
-            } catch (err) {
+
+                const prodRes = await fetch(`${API_URL}?action=inventoryProducts`);
+                const prodData = await prodRes.json();
                 hideLoader();
-                console.error(err);
-                toast("Error communicating with active grid engine.");
-            }
+
+                if(prodData.success) {
+                    productsDirectoryCache = prodData.products || [];
+                    renderCatalogTable(productsDirectoryCache);
+                }
+            } catch(e) { hideLoader(); toast("Error connecting to sheet engine."); }
         }
 
-        /* ===================================
-        RENDER DATA GRID GRID TABLE UI
-        =================================== */
-        function renderInventoryTable(products) {
-            const tbody = document.getElementById("inventoryTableBody");
-            if(products.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No row elements found.</td></tr>`;
-                return;
-            }
-
+        function renderCatalogTable(list) {
             let html = "";
-            products.forEach(p => {
-                const imgTag = p.imageUrl ? `<img class="prod-img" src="${p.imageUrl}" onerror="this.src='https://placehold.co/50x50?text=No+Img'">` : `<i>No Image</i>`;
-                
-                // Logic math handling native formula calculations matching your columns
+            list.forEach(p => {
+                const img = p.imageUrl ? `<img class="prod-img" src="${p.imageUrl}">` : `<i>No Image</i>`;
                 const finalStock = (Number(p.opening) + Number(p.inward) + Number(p.salesReturn)) - (Number(p.reject) + Number(p.sales));
-
-                html += `
-                    <tr>
-                        <td>${imgTag}</td>
-                        <td><b>${p.sku}</b></td>
-                        <td>${p.opening || 0}</td>
-                        <td style="color:#10b981; font-weight:500;">+${p.inward || 0}</td>
-                        <td style="color:#ef4444;">-${p.reject || 0}</td>
-                        <td style="color:#f59e0b;">-${p.sales || 0}</td>
-                        <td style="color:#06b6d4;">+${p.salesReturn || 0}</td>
-                        <td style="background:#f0f7ff; font-weight:700; color:#1e40af;">${finalStock}</td>
-                    </tr>
-                `;
+                html += `<tr><td>${img}</td><td><b>${p.sku}</b></td><td>${p.opening}</td><td>${p.inward}</td><td style="font-weight:700; color:#1e40af;">${finalStock}</td></tr>`;
             });
-            tbody.innerHTML = html;
+            document.getElementById("invGridBody").innerHTML = html;
         }
 
         /* ===================================
-        POPULATE SELECT OPTIONS DROPDOWN
+        FUZZY SMART REGEX LAYOUT FINDER
         =================================== */
-        function populateSkuDropdown(products) {
-            const select = document.getElementById("inputSkuSelect");
-            const currentSelVal = select.value;
+        function handleFuzzySearch(query) {
+            const box = document.getElementById("suggestionsBox");
+            if(!query.trim()) { box.style.display = "none"; return; }
+
+            // Normalize Query: Remove all space and dash symbols
+            const cleanQuery = query.toLowerCase().replace(/[\s-]/g, "");
             
-            select.innerHTML = '<option value="">-- Choose SKU --</option>';
-            products.forEach(p => {
-                select.innerHTML += `<option value="${p.sku}">${p.sku}</option>`;
+            const matches = productsDirectoryCache.filter(p => {
+                const cleanSku = p.sku.toLowerCase().replace(/[\s-]/g, "");
+                return cleanSku.includes(cleanQuery); // Partial matching index check
             });
-            if(currentSelVal) select.value = currentSelVal;
+
+            if(matches.length === 0) { box.style.display = "none"; return; }
+
+            box.innerHTML = "";
+            matches.slice(0, 6).forEach(m => {
+                box.innerHTML += `<div class="suggestion-item" onclick="selectSkuItem('${m.sku}', '${m.imageUrl}')">📦 ${m.sku}</div>`;
+            });
+            box.style.display = "block";
         }
 
-        function fetchSingleSkuPreview() {
-            const selectedSku = document.getElementById("inputSkuSelect").value;
-            const previewImg = document.getElementById("skuPreviewImage");
+        function selectSkuItem(sku, imgUrl) {
+            document.getElementById("masterSkuSearch").value = sku;
+            document.getElementById("suggestionsBox").style.display = "none";
             
-            if(!selectedSku) { previewImg.style.display = "none"; return; }
-            
-            const match = globalProductsCache.find(p => p.sku === selectedSku);
-            if(match && match.imageUrl) {
-                previewImg.src = match.imageUrl;
-                previewImg.style.display = "block";
+            const preview = document.getElementById("skuPreviewImg");
+            if(imgUrl) { preview.src = imgUrl; preview.style.display = "block"; } else { preview.style.display = "none"; }
+        }
+
+        function toggleTxMode(mode) {
+            if(mode === "Advance") {
+                document.getElementById("qtyLabel").innerText = "Advance Payment Amount (₹)";
+                document.getElementById("rateGroup").style.display = "none";
+                document.getElementById("txRate").required = false;
             } else {
-                previewImg.style.display = "none";
+                document.getElementById("qtyLabel").innerText = "Inward Quantity (Pcs)";
+                document.getElementById("rateGroup").style.display = "flex";
+                document.getElementById("txRate").required = true;
             }
         }
 
-        /* ===================================
-        SUBMIT INPUT DATA TO APPS SCRIPT POST
-        =================================== */
-        async function submitInventoryUpdate(e) {
+        async function submitLabourTx(e) {
             e.preventDefault();
+            const mode = document.getElementById("txType").value;
+            const sku = document.getElementById("masterSkuSearch").value.trim();
             
-            const sku = document.getElementById("inputSkuSelect").value;
-            const type = document.getElementById("inputActionType").value;
-            const qty = parseInt(document.getElementById("inputQty").value, 10);
-
-            if(!sku || !type || isNaN(qty)) { toast("Validation input parameters missing."); return; }
+            if(mode === "Inward" && !sku) { toast("Please pick a valid target SKU pattern code."); return; }
 
             showLoader();
             try {
@@ -260,26 +197,27 @@
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({
-                        action: "updateInventory",
-                        data: { sku: sku, type: type, quantity: qty }
+                        action: "saveLabourTransaction",
+                        payload: {
+                            labourName: document.getElementById("laborNameSelect").value,
+                            type: mode,
+                            sku: sku,
+                            qty: Number(document.getElementById("txQty").value),
+                            rate: mode === "Advance" ? 0 : Number(document.getElementById("txRate").value)
+                        }
                     })
                 });
-
-                const result = await response.json();
+                const res = await response.json();
                 hideLoader();
-
-                if(result.success) {
-                    toast("🎉 Inventory cell balance updated!");
-                    document.getElementById("inputQty").value = "";
-                    loadInventorySystem(); // Hot refresh calculations instantly
-                } else {
-                    toast(result.message || "Failed to edit inventory cells.");
+                if(res.success) {
+                    toast("🎉 Labour Account Updated!");
+                    document.getElementById("masterSkuSearch").value = "";
+                    document.getElementById("txQty").value = "";
+                    document.getElementById("txRate").value = "";
+                    document.getElementById("skuPreviewImg").style.display = "none";
+                    initPage();
                 }
-            } catch (err) {
-                hideLoader();
-                console.error(err);
-                toast("Network pipeline modification error.");
-            }
+            } catch(err) { hideLoader(); toast("Transmission failed."); }
         }
 
         function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
@@ -288,11 +226,7 @@
             const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
             document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
         }
-
-        window.onload = function() {
-            if (API_URL !== "YOUR_SPREADSHEET_WEB_APP_URL_HERE") { loadInventorySystem(); }
-        };
+        window.onload = initPage;
     </script>
 </body>
-
 </html>
