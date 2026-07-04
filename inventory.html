@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Harsidhi Ventures - Inventory Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif }
+        body { background: #f3f6fb; min-height: 100vh; color: #1f2937; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* Layout Grid */
+        .grid-layout { display: grid; grid-template-columns: 350px 1fr; gap: 20px; }
+        @media (max-width: 900px) { .grid-layout { grid-template-columns: 1fr; } }
+
+        /* Panels & Cards */
+        .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,.02); }
+        .panel-header { font-size: 16px; font-weight: 700; color: #1e3a8a; margin-bottom: 15px; border-bottom: 1px solid #eef2f7; padding-bottom: 8px; }
+        
+        /* Form Inputs */
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: #475569; }
+        .input, select { height: 42px; padding: 0 12px; border: 1px solid #dbe2ea; border-radius: 10px; outline: none; background: #fff; font-size: 14px; width: 100%; }
+        .input:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .12) }
+        
+        /* Stats Dashboard Bar */
+        .summary-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px rgba(0,0,0,.01); border-left: 4px solid #2563eb; }
+        .stat-card h3 { font-size: 12px; color: #64748b; text-transform: uppercase; }
+        .stat-card .val { font-size: 22px; font-weight: 700; margin-top: 4px; color: #0f172a; }
+
+        /* Table UI */
+        .table-wrapper { overflow-x: auto; max-height: 600px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; background: #fff; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; padding: 12px 14px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 5; }
+        td { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+        tr:hover { background: #f8fafc; }
+        
+        /* Image Preview Box */
+        .prod-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; background: #f8fafc; display: block; }
+        
+        /* Buttons */
+        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; width: 100%; text-align: center; display: block; }
+        .btn-primary { background: #2563eb; color: #fff; }
+        .btn-primary:hover { background: #1d4ed8; }
+        
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 12px 16px; border-radius: 12px; z-index: 9999; box-shadow: 0 8px 20px rgba(0, 0, 0, .2); font-size: 13px; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #2563eb }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Dashboard Summary Top Cards -->
+        <div class="summary-bar">
+            <div class="stat-card" style="border-left-color: #2563eb;">
+                <h3>Total SKU Types</h3>
+                <div class="val" id="sumTotalSkus">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #10b981;">
+                <h3>Total Stock Items</h3>
+                <div class="val" id="sumTotalStock">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f59e0b;">
+                <h3>Total Inwards</h3>
+                <div class="val" id="sumTotalInward">0</div>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Left Side: Input Data Transaction Form -->
+            <div class="panel">
+                <div class="panel-header">📥 Update SKU Stock Entry</div>
+                <form id="inventoryForm" onsubmit="submitInventoryUpdate(event)">
+                    <div class="form-group">
+                        <label>Select Target SKU</label>
+                        <select id="inputSkuSelect" required onchange="fetchSingleSkuPreview()">
+                            <option value="">-- Choose SKU --</option>
+                        </select>
+                    </div>
+
+                    <div style="text-align: center; display: flex; justify-content: center; margin: 10px 0;">
+                        <img id="skuPreviewImage" class="prod-img" style="width: 120px; height: 120px; display: none;" src="" alt="Preview">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Transaction / Entry Type</label>
+                        <select id="inputActionType" required>
+                            <option value="Inward">Inward (Stock Aaya)</option>
+                            <option value="Reject">Reject (Kharab/Damage)</option>
+                            <option value="Sales">Sales (Bik Gaya)</option>
+                            <option value="SalesReturn">Sales Return (Wapas Aaya)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Quantity (Pcs)</label>
+                        <input type="number" id="inputQty" class="input" placeholder="Enter quantity" min="1" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="margin-top: 10px;">💾 Save Stock Entry</button>
+                </form>
+            </div>
+
+            <!-- Right Side: Realtime Product Grid Output Table -->
+            <div class="panel">
+                <div class="panel-header">📊 Live Inventory Report Grid (Columns A to H Calculation)</div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>SKU</th>
+                                <th>Opening</th>
+                                <th>Inward</th>
+                                <th>Reject</th>
+                                <th>Sales</th>
+                                <th>Returns</th>
+                                <th style="background: #eff6ff; font-weight:700; color:#1e40af;">Final Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: gray; padding: 25px; font-style: italic;">Loading inventory sheet items...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay">Connecting Inventory Nodes...</div>
+
+    <script>
+        /* ===================================
+        CONFIG
+        =================================== */
+        const API_URL = "https://script.google.com/macros/s/AKfycbxoWaTIECKCVnljXiqLVIRRC8Orhlcvcih9eqT7J2wjIaJ5j94g97m0KI6A4GSEK2gN/exec"; 
+
+        let globalProductsCache = [];
+
+        /* ===================================
+        FETCH MASTER DATA DATASET
+        =================================== */
+        async function loadInventorySystem() {
+            showLoader();
+            try {
+                // 1. Fetch live summary aggregation counters
+                const summaryRes = await fetch(`${API_URL}?action=inventorySummary`);
+                const summaryData = await summaryRes.json();
+
+                // 2. Fetch all raw inventory items mapped inside rows
+                const productsRes = await fetch(`${API_URL}?action=inventoryProducts`);
+                const productsData = await productsRes.json();
+
+                hideLoader();
+
+                if (productsData.success) {
+                    globalProductsCache = productsData.products || [];
+                    
+                    // Render Metrics Bar
+                    document.getElementById("sumTotalSkus").innerText = globalProductsCache.length;
+                    document.getElementById("sumTotalStock").innerText = summaryData.totalStock || 0;
+                    document.getElementById("sumTotalInward").innerText = summaryData.totalInward || 0;
+
+                    renderInventoryTable(globalProductsCache);
+                    populateSkuDropdown(globalProductsCache);
+                } else {
+                    toast("Failed to build array sets.");
+                }
+            } catch (err) {
+                hideLoader();
+                console.error(err);
+                toast("Error communicating with active grid engine.");
+            }
+        }
+
+        /* ===================================
+        RENDER DATA GRID GRID TABLE UI
+        =================================== */
+        function renderInventoryTable(products) {
+            const tbody = document.getElementById("inventoryTableBody");
+            if(products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:20px;">No row elements found.</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            products.forEach(p => {
+                const imgTag = p.imageUrl ? `<img class="prod-img" src="${p.imageUrl}" onerror="this.src='https://placehold.co/50x50?text=No+Img'">` : `<i>No Image</i>`;
+                
+                // Logic math handling native formula calculations matching your columns
+                const finalStock = (Number(p.opening) + Number(p.inward) + Number(p.salesReturn)) - (Number(p.reject) + Number(p.sales));
+
+                html += `
+                    <tr>
+                        <td>${imgTag}</td>
+                        <td><b>${p.sku}</b></td>
+                        <td>${p.opening || 0}</td>
+                        <td style="color:#10b981; font-weight:500;">+${p.inward || 0}</td>
+                        <td style="color:#ef4444;">-${p.reject || 0}</td>
+                        <td style="color:#f59e0b;">-${p.sales || 0}</td>
+                        <td style="color:#06b6d4;">+${p.salesReturn || 0}</td>
+                        <td style="background:#f0f7ff; font-weight:700; color:#1e40af;">${finalStock}</td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        /* ===================================
+        POPULATE SELECT OPTIONS DROPDOWN
+        =================================== */
+        function populateSkuDropdown(products) {
+            const select = document.getElementById("inputSkuSelect");
+            const currentSelVal = select.value;
+            
+            select.innerHTML = '<option value="">-- Choose SKU --</option>';
+            products.forEach(p => {
+                select.innerHTML += `<option value="${p.sku}">${p.sku}</option>`;
+            });
+            if(currentSelVal) select.value = currentSelVal;
+        }
+
+        function fetchSingleSkuPreview() {
+            const selectedSku = document.getElementById("inputSkuSelect").value;
+            const previewImg = document.getElementById("skuPreviewImage");
+            
+            if(!selectedSku) { previewImg.style.display = "none"; return; }
+            
+            const match = globalProductsCache.find(p => p.sku === selectedSku);
+            if(match && match.imageUrl) {
+                previewImg.src = match.imageUrl;
+                previewImg.style.display = "block";
+            } else {
+                previewImg.style.display = "none";
+            }
+        }
+
+        /* ===================================
+        SUBMIT INPUT DATA TO APPS SCRIPT POST
+        =================================== */
+        async function submitInventoryUpdate(e) {
+            e.preventDefault();
+            
+            const sku = document.getElementById("inputSkuSelect").value;
+            const type = document.getElementById("inputActionType").value;
+            const qty = parseInt(document.getElementById("inputQty").value, 10);
+
+            if(!sku || !type || isNaN(qty)) { toast("Validation input parameters missing."); return; }
+
+            showLoader();
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "updateInventory",
+                        data: { sku: sku, type: type, quantity: qty }
+                    })
+                });
+
+                const result = await response.json();
+                hideLoader();
+
+                if(result.success) {
+                    toast("🎉 Inventory cell balance updated!");
+                    document.getElementById("inputQty").value = "";
+                    loadInventorySystem(); // Hot refresh calculations instantly
+                } else {
+                    toast(result.message || "Failed to edit inventory cells.");
+                }
+            } catch (err) {
+                hideLoader();
+                console.error(err);
+                toast("Network pipeline modification error.");
+            }
+        }
+
+        function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
+        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+        }
+
+        window.onload = function() {
+            if (API_URL !== "YOUR_SPREADSHEET_WEB_APP_URL_HERE") { loadInventorySystem(); }
+        };
+    </script>
+</body>
+
+</html>
