@@ -1,0 +1,3723 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<meta
+http-equiv="X-Frame-Options"
+content="allowall">
+
+<meta
+name="theme-color"
+content="#7c3aed">
+
+<meta
+name="description"
+content="Premium Delhivery & Razorpay Tracking Dashboard">
+
+<title>
+Delhivery • Premium Tracking Dashboard
+</title>
+
+<style>
+
+/* =========================================
+   PREMIUM GOOGLE FONT
+========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* =========================================
+   ROOT VARIABLES
+========================================= */
+
+:root{
+
+--primary:#7c3aed;
+--primary2:#8b5cf6;
+--primary3:#6366f1;
+
+--success:#10b981;
+--warning:#f59e0b;
+--danger:#ef4444;
+--info:#3b82f6;
+
+--bg:#edf2ff;
+--surface:#ffffff;
+--surface2:#f8fafc;
+
+--text:#0f172a;
+--muted:#64748b;
+
+--glass:rgba(255,255,255,.62);
+--glass2:rgba(255,255,255,.82);
+
+--border:rgba(255,255,255,.45);
+
+--shadow:
+0 10px 30px rgba(15,23,42,.06),
+0 25px 80px rgba(15,23,42,.08);
+
+--shadowHover:
+0 20px 45px rgba(15,23,42,.12);
+
+--radius:30px;
+
+}
+
+/* =========================================
+   RESET
+========================================= */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+/* =========================================
+   BODY
+========================================= */
+
+body{
+
+background:
+radial-gradient(circle at top left,#ddd6fe 0%,transparent 32%),
+radial-gradient(circle at bottom right,#bfdbfe 0%,transparent 30%),
+linear-gradient(135deg,#f8fbff,#eef2ff);
+
+background-attachment:fixed;
+
+min-height:100vh;
+
+padding:22px;
+
+color:var(--text);
+
+overflow-x:hidden;
+
+position:relative;
+
+}
+
+/* ANIMATED BG */
+
+body::before{
+
+content:'';
+
+position:fixed;
+
+width:700px;
+height:700px;
+
+background:
+radial-gradient(circle,
+rgba(124,58,237,.16),
+transparent 70%);
+
+top:-260px;
+right:-260px;
+
+animation:floatGlow 10s ease-in-out infinite;
+
+pointer-events:none;
+
+z-index:-1;
+
+}
+
+body::after{
+
+content:'';
+
+position:fixed;
+
+width:600px;
+height:600px;
+
+background:
+radial-gradient(circle,
+rgba(37,99,235,.14),
+transparent 70%);
+
+bottom:-250px;
+left:-250px;
+
+animation:floatGlow2 12s ease-in-out infinite;
+
+pointer-events:none;
+
+z-index:-1;
+
+}
+
+@keyframes floatGlow{
+
+0%,100%{
+transform:translateY(0px);
+}
+
+50%{
+transform:translateY(25px);
+}
+
+}
+
+@keyframes floatGlow2{
+
+0%,100%{
+transform:translateX(0px);
+}
+
+50%{
+transform:translateX(25px);
+}
+
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar{
+width:10px;
+height:10px;
+}
+
+::-webkit-scrollbar-track{
+background:transparent;
+}
+
+::-webkit-scrollbar-thumb{
+
+background:
+linear-gradient(
+180deg,
+#8b5cf6,
+#2563eb
+);
+
+border-radius:50px;
+
+}
+
+/* =========================================
+   MAIN CONTAINER
+========================================= */
+
+.main{
+
+max-width:1850px;
+
+margin:auto;
+
+padding:32px;
+
+border-radius:38px;
+
+background:rgba(255,255,255,.42);
+
+backdrop-filter:blur(28px);
+
+-webkit-backdrop-filter:blur(28px);
+
+border:1px solid rgba(255,255,255,.55);
+
+box-shadow:var(--shadow);
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+/* PREMIUM TOP GLOW */
+
+.main::before{
+
+content:'';
+
+position:absolute;
+
+top:-180px;
+right:-180px;
+
+width:500px;
+height:500px;
+
+background:
+radial-gradient(circle,
+rgba(139,92,246,.28),
+transparent 72%);
+
+pointer-events:none;
+
+}
+
+/* =========================================
+   TITLE
+========================================= */
+
+.title{
+
+font-size:48px;
+
+font-weight:900;
+
+text-align:center;
+
+letter-spacing:-2px;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed 0%,
+#2563eb 55%,
+#06b6d4 100%
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+margin-bottom:32px;
+
+position:relative;
+
+}
+
+/* =========================================
+   SECTION
+========================================= */
+
+.section{
+
+position:relative;
+
+padding:28px;
+
+margin-top:24px;
+
+border-radius:32px;
+
+background:var(--glass);
+
+backdrop-filter:blur(20px);
+
+-webkit-backdrop-filter:blur(20px);
+
+border:1px solid rgba(255,255,255,.5);
+
+box-shadow:var(--shadow);
+
+overflow:hidden;
+
+animation:fadeUp .5s ease;
+
+}
+
+/* TOP GRADIENT */
+
+.section::before{
+
+content:'';
+
+position:absolute;
+
+top:0;
+left:0;
+
+width:100%;
+height:5px;
+
+background:
+linear-gradient(
+90deg,
+#8b5cf6,
+#2563eb,
+#06b6d4,
+#10b981
+);
+
+}
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+@keyframes fadeUp{
+
+from{
+opacity:0;
+transform:translateY(20px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+/* =========================================
+   FLEX
+========================================= */
+
+.flex{
+
+display:flex;
+
+gap:16px;
+
+align-items:center;
+
+flex-wrap:wrap;
+
+}
+
+/* =========================================
+   HEADINGS
+========================================= */
+
+h3{
+
+font-size:28px;
+
+font-weight:900;
+
+letter-spacing:-1px;
+
+margin-bottom:22px;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#2563eb
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+}
+
+/* =========================================
+   INPUTS
+========================================= */
+
+input,
+select{
+
+height:62px;
+
+padding:0 22px;
+
+border-radius:22px;
+
+border:1px solid rgba(255,255,255,.55);
+
+background:
+rgba(255,255,255,.72);
+
+backdrop-filter:blur(12px);
+
+font-size:15px;
+
+font-weight:600;
+
+outline:none;
+
+transition:.3s;
+
+color:var(--text);
+
+box-shadow:
+inset 0 1px 2px rgba(255,255,255,.6),
+0 3px 10px rgba(15,23,42,.04);
+
+width:100%;
+
+}
+
+input::placeholder{
+color:#94a3b8;
+font-weight:600;
+}
+
+input:focus,
+select:focus{
+
+border-color:#8b5cf6;
+
+background:#fff;
+
+transform:translateY(-2px);
+
+box-shadow:
+0 0 0 5px rgba(139,92,246,.12),
+0 10px 30px rgba(139,92,246,.12);
+
+}
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+button{
+
+height:60px;
+
+padding:0 26px;
+
+border:none;
+
+border-radius:22px;
+
+font-size:14px;
+
+font-weight:800;
+
+cursor:pointer;
+
+position:relative;
+
+overflow:hidden;
+
+transition:
+transform .25s ease,
+box-shadow .25s ease,
+opacity .25s ease;
+
+white-space:nowrap;
+
+letter-spacing:.3px;
+
+}
+
+/* BUTTON SHINE */
+
+button::before{
+
+content:'';
+
+position:absolute;
+
+top:0;
+left:-120%;
+
+width:100%;
+height:100%;
+
+background:
+linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.28),
+transparent
+);
+
+transition:.7s;
+
+}
+
+button:hover::before{
+left:120%;
+}
+
+/* RIPPLE */
+
+button::after{
+
+content:'';
+
+position:absolute;
+
+width:0;
+height:0;
+
+background:rgba(255,255,255,.28);
+
+border-radius:50%;
+
+top:50%;
+left:50%;
+
+transform:translate(-50%,-50%);
+
+transition:.5s;
+
+}
+
+button:active::after{
+
+width:320px;
+height:320px;
+
+opacity:0;
+
+}
+
+button:hover{
+
+transform:translateY(-3px);
+
+}
+
+button:active{
+
+transform:scale(.98);
+
+}
+
+/* ACTIVE BUTTON */
+
+.activeBtn{
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#2563eb
+);
+
+color:#fff;
+
+box-shadow:
+0 14px 35px rgba(124,58,237,.28);
+
+}
+
+/* INACTIVE BUTTON */
+
+.inactiveBtn{
+
+background:
+rgba(255,255,255,.72);
+
+color:#5b21b6;
+
+border:1px solid rgba(124,58,237,.12);
+
+box-shadow:
+0 5px 16px rgba(15,23,42,.04);
+
+}
+
+/* ACTION BUTTON */
+
+.actionBtn{
+
+background:
+linear-gradient(
+135deg,
+#2563eb,
+#7c3aed
+);
+
+color:#fff;
+
+box-shadow:
+0 15px 35px rgba(37,99,235,.24);
+
+}
+
+/* =========================================
+   SCANNER SECTION SPECIAL
+========================================= */
+
+.scannerSection{
+
+background:
+linear-gradient(
+135deg,
+rgba(124,58,237,.12),
+rgba(37,99,235,.10)
+);
+
+border:1px solid rgba(255,255,255,.5);
+
+}
+
+/* =========================================
+   SEARCH ENGINE SPECIAL
+========================================= */
+
+.searchBarWrap{
+
+display:flex;
+
+align-items:center;
+
+gap:16px;
+
+padding:14px;
+
+border-radius:28px;
+
+background:
+rgba(255,255,255,.42);
+
+backdrop-filter:blur(16px);
+
+border:1px solid rgba(255,255,255,.45);
+
+overflow-x:auto;
+
+}
+
+/* SEARCH TABS */
+
+.searchTabs{
+
+display:flex;
+
+gap:12px;
+
+padding:6px;
+
+border-radius:22px;
+
+background:
+rgba(255,255,255,.55);
+
+}
+
+/* SEARCH INPUT */
+
+#searchInput{
+
+min-width:450px;
+
+height:64px;
+
+font-size:16px;
+
+font-weight:700;
+
+}
+
+/* SEARCH BUTTON */
+
+.searchBtn{
+
+height:64px;
+
+min-width:150px;
+
+}
+
+/* =========================================
+   STATS GRID
+========================================= */
+
+.stats{
+
+display:grid;
+
+grid-template-columns:
+repeat(6,1fr);
+
+gap:18px;
+
+margin-top:18px;
+
+}
+
+/* =========================================
+   CARD
+========================================= */
+
+.card{
+
+position:relative;
+
+padding:24px;
+
+min-height:140px;
+
+border-radius:30px;
+
+background:
+rgba(255,255,255,.72);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.5);
+
+overflow:hidden;
+
+transition:.3s;
+
+box-shadow:
+0 10px 35px rgba(15,23,42,.05);
+
+}
+
+/* CARD GLOW */
+
+.card::before{
+
+content:'';
+
+position:absolute;
+
+top:0;
+left:0;
+
+width:100%;
+height:5px;
+
+background:
+linear-gradient(
+90deg,
+#8b5cf6,
+#06b6d4
+);
+
+}
+
+.card::after{
+
+content:'';
+
+position:absolute;
+
+top:-80px;
+right:-80px;
+
+width:180px;
+height:180px;
+
+background:
+radial-gradient(circle,
+rgba(124,58,237,.10),
+transparent 70%);
+
+}
+
+/* HOVER */
+
+.card:hover{
+
+transform:translateY(-5px);
+
+box-shadow:var(--shadowHover);
+
+}
+
+/* LABEL */
+
+.card div{
+
+font-size:13px;
+
+font-weight:700;
+
+color:var(--muted);
+
+text-transform:uppercase;
+
+letter-spacing:.6px;
+
+}
+
+/* VALUE */
+
+.card h2{
+
+font-size:38px;
+
+font-weight:900;
+
+margin-top:16px;
+
+letter-spacing:-1px;
+
+color:var(--text);
+
+}
+
+/* =========================================
+   MONTHS & DATES
+========================================= */
+
+#months,
+#dates{
+
+display:flex;
+
+gap:14px;
+
+flex-wrap:wrap;
+
+margin-top:20px;
+
+}
+
+/* =========================================
+   TABLE WRAP
+========================================= */
+
+.tableWrap{
+
+margin-top:24px;
+
+padding:10px;
+
+overflow:auto;
+
+border-radius:30px;
+
+background:
+rgba(255,255,255,.55);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.45);
+
+}
+
+/* =========================================
+   TABLE
+========================================= */
+
+table{
+
+width:100%;
+
+min-width:1900px;
+
+border-collapse:separate;
+
+border-spacing:0 12px;
+
+}
+
+/* HEADER */
+
+th{
+
+padding:20px 18px;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#2563eb
+);
+
+color:#fff;
+
+font-size:13px;
+
+font-weight:800;
+
+letter-spacing:.5px;
+
+position:sticky;
+
+top:0;
+
+z-index:5;
+
+text-transform:uppercase;
+
+}
+
+/* HEADER ROUND */
+
+th:first-child{
+border-radius:18px 0 0 18px;
+}
+
+th:last-child{
+border-radius:0 18px 18px 0;
+}
+
+/* TABLE TD */
+
+td{
+
+padding:20px 16px;
+
+background:
+rgba(255,255,255,.82);
+
+backdrop-filter:blur(12px);
+
+font-size:14px;
+
+font-weight:700;
+
+color:#111827;
+
+border-top:1px solid rgba(255,255,255,.55);
+
+border-bottom:1px solid rgba(255,255,255,.55);
+
+transition:.25s;
+
+}
+
+/* ROW */
+
+tbody tr{
+
+transition:.25s;
+
+}
+
+/* HOVER */
+
+tbody tr:hover{
+
+transform:scale(1.003);
+
+}
+
+/* TD ROUND */
+
+tbody tr td:first-child{
+
+border-left:1px solid rgba(255,255,255,.55);
+
+border-radius:20px 0 0 20px;
+
+}
+
+tbody tr td:last-child{
+
+border-right:1px solid rgba(255,255,255,.55);
+
+border-radius:0 20px 20px 0;
+
+}
+
+/* =========================================
+   BADGES
+========================================= */
+
+.badge{
+
+padding:10px 16px;
+
+border-radius:50px;
+
+font-size:11px;
+
+font-weight:900;
+
+letter-spacing:.7px;
+
+display:inline-flex;
+
+align-items:center;
+
+justify-content:center;
+
+text-transform:uppercase;
+
+box-shadow:
+0 8px 18px rgba(0,0,0,.08);
+
+}
+
+/* STATUS COLORS */
+
+.delivered{
+background:#10b981;
+color:#fff;
+}
+
+.transit{
+background:#3b82f6;
+color:#fff;
+}
+
+.pending{
+background:#f59e0b;
+color:#fff;
+}
+
+.rto{
+background:#ef4444;
+color:#fff;
+}
+
+.cancelled{
+background:#64748b;
+color:#fff;
+}
+
+/* =========================================
+   RESULT CARD
+========================================= */
+
+.resultCard{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(220px,1fr));
+
+gap:18px;
+
+padding:24px;
+
+margin-top:20px;
+
+border-radius:30px;
+
+background:
+rgba(255,255,255,.62);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.5);
+
+}
+
+/* RESULT ITEM */
+
+.resultItem{
+
+padding:20px;
+
+border-radius:24px;
+
+background:
+rgba(255,255,255,.75);
+
+border:1px solid rgba(255,255,255,.45);
+
+transition:.25s;
+
+}
+
+.resultItem:hover{
+
+transform:translateY(-3px);
+
+}
+
+/* LABEL */
+
+.resultLabel{
+
+font-size:12px;
+
+font-weight:800;
+
+letter-spacing:.7px;
+
+text-transform:uppercase;
+
+color:var(--muted);
+
+margin-bottom:12px;
+
+}
+
+/* VALUE */
+
+.resultValue{
+
+font-size:15px;
+
+font-weight:800;
+
+line-height:1.6;
+
+word-break:break-word;
+
+}
+
+/* =========================================
+   DELHIVERY WRAP
+========================================= */
+
+.delhiveryWrap{
+
+display:grid;
+
+grid-template-columns:32% 68%;
+
+gap:20px;
+
+align-items:start;
+
+}
+
+/* =========================================
+   TIMELINE
+========================================= */
+
+.timelineWrap{
+
+padding:26px;
+
+border-radius:30px;
+
+background:
+rgba(255,255,255,.68);
+
+backdrop-filter:blur(20px);
+
+border:1px solid rgba(255,255,255,.5);
+
+max-height:850px;
+
+overflow:auto;
+
+}
+
+/* TITLE */
+
+.timelineTitle{
+
+font-size:28px;
+
+font-weight:900;
+
+margin-bottom:24px;
+
+letter-spacing:-1px;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#2563eb
+);
+
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+
+}
+
+/* TIMELINE ITEM */
+
+.timelineItem{
+
+padding:20px;
+
+margin-bottom:16px;
+
+border-radius:24px;
+
+background:
+rgba(255,255,255,.82);
+
+border:1px solid rgba(255,255,255,.45);
+
+transition:.25s;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.timelineItem::before{
+
+content:'';
+
+position:absolute;
+
+top:0;
+left:0;
+
+width:5px;
+height:100%;
+
+background:
+linear-gradient(
+180deg,
+#7c3aed,
+#2563eb
+);
+
+}
+
+.timelineItem:hover{
+
+transform:translateY(-3px);
+
+box-shadow:
+0 12px 30px rgba(15,23,42,.08);
+
+}
+
+/* TOP */
+
+.timelineTop{
+
+display:flex;
+
+justify-content:space-between;
+
+gap:14px;
+
+flex-wrap:wrap;
+
+margin-bottom:12px;
+
+}
+
+/* STATUS */
+
+.timelineStatus{
+
+font-size:15px;
+
+font-weight:900;
+
+}
+
+/* DATE */
+
+.timelineDate{
+
+font-size:13px;
+
+font-weight:700;
+
+color:var(--muted);
+
+}
+
+/* DESC */
+
+.timelineDesc{
+
+font-size:14px;
+
+font-weight:700;
+
+margin-bottom:8px;
+
+line-height:1.6;
+
+}
+
+/* LOC */
+
+.timelineLoc{
+
+font-size:13px;
+
+font-weight:600;
+
+color:var(--muted);
+
+}
+
+/* =========================================
+   FLOATING LOADER
+========================================= */
+
+.loaderWrap{
+
+position:fixed;
+
+inset:0;
+
+display:none;
+
+justify-content:center;
+align-items:center;
+
+background:rgba(255,255,255,.08);
+
+backdrop-filter:blur(2px);
+
+-webkit-backdrop-filter:blur(2px);
+
+z-index:99999;
+
+pointer-events:none;
+
+animation:fadeLoader .2s ease;
+
+}
+
+/* =========================================
+   RING
+========================================= */
+
+.loaderRing{
+
+width:74px;
+height:74px;
+
+border-radius:50%;
+
+border:5px solid
+rgba(124,58,237,.12);
+
+border-top:5px solid #7c3aed;
+
+border-right:5px solid #2563eb;
+
+animation:loaderSpin .7s linear infinite;
+
+box-shadow:
+
+0 0 30px rgba(124,58,237,.18),
+
+inset 0 0 20px rgba(255,255,255,.3);
+
+background:
+rgba(255,255,255,.25);
+
+backdrop-filter:blur(10px);
+
+}
+
+/* =========================================
+   ANIMATION
+========================================= */
+
+@keyframes loaderSpin{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+@keyframes fadeLoader{
+
+from{
+opacity:0;
+}
+
+to{
+opacity:1;
+}
+
+}
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+body.dark .loaderWrap{
+
+background:rgba(0,0,0,.12);
+
+}
+
+body.dark .loaderRing{
+
+background:
+rgba(15,23,42,.45);
+
+border:
+5px solid rgba(255,255,255,.08);
+
+border-top:
+5px solid #8b5cf6;
+
+border-right:
+5px solid #06b6d4;
+
+}
+
+/* =========================================
+   PROCESS BOX
+========================================= */
+
+.processBox{
+
+width:280px;
+height:280px;
+
+border-radius:40px;
+
+background:
+rgba(255,255,255,.75);
+
+backdrop-filter:blur(24px);
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+border:1px solid rgba(255,255,255,.55);
+
+box-shadow:
+0 25px 60px rgba(0,0,0,.15);
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.processBox::before{
+
+content:'';
+
+position:absolute;
+
+width:280px;
+height:280px;
+
+background:
+conic-gradient(
+from 0deg,
+transparent,
+rgba(124,58,237,.22),
+transparent
+);
+
+animation:rotateGlow 2s linear infinite;
+
+}
+
+@keyframes rotateGlow{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+/* =========================================
+   PROCESS CIRCLE
+========================================= */
+
+.processCircle{
+
+width:130px;
+height:130px;
+
+border-radius:50%;
+
+position:relative;
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+background:
+rgba(255,255,255,.8);
+
+box-shadow:
+inset 0 0 20px rgba(124,58,237,.12);
+
+z-index:2;
+
+}
+
+/* SPINNER */
+
+.spinner{
+
+position:absolute;
+
+width:100%;
+height:100%;
+
+border-radius:50%;
+
+border:8px solid transparent;
+
+border-top:8px solid #7c3aed;
+
+border-right:8px solid #2563eb;
+
+animation:spin .8s linear infinite;
+
+}
+
+@keyframes spin{
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+/* =========================================
+   DONE POPUP
+========================================= */
+
+.donePopup{
+
+padding:40px;
+
+min-width:360px;
+
+border-radius:38px;
+
+background:
+rgba(255,255,255,.82);
+
+backdrop-filter:blur(24px);
+
+text-align:center;
+
+border:1px solid rgba(255,255,255,.55);
+
+box-shadow:
+0 25px 60px rgba(0,0,0,.15);
+
+animation:popup .3s ease;
+
+}
+
+/* ICON */
+
+.doneIcon{
+
+width:110px;
+height:110px;
+
+margin:auto;
+
+border-radius:50%;
+
+background:
+linear-gradient(
+135deg,
+#10b981,
+#22c55e
+);
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+font-size:60px;
+
+font-weight:900;
+
+color:#fff;
+
+box-shadow:
+0 18px 35px rgba(16,185,129,.28);
+
+}
+
+/* TEXT */
+
+.doneText{
+
+font-size:30px;
+
+font-weight:900;
+
+margin-top:22px;
+
+letter-spacing:-1px;
+
+}
+
+/* DONE BUTTON */
+
+.doneBtn{
+
+width:100%;
+
+margin-top:24px;
+
+background:
+linear-gradient(
+135deg,
+#7c3aed,
+#2563eb
+);
+
+color:#fff;
+
+}
+
+/* POPUP ANIMATION */
+
+@keyframes popup{
+
+from{
+opacity:0;
+transform:scale(.75);
+}
+
+to{
+opacity:1;
+transform:scale(1);
+}
+
+}
+
+/* =========================================
+   IFRAME
+========================================= */
+
+iframe{
+display:none!important;
+}
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+body.dark{
+
+background:
+linear-gradient(
+135deg,
+#020617,
+#0f172a
+);
+
+color:#fff;
+
+}
+
+/* DARK MAIN */
+
+body.dark .main{
+
+background:
+rgba(15,23,42,.72);
+
+border:1px solid rgba(255,255,255,.06);
+
+}
+
+/* DARK CARDS */
+
+body.dark .section,
+body.dark .card,
+body.dark .resultCard,
+body.dark .timelineWrap,
+body.dark .tableWrap{
+
+background:
+rgba(15,23,42,.72);
+
+border:1px solid rgba(255,255,255,.05);
+
+}
+
+/* DARK INPUTS */
+
+body.dark input,
+body.dark select{
+
+background:
+rgba(15,23,42,.85);
+
+border:1px solid rgba(255,255,255,.06);
+
+color:#fff;
+
+}
+
+/* DARK TD */
+
+body.dark td{
+
+background:
+rgba(15,23,42,.85);
+
+border-color:
+rgba(255,255,255,.05);
+
+color:#fff;
+
+}
+
+/* DARK ITEMS */
+
+body.dark .resultItem,
+body.dark .timelineItem{
+
+background:
+rgba(15,23,42,.88);
+
+border:1px solid rgba(255,255,255,.05);
+
+}
+
+/* DARK TEXT */
+
+body.dark .resultValue,
+body.dark .timelineStatus,
+body.dark .doneText,
+body.dark .card h2{
+
+color:#fff;
+
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:1400px){
+
+.stats{
+grid-template-columns:repeat(3,1fr);
+}
+
+.delhiveryWrap{
+grid-template-columns:1fr;
+}
+
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media(max-width:700px){
+
+body{
+padding:10px;
+}
+
+.main{
+padding:16px;
+border-radius:26px;
+}
+
+.section{
+padding:18px;
+border-radius:26px;
+}
+
+.title{
+font-size:30px;
+line-height:1.2;
+}
+
+.flex{
+flex-direction:column;
+}
+
+input,
+button,
+select{
+width:100%;
+}
+
+.stats{
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+.card{
+padding:18px;
+min-height:110px;
+}
+
+.card h2{
+font-size:28px;
+}
+
+#searchInput{
+min-width:100%;
+}
+
+.searchBarWrap{
+padding:10px;
+}
+
+.searchTabs{
+width:100%;
+overflow:auto;
+}
+
+.resultCard{
+grid-template-columns:1fr;
+padding:16px;
+}
+
+.timelineWrap{
+padding:16px;
+max-height:none;
+}
+
+.timelineTop{
+flex-direction:column;
+gap:6px;
+}
+
+#months,
+#dates{
+overflow-x:auto;
+flex-wrap:nowrap;
+padding-bottom:8px;
+}
+
+#months button,
+#dates button{
+flex-shrink:0;
+}
+
+.donePopup{
+min-width:90%;
+padding:28px;
+}
+
+.processBox{
+width:230px;
+height:230px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================
+     PREMIUM BACKGROUND GLOW
+========================================= -->
+
+<div class="bgGlow bgGlow1"></div>
+<div class="bgGlow bgGlow2"></div>
+<div class="bgGlow bgGlow3"></div>
+
+<!-- =========================
+     MODERN FLOATING LOADER
+========================= -->
+
+<div class="loaderWrap" id="loading">
+
+  <div class="loaderRing"></div>
+
+</div>
+
+
+<!-- =========================================
+     MAIN APP
+========================================= -->
+
+<div class="main">
+
+<!-- =========================================
+     TOP HEADER
+========================================= -->
+
+<div class="topHeader">
+
+    <div>
+
+        <div class="miniTag">
+
+            LIVE TRACKING PANEL
+
+        </div>
+
+        <div class="title">
+
+            Delhivery & Razorpay Tracking
+
+        </div>
+
+        <div class="subTitle">
+
+            Premium logistics dashboard with real-time shipment monitoring
+
+        </div>
+
+    </div>
+
+    <button class="themeBtn" onclick="toggleDark()">
+
+        🌙 Theme
+
+    </button>
+
+</div>
+
+
+<!-- =========================================
+     STATS
+========================================= -->
+
+<div class="stats">
+
+    <div class="card premiumCard purpleCard">
+
+        <div class="cardIcon">📦</div>
+
+        <div class="cardLabel">
+
+            Today's Pickup
+
+        </div>
+
+        <h2 id="todayPickup">0</h2>
+
+        <div class="cardGlow"></div>
+
+    </div>
+
+
+    <div class="card premiumCard blueCard">
+
+        <div class="cardIcon">↩️</div>
+
+        <div class="cardLabel">
+
+            Today's Return
+
+        </div>
+
+        <h2 id="todayReturn">0</h2>
+
+        <div class="cardGlow"></div>
+
+    </div>
+
+
+    <div class="card premiumCard cyanCard">
+
+        <div class="cardIcon">🚚</div>
+
+        <div class="cardLabel">
+
+            Yesterday Pickup
+
+        </div>
+
+        <h2 id="yesterdayPickup">0</h2>
+
+        <div class="cardGlow"></div>
+
+    </div>
+
+
+    <div class="card premiumCard orangeCard">
+
+        <div class="cardIcon">📥</div>
+
+        <div class="cardLabel">
+
+            Yesterday Return
+
+        </div>
+
+        <h2 id="yesterdayReturn">0</h2>
+
+        <div class="cardGlow"></div>
+
+    </div>
+
+
+    <div class="card premiumCard greenCard">
+
+        <div class="cardIcon">✅</div>
+
+        <div class="cardLabel">
+
+            Total Pickup
+
+        </div>
+
+        <h2 id="pickupCount">0</h2>
+
+        <div class="cardGlow"></div>
+
+    </div>
+
+
+    <div class="card premiumCard redCard">
+
+        <div class="cardIcon">📛</div>
+
+        <div class="cardLabel">
+
+            Total Return
+
+        </div>
+
+        <h2 id="returnCount">0</h2>
+
+        <div class="cardGlow"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     LIVE STATUS STRIP
+========================================= -->
+
+<div class="liveStrip">
+
+    <div class="liveBox">
+
+        <span class="liveDot"></span>
+
+        Manifested :
+        <b id="manifestedCount">0</b>
+
+    </div>
+
+    <div class="liveBox">
+
+        🚛 In Transit :
+        <b id="transitCount">0</b>
+
+    </div>
+
+    <div class="liveBox">
+
+        ✅ Delivered :
+        <b id="deliveredCount">0</b>
+
+    </div>
+
+    <div class="liveBox">
+
+        ⚠️ DTO :
+        <b id="dtoCount">0</b>
+
+    </div>
+
+    <div class="liveBox">
+
+        🔁 RTO :
+        <b id="rtoCount">0</b>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     SCANNER SECTION
+========================================= -->
+
+<div class="section scannerSection">
+
+    <div class="sectionHeader">
+
+        <div>
+
+            <div class="sectionMini">
+
+                FAST ENTRY MODE
+
+            </div>
+
+            <h3>
+
+                Scanner Entry
+
+            </h3>
+
+        </div>
+
+        <div class="scannerBadge">
+
+            ● LIVE
+
+        </div>
+
+    </div>
+
+
+    <div class="scannerGrid">
+
+        <div class="scannerSwitch">
+
+            <button
+            id="pickupScannerBtn"
+            class="activeBtn"
+            onclick="setScannerType('Pickup')">
+
+            📦 Pickup
+
+            </button>
+
+            <button
+            id="returnScannerBtn"
+            class="inactiveBtn"
+            onclick="setScannerType('Return')">
+
+            ↩️ Return
+
+            </button>
+
+        </div>
+
+
+        <div class="scanInputWrap">
+
+            <span class="scanIcon">
+
+                ⌕
+
+            </span>
+
+            <input
+            type="text"
+            id="scanInput"
+            placeholder="Scan / Enter AWB Number"
+            autocomplete="off"
+            autofocus>
+
+        </div>
+
+
+        <button
+        class="actionBtn bigActionBtn"
+        onclick="saveScan()">
+
+        Save Entry
+
+        </button>
+
+    </div>
+
+    <div id="scanStatus"></div>
+
+</div>
+
+
+<!-- =========================================
+     SEARCH ENGINE
+========================================= -->
+
+<div class="section searchSection">
+
+    <div class="sectionHeader">
+
+        <div>
+
+            <div class="sectionMini">
+
+                UNIVERSAL SEARCH
+
+            </div>
+
+            <h3 class="searchTitle">
+
+                Triple Search Engine
+
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div class="premiumSearchWrap">
+
+        <div class="searchTabs premiumTabs">
+
+            <button
+            id="offlineBtn"
+            class="activeBtn"
+            onclick="setSearchMode('offline')">
+
+            Offline
+
+            </button>
+
+            <button
+            id="delhiveryBtn"
+            class="inactiveBtn"
+            onclick="setSearchMode('delhivery')">
+
+            Delhivery
+
+            </button>
+
+            <button
+            id="razorpayBtn"
+            class="inactiveBtn"
+            onclick="setSearchMode('razorpay')">
+
+            Razorpay
+
+            </button>
+
+        </div>
+
+
+        <div class="searchInputWrap">
+
+            <span class="searchGlass">
+
+                🔍
+
+            </span>
+
+            <input
+            type="text"
+            id="searchInput"
+            placeholder="Search AWB / Mobile / Email / Payment ID">
+
+        </div>
+
+
+        <button
+        class="actionBtn premiumSearchBtn"
+        onclick="runSearch()">
+
+        Search
+
+        </button>
+
+
+        <button
+        class="inactiveBtn premiumSearchBtn"
+        onclick="clearSearchResult()">
+
+        Clear
+
+        </button>
+
+    </div>
+
+
+    <div id="searchResult"></div>
+
+</div>
+
+
+<!-- =========================================
+     DASHBOARD
+========================================= -->
+
+<div class="section">
+
+    <div class="dashboardTop">
+
+        <div class="dashboardSwitch">
+
+            <button
+            id="pickupBtn"
+            class="activeBtn"
+            onclick="loadType('Pickup')">
+
+            Pickup
+
+            </button>
+
+            <button
+            id="returnBtn"
+            class="inactiveBtn"
+            onclick="loadType('Return')">
+
+            Return
+
+            </button>
+
+        </div>
+
+
+        <div class="dashboardSearch">
+
+            <div class="tableSearchWrap">
+
+                <span>🔎</span>
+
+                <input
+                type="text"
+                id="tableSearch"
+                placeholder="Filter Table..."
+                onkeyup="filterTable()">
+
+            </div>
+
+            <button
+            class="actionBtn"
+            onclick="updateAllRows()">
+
+            Update All
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="months" class="flex monthWrap"></div>
+
+    <div id="dates" class="flex dateWrap"></div>
+
+
+    <div class="tableWrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>#</th>
+                    <th>AWB</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Updated</th>
+                    <th>Payment Mode</th>
+                    <th>Packet Amount</th>
+                    <th>Payment</th>
+                    <th>Pay Status</th>
+                    <th>Amount</th>
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="body">
+
+                <tr>
+
+                    <td
+                    colspan="13"
+                    style="padding:40px;font-weight:700">
+
+                    No Data
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     ANALYTICS
+========================================= -->
+
+<div class="section">
+
+    <div class="sectionHeader">
+
+        <div>
+
+            <div class="sectionMini">
+
+                SMART ANALYTICS
+
+            </div>
+
+            <h3>
+
+                Pincode Analytics
+
+            </h3>
+
+        </div>
+
+    </div>
+
+
+    <div id="analytics">
+
+        <div class="resultCard">
+
+            No Analytics Yet
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- =========================================
+     AUDIO
+========================================= -->
+
+<audio id="successSound">
+
+<source src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg">
+
+</audio>
+
+<audio id="errorSound">
+
+<source src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg">
+
+</audio>
+
+</body>
+
+<script>
+
+/* =========================================
+   GLOBAL STATE
+========================================= */
+
+let currentType="Pickup",
+currentDate="",
+currentMonth="",
+rows=[],
+scannerType="Pickup",
+searchMode="offline";
+
+window.monthData={};
+
+const qs=id=>document.getElementById(id);
+
+
+/* =========================
+   SHOW LOADER
+========================= */
+
+function showLoading(){
+
+qs("loading").style.display="flex";
+
+}
+
+
+/* =========================
+   HIDE LOADER
+========================= */
+
+function hideLoading(){
+
+qs("loading").style.display="none";
+
+}
+
+/* =========================================
+   SUCCESS POPUP
+========================================= */
+
+function hideLoading(msg="Completed Successfully"){
+
+qs("loading").innerHTML=`
+
+<div class="donePopup premiumPopup">
+
+<div class="successPulse"></div>
+
+<div class="doneIcon">
+
+✓
+
+</div>
+
+<div class="doneText">
+
+${msg}
+
+</div>
+
+<div class="doneSub">
+
+Operation completed successfully
+
+</div>
+
+<button
+class="doneBtn"
+onclick="closeDonePopup()">
+
+Continue
+
+</button>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   CLOSE POPUP
+========================================= */
+
+function closeDonePopup(){
+
+hideLoading();
+
+}
+
+
+/* =========================================
+   DARK MODE
+========================================= */
+
+function toggleDark(){
+
+document.body.classList.toggle("dark");
+
+localStorage.setItem(
+"premiumTheme",
+document.body.classList.contains("dark")
+?"dark"
+:"light"
+);
+
+}
+
+
+/* =========================================
+   LOAD THEME
+========================================= */
+
+(function(){
+
+if(
+localStorage.getItem("premiumTheme")==="dark"
+){
+
+document.body.classList.add("dark");
+
+}
+
+})();
+
+
+/* =========================================
+   BUTTON SWITCH EFFECT
+========================================= */
+
+function activateButtonGroup(
+buttons,
+activeId
+){
+
+buttons.forEach(id=>{
+
+qs(id).className=
+id===activeId
+?"activeBtn"
+:"inactiveBtn";
+
+});
+
+}
+
+
+/* =========================================
+   SCANNER TYPE
+========================================= */
+
+function setScannerType(t){
+
+scannerType=t;
+
+activateButtonGroup(
+
+[
+"pickupScannerBtn",
+"returnScannerBtn"
+],
+
+t==="Pickup"
+?"pickupScannerBtn"
+:"returnScannerBtn"
+
+);
+
+qs("scanInput").focus();
+
+}
+
+
+/* =========================================
+   SEARCH MODE
+========================================= */
+
+function setSearchMode(m){
+
+searchMode=m;
+
+activateButtonGroup(
+
+[
+"offlineBtn",
+"delhiveryBtn",
+"razorpayBtn"
+],
+
+m==="offline"
+?"offlineBtn"
+:m==="delhivery"
+?"delhiveryBtn"
+:"razorpayBtn"
+
+);
+
+}
+
+
+/* =========================================
+   SOUND PLAY
+========================================= */
+
+function playSound(type){
+
+try{
+
+qs(type==="success"
+?"successSound"
+:"errorSound").play();
+
+}catch(e){}
+
+}
+
+
+/* =========================================
+   PREMIUM TOAST
+========================================= */
+
+function showToast(
+msg,
+type="success"
+){
+
+qs("scanStatus").innerHTML=`
+
+<div class="toastCard ${type}Toast">
+
+<div class="toastIcon">
+
+${type==="success"?"✅":"❌"}
+
+</div>
+
+<div>
+
+<div class="toastTitle">
+
+${type==="success"
+?"Success"
+:"Error"}
+
+</div>
+
+<div class="toastText">
+
+${msg}
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   SAVE SCAN
+========================================= */
+
+let lastScannedAWB="";
+let lastScanTime=0;
+let scanLock=false;
+
+function saveScan(){
+
+if(scanLock)return;
+
+scanLock=true;
+
+let awb =
+qs("scanInput")
+.value
+.trim();
+
+if(!awb){
+
+showToast(
+"Please Enter AWB Number",
+"error"
+);
+
+scanLock=false;
+
+return;
+
+}
+
+
+
+/* DUPLICATE CHECK */
+
+const now=Date.now();
+
+if(
+awb===lastScannedAWB &&
+(now-lastScanTime)<2000
+){
+
+playSound("error");
+
+showToast(
+"Duplicate Fast Scan Detected",
+"error"
+);
+
+qs("scanInput").value="";
+qs("scanInput").focus();
+
+scanLock=false;
+
+return;
+
+}
+
+lastScannedAWB=awb;
+lastScanTime=now;
+
+showLoading("Saving Shipment Entry...");
+
+google.script.run
+
+.withSuccessHandler(r=>{
+
+scanLock=false;
+
+qs("loading").style.display="none";
+
+if(r.success){
+
+playSound("success");
+
+showToast(
+
+`
+AWB : ${awb}
+<br>
+Type : ${scannerType}
+`,
+
+"success"
+
+);
+
+qs("scanInput").value="";
+qs("scanInput").focus();
+
+loadCounts();
+
+if(currentDate){
+
+openDate(currentDate);
+
+}
+
+}else{
+
+playSound("error");
+
+showToast(
+r.message||"Failed To Save",
+"error"
+);
+
+}
+
+})
+
+.addScanEntry(
+awb,
+scannerType
+);
+
+}
+
+
+/* =========================================
+   ENTER AUTO SAVE
+========================================= */
+
+qs("scanInput")
+.addEventListener(
+"keypress",
+e=>{
+
+if(e.key==="Enter"){
+
+saveScan();
+
+}
+
+}
+);
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+function runSearch(){
+
+let q=
+qs("searchInput")
+.value
+.trim();
+
+if(!q){
+
+showToast(
+"Please Enter Search Value",
+"error"
+);
+
+return;
+
+}
+
+showLoading("Searching Database...");
+
+if(searchMode==="offline"){
+
+google.script.run
+
+.withSuccessHandler(drawSearch)
+
+.searchOffline(q);
+
+}
+
+else if(searchMode==="delhivery"){
+
+google.script.run
+
+.withSuccessHandler(drawSearch)
+
+.universalTrack(q);
+
+}
+
+else{
+
+google.script.run
+
+.withSuccessHandler(drawSearch)
+
+.searchRazorpay(q);
+
+}
+
+}
+
+
+/* =========================================
+   DRAW SEARCH
+========================================= */
+
+function drawSearch(r){
+
+qs("loading").style.display="none";
+
+if(!r.success){
+
+qs("searchResult").innerHTML=`
+
+<div class="emptyState">
+
+<div class="emptyIcon">
+
+🔍
+
+</div>
+
+<div class="emptyTitle">
+
+No Result Found
+
+</div>
+
+<div class="emptyText">
+
+${r.message||"No Data Available"}
+
+</div>
+
+</div>
+
+`;
+
+return;
+
+}
+
+let d=r.data||{};
+
+
+/* =========================================
+   DELHIVERY VIEW
+========================================= */
+
+if(searchMode==="delhivery"){
+
+let scans=d.scans||[];
+
+let timeline="";
+
+scans.reverse().forEach(s=>{
+
+timeline+=`
+
+<div class="timelineItem premiumTimeline">
+
+<div class="timelineTrack"></div>
+
+<div class="timelineTop">
+
+<div class="timelineStatus">
+
+${s.status||"-"}
+
+</div>
+
+<div class="timelineDate">
+
+${s.date||"-"}
+
+</div>
+
+</div>
+
+<div class="timelineDesc">
+
+${s.desc||"-"}
+
+</div>
+
+<div class="timelineLoc">
+
+📍 ${s.location||"-"}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+
+qs("searchResult").innerHTML=`
+
+<div class="delhiveryWrap">
+
+<div class="resultCard">
+
+<div class="resultItem">
+<div class="resultLabel">Order ID</div>
+<div class="resultValue">${d.orderId||"-"}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">AWB Number</div>
+<div class="resultValue">${d.awb||"-"}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Shipment Status</div>
+<div class="resultValue">${d.status||"-"}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Customer</div>
+<div class="resultValue">${d.customer||"-"}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Destination</div>
+<div class="resultValue">${d.destination||"-"}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Mobile</div>
+<div class="resultValue">${d.mobile||"-"}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Email</div>
+<div class="resultValue">${d.email||"-"}</div>
+</div>
+
+</div>
+
+
+<div class="timelineWrap">
+
+<div class="timelineTitle">
+
+Shipment Timeline
+
+</div>
+
+${timeline||`
+
+<div class="emptyTimeline">
+
+No Timeline Available
+
+</div>
+
+`}
+
+</div>
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+/* =========================================
+   OFFLINE / RAZORPAY
+========================================= */
+
+qs("searchResult").innerHTML=`
+
+<div class="resultCard premiumResultCard">
+
+<div class="resultItem">
+<div class="resultLabel">Courier</div>
+<div class="resultValue">${d.courier||'-'}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">AWB</div>
+<div class="resultValue">${d.awb||'-'}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Status</div>
+<div class="resultValue">${d.status||'-'}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Mobile</div>
+<div class="resultValue">${d.mobile||'-'}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Email</div>
+<div class="resultValue">${d.email||'-'}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Payment</div>
+<div class="resultValue">${d.payment||'-'}</div>
+</div>
+
+<div class="resultItem">
+<div class="resultLabel">Amount</div>
+<div class="resultValue">₹ ${d.amount||'-'}</div>
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   COUNTS
+========================================= */
+
+function animateValue(id,val){
+
+const el=qs(id);
+
+if(!el)return;
+
+el.innerHTML=val||0;
+
+}
+
+
+function loadCounts(){
+
+google.script.run
+
+.withSuccessHandler(r=>{
+
+animateValue("pickupCount",r.pickup);
+animateValue("returnCount",r.return);
+
+animateValue("todayPickup",r.todayPickup);
+animateValue("todayReturn",r.todayReturn);
+
+animateValue("yesterdayPickup",r.yesterdayPickup);
+animateValue("yesterdayReturn",r.yesterdayReturn);
+
+animateValue("manifestedCount",r.manifested);
+animateValue("transitCount",r.transit);
+animateValue("dtoCount",r.dto);
+animateValue("deliveredCount",r.delivered);
+animateValue("rtoCount",r.rto);
+
+})
+
+.getCounts();
+
+}
+
+loadCounts();
+
+
+/* =========================================
+   LOAD TYPE
+========================================= */
+
+function loadType(t){
+
+currentType=t;
+
+activateButtonGroup(
+
+["pickupBtn","returnBtn"],
+
+t==="Pickup"
+?"pickupBtn"
+:"returnBtn"
+
+);
+
+showLoading("Loading Shipment Dates...");
+
+google.script.run
+
+.withSuccessHandler(d=>{
+
+qs("loading").style.display="none";
+
+showMonths(d);
+
+})
+
+.getDates(t);
+
+}
+
+
+/* =========================================
+   SHOW MONTHS
+========================================= */
+
+function showMonths(data){
+
+window.monthData=data||{};
+
+let months=
+Object.keys(window.monthData)
+.sort((a,b)=>{
+
+let pa=a.split("/");
+let pb=b.split("/");
+
+return (
+(pb[1]+pb[0])-
+(pa[1]+pa[0])
+);
+
+});
+
+if(!months.length){
+
+qs("months").innerHTML=`
+
+<div class="emptyMini">
+
+No Months Available
+
+</div>
+
+`;
+
+qs("dates").innerHTML="";
+
+qs("body").innerHTML=`
+
+<tr>
+
+<td colspan="13">
+
+<div class="emptyTable">
+
+No Shipment Entries
+
+</div>
+
+</td>
+
+</tr>
+
+`;
+
+return;
+
+}
+
+let html="";
+
+months.forEach((m,i)=>{
+
+html+=`
+
+<button
+class="${
+i===0
+?'activeBtn'
+:'inactiveBtn'
+}"
+onclick="openMonth('${m}')">
+
+📅 ${m}
+
+</button>
+
+`;
+
+});
+
+qs("months").innerHTML=html;
+
+openMonth(months[0]);
+
+}
+
+
+/* =========================================
+   OPEN MONTH
+========================================= */
+
+function openMonth(month){
+
+currentMonth=month;
+
+document
+.querySelectorAll("#months button")
+.forEach(b=>{
+
+b.className=
+b.innerText.includes(month)
+?"activeBtn"
+:"inactiveBtn";
+
+});
+
+let data=
+window.monthData[month]||{};
+
+let dates=
+Object.keys(data)
+.sort((a,b)=>{
+
+const da=
+a.split("/").reverse().join("");
+
+const db=
+b.split("/").reverse().join("");
+
+return db-da;
+
+});
+
+if(!dates.length){
+
+qs("dates").innerHTML=`
+
+<div class="emptyMini">
+
+No Dates Found
+
+</div>
+
+`;
+
+return;
+
+}
+
+let html="";
+
+dates.forEach((d,i)=>{
+
+html+=`
+
+<button
+class="${
+i===0
+?'activeBtn'
+:'inactiveBtn'
+}"
+onclick="openDate('${d}',this)">
+
+${d}
+
+<span class="dateCount">
+
+${data[d]}
+
+</span>
+
+</button>
+
+`;
+
+});
+
+qs("dates").innerHTML=html;
+
+openDate(dates[0]);
+
+}
+
+
+/* =========================================
+   OPEN DATE
+========================================= */
+
+function openDate(date,btn){
+
+currentDate=date;
+
+document
+.querySelectorAll("#dates button")
+.forEach(b=>{
+
+b.className=
+b.innerText.includes(date)
+?"activeBtn"
+:"inactiveBtn";
+
+});
+
+if(btn){
+
+btn.className="activeBtn";
+
+}
+
+showLoading("Loading Shipment Table...");
+
+google.script.run
+
+.withSuccessHandler(d=>{
+
+qs("loading").style.display="none";
+
+drawTable(d);
+
+})
+
+.getEntries(
+currentType,
+date
+);
+
+}
+
+
+/* =========================================
+   STATUS BADGES
+========================================= */
+
+function getBadge(s){
+
+s=(s||"pending").toLowerCase();
+
+if(s.includes("delivered"))
+return`
+<span class="badge delivered">
+✅ ${s}
+</span>`;
+
+if(s.includes("transit"))
+return`
+<span class="badge transit">
+🚚 ${s}
+</span>`;
+
+if(s.includes("rto"))
+return`
+<span class="badge rto">
+🔁 ${s}
+</span>`;
+
+if(s.includes("cancel"))
+return`
+<span class="badge cancelled">
+❌ ${s}
+</span>`;
+
+return`
+<span class="badge pending">
+⏳ ${s}
+</span>`;
+
+}
+
+
+/* =========================================
+   DRAW TABLE
+========================================= */
+
+function drawTable(data){
+
+rows=[];
+
+if(!data.length){
+
+qs("body").innerHTML=`
+
+<tr>
+
+<td colspan="13">
+
+<div class="emptyTable">
+
+No Shipment Entries Found
+
+</div>
+
+</td>
+
+</tr>
+
+`;
+
+return;
+
+}
+
+let html="";
+
+data.forEach((r,i)=>{
+
+rows.push(r.row);
+
+html+=`
+
+<tr class="premiumRow">
+
+<td>${i+1}</td>
+
+<td>
+<div class="awbBox">
+
+${r.awb||''}
+
+</div>
+</td>
+
+<td>${r.order||''}</td>
+
+<td>${getBadge(r.status)}</td>
+
+<td>${r.origin||''}</td>
+
+<td>${r.destination||''}</td>
+
+<td>${r.updated||''}</td>
+
+<td>${r.paymentMode||''}</td>
+
+<td>${r.packetAmount||''}</td>
+
+<td>${r.payment||''}</td>
+
+<td>${r.payStatus||''}</td>
+
+<td>₹ ${r.amount||''}</td>
+
+<td>
+
+<button
+class="actionBtn tableBtn"
+onclick="updateOne(${r.row})">
+
+Update
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+qs("body").innerHTML=html;
+
+}
+
+
+/* =========================================
+   FILTER TABLE
+========================================= */
+
+function filterTable(){
+
+let v=
+qs("tableSearch")
+.value
+.trim();
+
+if(!v){
+
+if(currentDate){
+
+openDate(currentDate);
+
+}
+
+return;
+
+}
+
+google.script.run
+
+.withSuccessHandler(r=>{
+
+if(!r.success)return;
+
+drawGlobalTable(r.data);
+
+})
+
+.globalSearch(v);
+
+}
+
+
+/* =========================================
+   GLOBAL TABLE
+========================================= */
+
+function drawGlobalTable(data){
+
+drawTable(data);
+
+}
+
+
+/* =========================================
+   UPDATE ONE
+========================================= */
+
+function updateOne(r){
+
+showLoading("Updating Shipment...");
+
+google.script.run
+
+.withSuccessHandler(x=>{
+
+hideLoading(
+x.message||"Shipment Updated"
+);
+
+openDate(currentDate);
+
+})
+
+.updateRow(r);
+
+}
+
+
+/* =========================================
+   UPDATE ALL
+========================================= */
+
+function updateAllRows(){
+
+if(!rows.length){
+
+showToast(
+"No Rows Available",
+"error"
+);
+
+return;
+
+}
+
+showLoading("Updating All Shipments...");
+
+google.script.run
+
+.withSuccessHandler(r=>{
+
+hideLoading(
+"Updated : "+r.updated
+);
+
+openDate(currentDate);
+
+})
+
+.updateAll(rows);
+
+}
+
+
+/* =========================================
+   CLEAR SEARCH
+========================================= */
+
+function clearSearchResult(){
+
+qs("searchInput").value="";
+
+qs("searchResult").innerHTML="";
+
+qs("searchInput").focus();
+
+}
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+window.onload=()=>{
+
+loadType("Pickup");
+
+};
+
+
+</script>
+
+</body>
+</html>
