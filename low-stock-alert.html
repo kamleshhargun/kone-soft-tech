@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Harsidhi Ventures - Low Stock Warnings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif }
+        body { background: #fef2f2; min-height: 100vh; padding: 20px; color: #1f2937; }
+        .container { max-width: 850px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .alert-card { background: white; border: 1px solid #fee2e2; border-left: 6px solid #ef4444; border-radius: 14px; padding: 16px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 10px rgba(239,68,68,0.03); }
+        .sku-info h3 { font-size: 16px; color: #991b1b; font-weight: 700; }
+        .sku-info p { font-size: 12px; color: #64748b; margin-top: 2px; }
+        .stock-badge { background: #fee2e2; color: #ef4444; font-size: 14px; font-weight: 700; padding: 6px 14px; border-radius: 8px; text-align: center; }
+        .btn-refresh { background: #ef4444; color: white; border: none; padding: 10px 16px; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 13px; align-self: flex-end; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #ef4444 }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px dashed #fca5a5; padding-bottom:10px;">
+            <div>
+                <h2 style="color:#991b1b;">⚠️ Critical Low Stock Replenishment Board</h2>
+                <p style="font-size:12px; color:#64748b; margin-top:2px;">Displays SKUs with net available counts under 10 pieces remaining.</p>
+            </div>
+            <button class="btn-refresh" onclick="fetchLowStockAlerts()">🔄 Check Live</button>
+        </div>
+        <div id="alertBoxGrid" style="display:flex; flex-direction:column; gap:10px; margin-top:5px;">
+            <div style="text-align:center; padding:30px; color:gray; font-style:italic;">Querying warehouse registers...</div>
+        </div>
+    </div>
+    <div id="loadingOverlay">Scanning Stock Quantities...</div>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwlm0JdWgH7i930zgSVBhnMsuuq6rleHs02PLK6AkxOMz1DPd09EAejLZPjChyBvjZ4/exec";
+        async function fetchLowStockAlerts() {
+            document.getElementById("loadingOverlay").style.display = "flex";
+            try {
+                // Calling existing code.gs endpoint -> lowStock with a threshold limit of 10
+                const response = await fetch(`${API_URL}?action=lowStock&limit=10`);
+                const data = await response.json();
+                document.getElementById("loadingOverlay").style.display = "none";
+                
+                const grid = document.getElementById("alertBoxGrid");
+                if(!data.success || !data.products || data.products.length === 0) {
+                    grid.innerHTML = `<div style="text-align:center; padding:30px; background:white; border-radius:12px; color:#166534; font-weight:600;">✅ Excellent! All SKUs are healthy and fully stocked up.</div>`;
+                    return;
+                }
+                let html = "";
+                data.products.forEach(p => {
+                    html += `
+                        <div class="alert-card">
+                            <div class="sku-info">
+                                <h3>📦 SKU: ${p.sku}</h3>
+                                <p>Action Required: Assign stitching job ticket to production labour immediately.</p>
+                            </div>
+                            <div class="stock-badge">Stock: ${p.stock} Pcs</div>
+                        </div>`;
+                });
+                grid.innerHTML = html;
+            } catch(e) { document.getElementById("loadingOverlay").style.display = "none"; }
+        }
+        window.onload = function() { if(API_URL !== "YOUR_SPREADSHEET_WEB_APP_URL_HERE") fetchLowStockAlerts(); }
+    </script>
+</body>
+</html>
