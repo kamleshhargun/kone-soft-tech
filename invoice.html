@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harsidhi Ventures - Exclusive Tax Invoice Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; color: var(--text-main); }
+        body { background: #f1f5f9; padding: 24px; min-height: 100vh; }
+        
+        .workspace-wrapper { max-width: 1020px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        
+        .software-top-bar { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 10px; }
+        .shortcut-badge { background: #e2e8f0; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; color: #475569; }
+        
+        /* Premium Balanced A4 Frame Canvas Grid */
+        .invoice-workspace { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 20px; position: relative; }
+        
+        /* Swapped Font Sizes Framework precisely aligning fonts */
+        .company-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 14px; }
+        .company-header h1 { font-size: 18px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 0.5px; }
+        .company-header .brand-main-title { font-size: 26px; font-weight: 700; margin-bottom: 2px; color: #000; letter-spacing: 1px; }
+        .company-header p { font-size: 11px; line-height: 1.4; color: #000; font-weight: 500; margin-top: 2px; }
+        
+        .meta-data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; position: relative; }
+        .form-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .input, select { height: 36px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 13px; width: 100%; transition: 0.15s; background: #fff; }
+        .input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .input[readonly] { background: #f1f5f9; font-weight: 700; color: #000; }
+        
+        .items-block-ledger { display: flex; flex-direction: column; gap: 6px; }
+        .items-header { display: grid; grid-template-columns: 4fr 1.2fr 1.5fr 1.5fr 45px; gap: 12px; font-weight: 700; font-size: 11px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 6px; }
+        .item-row { display: grid; grid-template-columns: 4fr 1.2fr 1.5fr 1.5fr 45px; gap: 12px; align-items: center; position: relative; }
+        
+        .search-suggestions { position: absolute; top: 38px; left: 0; right: 0; background: white; border: 1px solid var(--primary); border-radius: 6px; max-height: 150px; overflow-y: auto; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
+        .suggestion-item:hover { background: #f1f5f9; color: var(--primary); }
+
+        .btn-minus { background: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; border-radius: 6px; height: 36px; cursor: pointer; font-size: 18px; font-weight: 700; }
+        .btn-minus:hover { background: var(--danger); color: white; }
+        .btn-add-row { background: #f8fafc; border: 1px dashed var(--border-color); padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; color: var(--primary); margin-top: 2px; }
+        .btn-add-row:hover { background: #eff6ff; border-color: var(--primary); }
+
+        .invoice-bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 16px; }
+        .legal-notes-pane { display: flex; flex-direction: column; gap: 10px; justify-content: space-between; }
+        
+        .bank-details { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 11px; line-height: 1.4; }
+        .bank-details strong { color: #000; }
+        .terms-conditions { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+        
+        .math-summary-rows { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; background: #f8fafc; padding: 14px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .math-line { display: flex; justify-content: space-between; padding: 1px 0; }
+        .grand-total-line { border-top: 2px dashed #cbd5e1; border-bottom: 2px solid #000; padding: 6px 0; margin-top: 2px; font-size: 15px; font-weight: 700; color: #000; }
+        
+        .software-control-panel { display: flex; justify-content: flex-end; gap: 12px; margin-top: 14px; background: #fff; padding: 16px 24px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .btn-ctrl { border: none; height: 44px; padding: 0 22px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.3px; transition: 0.15s; display: flex; align-items: center; gap: 8px; }
+        .btn-ctrl:hover { transform: translateY(-1px); }
+        .btn-ctrl-save { background: var(--success); color: white; }
+        .btn-ctrl-delete { background: var(--danger); color: white; }
+        .btn-ctrl-download { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .btn-ctrl-nav { background: #475569; color: white; }
+        .btn-ctrl:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .toast-msg { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 30px; border-radius: 6px; font-size: 13px; font-weight: 600; z-index: 999999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid var(--success); }
+        
+        /* 🖨️ STRICT HIGH-DENSITY COMMERCIAL PRINT STYLES SHEET ENGINES */
+        @media print {
+            body { background: #fff; padding: 0; }
+            .software-top-bar, .software-control-panel, .btn-minus, .btn-add-row { display: none !important; }
+            .invoice-workspace { border: none; box-shadow: none; padding: 10px !important; }
+            .input, select { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; pointer-events: none !important; font-weight: 700 !important; }
+            .meta-data-grid { background: transparent !important; border: 1px solid #000 !important; padding: 12px !important; }
+            .math-summary-rows { background: transparent !important; border: 1px solid #000 !important; }
+            .bank-details { background: transparent !important; border: 1px dashed #000 !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="workspace-wrapper">
+        
+        <div class="software-top-bar">
+            <div style="font-size:13px; font-weight:700; color:var(--primary);">📊 Harsidhi Ventures ERP Billing Module (A4 Optimized Print Core)</div>
+            <div style="display:flex; gap:15px; font-size:11px; font-weight:500;">
+                <div><span class="shortcut-badge">Alt + PageUp</span> Previous Invoice</div>
+                <div><span class="shortcut-badge">Alt + PageDown</span> Next/New Invoice</div>
+            </div>
+        </div>
+
+        <!-- MAIN INVOICE DESKTOP COMPONENT -->
+        <div class="invoice-workspace" id="printableA4InvoiceArea">
+            
+            <div class="company-header">
+                <div class="brand-main-title">HARSIDHI VENTURES</div>
+                <h1>TAX INVOICE</h1>
+                <p>
+                    Plot no. 27, Khatri nagar, Near sanganer railway overbridge, New sanganer road, Sanganer, Jaipur-302029 (RAJ)<br>
+                    <strong>GSTIN: 08AYBPH8726RIZQ</strong>
+                </p>
+            </div>
+
+            <!-- Parameters Grid Layer -->
+            <div class="meta-data-grid">
+                <div class="form-group">
+                    <label>Invoice Date</label>
+                    <input type="date" id="invDate" class="input" onchange="recalculateCompleteInvoiceFramework()">
+                </div>
+                <div class="form-group">
+                    <label>Invoice Number</label>
+                    <input type="text" id="invNo" class="input" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Party Name</label>
+                    <input type="text" id="clientName" class="input" placeholder="Enter party name" oninput="recalculateCompleteInvoiceFramework()">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Full Billing Address</label>
+                    <input type="text" id="clientCity" class="input" placeholder="Enter destination address" oninput="recalculateCompleteInvoiceFramework()">
+                </div>
+                <div class="form-group">
+                    <label>GSTIN/PAN No</label>
+                    <input type="text" id="clientGst" class="input" placeholder="Optional Client GSTIN" oninput="recalculateCompleteInvoiceFramework()">
+                </div>
+            </div>
+
+            <!-- Products Transaction Matrix -->
+            <div class="items-block-ledger">
+                <div class="items-header">
+                    <span>Particulars</span>
+                    <span style="text-align: center;">Qty</span>
+                    <span style="text-align: right;">Price (₹ Excl.)</span>
+                    <span style="text-align: right;">Total Amount (₹)</span>
+                    <span></span>
+                </div>
+                <div id="dynamicProductsLinesBlock">
+                    <!-- Dynamic fields injected loop wise via engine -->
+                </div>
+                <button type="button" class="btn-add-row" onclick="appendNewProductLineRow()">+ Insert Additional Product Line Item Row</button>
+            </div>
+
+            <!-- Computation Section Footer Layout Grid Cells -->
+            <div class="invoice-bottom-grid">
+                <div class="legal-notes-pane">
+                    <div class="bank-details">
+                        <p style="font-weight:700; text-transform:uppercase; border-bottom:1px solid #000; padding-bottom:3px; margin-bottom:5px; color:#000;">Bank details:</p>
+                        <p><strong>Account Holder:</strong> HARSIDHI VENTURES</p>
+                        <p><strong>Account Number:</strong> 50200041739011</p>
+                        <p><strong>IFSC Code:</strong> HDFC0000987 | <strong>Branch:</strong> MANSAROVAR JAIPUR</p>
+                        <p><strong>Account Type:</strong> Current Account | <strong>UPI ID:</strong> 9828222076@hdfc</p>
+                    </div>
+                    <div class="terms-conditions">
+                        <strong>Terms & Conditions:</strong><br>
+                        1. Goods once sold will not be taken back or exchanged.<br>
+                        2. All disputes are subject to Jaipur Jurisdiction only.<br>
+                        3. Total amount calculated is strictly exclusive of tax parameters.
+                    </div>
+                    <p id="pAmountInWords" style="font-weight:600; font-style:italic; font-size:11px; border-top:1px dashed #000; padding-top:6px; color:#000; margin-top: auto; line-height:1.4;">
+                        Total Amount in Words: Zero Only
+                    </p>
+                </div>
+
+                <div>
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <label style="font-size:10px; font-weight:700; color:var(--text-muted);">Tax Configuration Route</label>
+                        <select id="taxStrategySelect" class="input" onchange="recalculateCompleteInvoiceFramework()">
+                            <option value="IGST" selected>Center Tax (IGST 5% Exclusive Default)</option>
+                            <option value="CGST_SGST">State Tax (CGST 2.5% + SGST 2.5% Exclusive)</option>
+                        </select>
+                    </div>
+
+                    <div class="math-summary-rows">
+                        <div class="math-line"><span>Total Pcs Volume:</span><span id="pTotalPcs">0</span></div>
+                        <div class="math-line"><span>Taxable Base Subtotal:</span>₹<span id="pBaseAmount">0.00</span></div>
+                        <div id="pDynamicTaxRows"></div>
+                        <div class="math-line"><span>Round Add/Less:</span><span id="pRoundOff">0.00</span></div>
+                        <div class="math-line grand-total-line"><span>Grand Total Due:</span>₹<span id="pGrandTotal">0.00</span></div>
+                    </div>
+                    
+                    <div style="display:flex; flex-direction:column; align-items:center; float:right; margin-top:30px; text-align:center; width:160px;">
+                        <div style="border-top:1px solid #000; width:100%; font-size:10px; font-weight:700; text-transform:uppercase; padding-top:4px; color:#000;">
+                            authorised signatory
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="software-control-panel">
+            <button class="btn-ctrl btn-ctrl-nav" onclick="navigateHistoryIndex(-1)">◀ Prev Bill</button>
+            <button id="saveEditBtn" class="btn-ctrl btn-ctrl-save" onclick="saveCurrentInvoiceToMemoryStore()">💾 Save Invoice</button>
+            <button id="deleteBtn" class="btn-ctrl btn-ctrl-delete" onclick="deleteInvoiceFromSystemMemory()" disabled>❌ Delete Bill</button>
+            <button id="downloadBtn" class="btn-ctrl btn-ctrl-download" onclick="triggerDirectPdfDownloadBlob()" disabled>📥 Download PDF</button>
+            <button class="btn-ctrl btn-ctrl-nav" onclick="navigateHistoryIndex(1)">Next Bill ▶</button>
+        </div>
+    </div>
+
+    <script>
+        const CLOUD_CATALOG_API_URL = "https://script.google.com/macros/s/AKfycbzut_XuQmPmE_sfhivfEB3whXhGN7zhQqxNowrfid4Amaxk1WHY8nT5RIcw1cv798YR/exec";
+        
+        let masterCatalogCache = [];
+        let savedInvoicesDatabase = [];
+        let activeBrowsingIndex = -1; 
+
+        async function initInvoiceSoftwareTerminal() {
+            const localData = localStorage.getItem("hv_invoice_master_db");
+            if(localData) savedInvoicesDatabase = JSON.parse(localData);
+
+            resetFormToFreshBlankState();
+
+            try {
+                const res = await fetch(`${CLOUD_CATALOG_API_URL}?action=inventoryProducts`);
+                const data = await res.json();
+                if(data.success) masterCatalogCache = data.products || [];
+            } catch(e) {}
+
+            window.addEventListener("keydown", function(e) {
+                if(e.altKey && e.key === "PageUp") { e.preventDefault(); navigateHistoryIndex(-1); }
+                if(e.altKey && e.key === "PageDown") { e.preventDefault(); navigateHistoryIndex(1); }
+            });
+        }
+
+        function calculateNextAutoInvoiceNumber() {
+            if(activeBrowsingIndex !== -1) return; 
+            
+            let maxNumberIndex = 0;
+            savedInvoicesDatabase.forEach(inv => {
+                const parts = inv.invNo.split('/');
+                const num = parseInt(parts[parts.length - 1], 10);
+                if(!isNaN(num) && num > maxNumberIndex) maxNumberIndex = num;
+            });
+
+            const nextNum = String(maxNumberIndex + 1).padStart(3, '0');
+            document.getElementById("invNo").value = `HV/2025-26/${nextNum}`;
+        }
+
+        function appendNewProductLineRow(desc = "", qty = "", price = "") {
+            const container = document.getElementById("dynamicProductsLinesBlock");
+            const rowIndex = container.children.length;
+            const elementRow = document.createElement("div");
+            elementRow.className = "item-row";
+            elementRow.id = `line-row-idx-${rowIndex}`;
+            
+            elementRow.innerHTML = `
+                <div style="width:100%; position:relative;">
+                    <input type="text" class="input row-desc" value="${desc}" placeholder="Type item name or search SKU pattern..." oninput="handleInlineFuzzyDropdown('${rowIndex}', this.value)">
+                    <div id="suggest-panel-${rowIndex}" class="search-suggestions"></div>
+                </div>
+                <input type="number" class="input row-qty" value="${qty}" placeholder="0" style="text-align:center;" oninput="recalculateCompleteInvoiceFramework()">
+                <input type="number" class="input row-price" value="${price}" placeholder="0.00" style="text-align:right;" oninput="recalculateCompleteInvoiceFramework()">
+                <input type="text" class="input row-total" value="0.00" readonly style="text-align:right; font-weight:700; background:#f1f5f9;">
+                <button type="button" class="btn-minus" onclick="removeProductLineRow('${rowIndex}')">×</button>
+            `;
+            container.appendChild(elementRow);
+            recalculateCompleteInvoiceFramework();
+        }
+
+        function removeProductLineRow(id) {
+            document.getElementById(`line-row-idx-${id}`).remove();
+            recalculateCompleteInvoiceFramework();
+        }
+
+        function handleInlineFuzzyDropdown(rowIndex, val) {
+            const box = document.getElementById(`suggest-panel-${rowIndex}`);
+            if(!val.trim() || masterCatalogCache.length === 0) { box.style.display = "none"; return; }
+
+            const cleanQuery = val.toLowerCase().replace(/[\s-]/g, "");
+            const matches = masterCatalogCache.filter(p => p.sku.toLowerCase().replace(/[\s-]/g, "").includes(cleanQuery));
+
+            if(matches.length === 0) { box.style.display = "none"; return; }
+            
+            box.innerHTML = "";
+            matches.slice(0, 5).forEach(m => {
+                box.innerHTML += `<div class="suggestion-item" onclick="selectSkuToRow('${rowIndex}', '${m.sku}')">📦 ${m.sku}</div>`;
+            });
+            box.style.display = "block";
+        }
+
+        function selectSkuToRow(rowIndex, sku) {
+            const row = document.getElementById(`line-row-idx-${rowIndex}`);
+            row.querySelector(".row-desc").value = sku;
+            document.getElementById(`suggest-panel-${rowIndex}`).style.display = "none";
+            recalculateCompleteInvoiceFramework();
+        }
+
+        function recalculateCompleteInvoiceFramework() {
+            const container = document.getElementById("dynamicProductsLinesBlock");
+            let totalTaxableBaseAggregate = 0;
+            let totalVolumePieces = 0;
+
+            for(let child of container.children) {
+                const qty = parseInt(child.querySelector(".row-qty").value, 10) || 0;
+                const price = parseFloat(child.querySelector(".row-price").value) || 0;
+                
+                const lineTotal = qty * price;
+                child.querySelector(".row-total").value = lineTotal.toFixed(2);
+                
+                totalTaxableBaseAggregate += lineTotal;
+                totalVolumePieces += qty;
+            }
+
+            let totalTaxSumValue = totalTaxableBaseAggregate * 0.05;
+            const chosenStrategy = document.getElementById("taxStrategySelect").value;
+            const taxRowsArea = document.getElementById("pDynamicTaxRows");
+            taxRowsArea.innerHTML = "";
+
+            if(totalTaxableBaseAggregate > 0) {
+                if(chosenStrategy === "CGST_SGST") {
+                    const halfTax = totalTaxSumValue / 2;
+                    taxRowsArea.innerHTML = `
+                        <div class="math-line"><span>CGST 2.5% (Exclusive):</span><span>₹${halfTax.toFixed(2)}</span></div>
+                        <div class="math-line"><span>SGST 2.5% (Exclusive):</span><span>₹${halfTax.toFixed(2)}</span></div>`;
+                } else {
+                    taxRowsArea.innerHTML = `<div class="math-line"><span>IGST 5% (Exclusive):</span><span>₹${totalTaxSumValue.toFixed(2)}</span></div>`;
+                }
+            }
+
+            const combinedGrossFloat = totalTaxableBaseAggregate + totalTaxSumValue;
+            const absoluteIntegerRoundedValue = Math.round(combinedGrossFloat);
+            const variantRoundOffMargin = absoluteIntegerRoundedValue - combinedGrossFloat;
+
+            document.getElementById("pTotalPcs").innerText = totalVolumePieces;
+            document.getElementById("pBaseAmount").innerText = totalTaxableBaseAggregate.toFixed(2);
+            document.getElementById("pRoundOff").innerText = variantRoundOffMargin >= 0 ? `+${variantRoundOffMargin.toFixed(2)}` : `${variantRoundOffMargin.toFixed(2)}`;
+            document.getElementById("pGrandTotal").innerText = absoluteIntegerRoundedValue.toFixed(2);
+
+            document.getElementById("pAmountInWords").innerHTML = `<strong>Total Amount in Words:</strong> ${convertNumberToTextWords(absoluteIntegerRoundedValue)} Only`;
+            
+            updateButtonStateMatrix();
+        }
+
+        function updateButtonStateMatrix() {
+            const isUnsaved = (activeBrowsingIndex === -1);
+            document.getElementById("deleteBtn").disabled = isUnsaved;
+            document.getElementById("downloadBtn").disabled = isUnsaved;
+            document.getElementById("saveEditBtn").innerText = isUnsaved ? "💾 Save Invoice" : "📝 Edit Invoice";
+        }
+
+        function saveCurrentInvoiceToMemoryStore() {
+            const invNo = document.getElementById("invNo").value.trim();
+            const dateStr = document.getElementById("invDate").value;
+            const client = document.getElementById("clientName").value.trim();
+            const city = document.getElementById("clientCity").value.trim();
+            const gstin = document.getElementById("clientGst").value.trim();
+            const taxStrategy = document.getElementById("taxStrategySelect").value;
+            const grandTotal = document.getElementById("pGrandTotal").innerText;
+
+            if(!client) { alert("Customer Name is mandatory to save invoice logs."); return; }
+
+            const structuralItemsCollectedArray = [];
+            const container = document.getElementById("dynamicProductsLinesBlock");
+            for(let child of container.children) {
+                const desc = child.querySelector(".row-desc").value.trim();
+                const qty = parseInt(child.querySelector(".row-qty").value, 10) || 0;
+                const price = parseFloat(child.querySelector(".row-price").value) || 0;
+                if(desc !== "") {
+                    structuralItemsCollectedArray.push({ desc: desc, qty: qty, price: price });
+                }
+            }
+
+            const documentMappingObject = {
+                invNo: invNo, dateStr: dateStr, client: client, city: city, gstin: gstin,
+                grandTotal: grandTotal, items: structuralItemsCollectedArray, taxStrategy: taxStrategy
+            };
+
+            if(activeBrowsingIndex === -1) {
+                savedInvoicesDatabase.push(documentMappingObject);
+                showNotificationToast(`Invoice ${invNo} Saved!`);
+                resetFormToFreshBlankState();
+            } else {
+                savedInvoicesDatabase[activeBrowsingIndex] = documentMappingObject;
+                showNotificationToast(`Invoice ${invNo} Updated!`);
+                recalculateCompleteInvoiceFramework();
+            }
+
+            localStorage.setItem("hv_invoice_master_db", JSON.stringify(savedInvoicesDatabase));
+        }
+
+        function deleteInvoiceFromSystemMemory() {
+            if(activeBrowsingIndex === -1) return;
+            if(!confirm("Are you sure you want to delete this historical invoice record?")) return;
+
+            const targetNo = savedInvoicesDatabase[activeBrowsingIndex].invNo;
+            savedInvoicesDatabase.splice(activeBrowsingIndex, 1);
+            localStorage.setItem("hv_invoice_master_db", JSON.stringify(savedInvoicesDatabase));
+            
+            showNotificationToast(`Invoice ${targetNo} Deleted.`);
+            resetFormToFreshBlankState();
+        }
+
+        function resetFormToFreshBlankState() {
+            activeBrowsingIndex = -1;
+            document.getElementById("invDate").value = new Date().toISOString().split('T')[0];
+            document.getElementById("clientName").value = "";
+            document.getElementById("clientCity").value = "";
+            document.getElementById("clientGst").value = "";
+            document.getElementById("taxStrategySelect").value = "IGST";
+            document.getElementById("dynamicProductsLinesBlock").innerHTML = "";
+            
+            calculateNextAutoInvoiceNumber();
+            appendNewProductLineRow("", "", ""); 
+            recalculateCompleteInvoiceFramework();
+        }
+
+        function navigateHistoryIndex(direction) {
+            if(savedInvoicesDatabase.length === 0) { alert("No stored records found."); return; }
+            
+            let targetIndex = activeBrowsingIndex + direction;
+            if(activeBrowsingIndex === -1 && direction === -1) targetIndex = savedInvoicesDatabase.length - 1;
+
+            if(targetIndex >= 0 && targetIndex < savedInvoicesDatabase.length) {
+                activeBrowsingIndex = targetIndex;
+                const doc = savedInvoicesDatabase[activeBrowsingIndex];
+                
+                document.getElementById("invNo").value = doc.invNo;
+                document.getElementById("invDate").value = doc.dateStr;
+                document.getElementById("clientName").value = doc.client;
+                document.getElementById("clientCity").value = doc.city;
+                document.getElementById("clientGst").value = doc.gstin;
+                document.getElementById("taxStrategySelect").value = doc.taxStrategy || "IGST";
+
+                const container = document.getElementById("dynamicProductsLinesBlock");
+                container.innerHTML = "";
+                doc.items.forEach(item => {
+                    appendNewProductLineRow(item.desc, item.qty, item.price);
+                });
+                recalculateCompleteInvoiceFramework();
+            } else if(targetIndex === savedInvoicesDatabase.length) {
+                resetFormToFreshBlankState();
+            } else {
+                alert("Boundary reached.");
+            }
+        }
+
+        /* =====================================================
+           HIGH FREQUENCY ADAPTIVE A4 SINGLE-PAGE PRINT LOGIC ENGINE
+        ===================================================== */
+        function triggerDirectPdfDownloadBlob() {
+            if(activeBrowsingIndex === -1) return;
+            
+            const targetElement = document.getElementById("printableA4InvoiceArea");
+            const invoiceNumberStr = document.getElementById("invNo").value.replace(/\//g, '-');
+            
+            // 1. Hide interactive visual structural components
+            const minusButtons = document.querySelectorAll('.btn-minus');
+            const addBtn = document.querySelector('.btn-add-row');
+            minusButtons.forEach(b => b.style.display = 'none');
+            if(addBtn) addBtn.style.display = 'none';
+
+            // 2. Temporarily inject flat text styles to avoid multi-page breaking
+            const inputs = targetElement.querySelectorAll('.input, select');
+            inputs.forEach(input => {
+                input.style.border = 'none';
+                input.style.background = 'transparent';
+                input.style.padding = '0';
+                input.style.height = 'auto';
+            });
+
+            const formatOptions = {
+                margin: [10, 12, 10, 12], // Perfectly balanced margins
+                filename: `Invoice_${invoiceNumberStr}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { 
+                    scale: 2.2, 
+                    useCORS: true, 
+                    logging: false,
+                    letterRendering: true,
+                    scrollY: 0
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // 3. Trigger build stream sequence safely
+            html2pdf().set(formatOptions).from(targetElement).save().then(() => {
+                // 4. Rollback styles back instantly on finish
+                minusButtons.forEach(b => b.style.display = 'block');
+                if(addBtn) addBtn.style.display = 'block';
+                inputs.forEach(input => {
+                    input.removeAttribute('style');
+                });
+                recalculateCompleteInvoiceFramework();
+            });
+        }
+
+        function showNotificationToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "toast-msg";
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        function convertNumberToTextWords(amount) {
+            const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            if (amount === 0) return 'Zero';
+            let numStr = Math.floor(amount).toString();
+            let numVal = parseInt(numStr, 10);
+            if (numVal < 20) return units[numVal];
+            if (numStr.length === 2) return tens[numStr[0]] + (numStr[1] !== '0' ? ' ' + units[numStr[1]] : '');
+            if (numStr.length === 3) return units[numStr[0]] + ' Hundred' + (numVal % 100 !== 0 ? ' and ' + convertNumberToTextWords(numVal % 100) : '');
+            if (numStr.length === 4 || numStr.length === 5) {
+                return convertNumberToTextWords(Math.floor(numVal / 1000)) + ' Thousand' + (numVal % 1000 !== 0 ? ' ' + convertNumberToTextWords(numVal % 1000) : '');
+            }
+            return numStr;
+        }
+
+        window.onload = initInvoiceSoftwareTerminal;
+    </script>
+</body>
+</html>
