@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harsidhi Ventures - Thermal 4x6 Shipping Label Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; color: var(--text-main); }
+        body { background: #f1f5f9; padding: 24px; min-height: 100vh; }
+        
+        .workspace-wrapper { max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        
+        .software-top-bar { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 10px; }
+        .shortcut-badge { background: #e2e8f0; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; color: #475569; }
+        
+        /* Strict 4x6 Inch Thermal Label Dimensions (100mm x 150mm Aspect Ratio) */
+        .label-workspace { background: #fff; border: 3px solid #000; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; width: 100%; max-width: 420px; min-height: 620px; margin: 0 auto; overflow: hidden; }
+        
+        .label-brand-block { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 8px; font-weight: 700; font-size: 18px; letter-spacing: 0.5px; }
+        
+        .label-section-block { display: flex; flex-direction: column; gap: 6px; }
+        .label-section-block h3 { font-size: 11px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #000; padding-bottom: 3px; margin-bottom: 2px; }
+        
+        .input, select, textarea { height: 38px; padding: 0 10px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 13px; width: 100%; background: #fff; }
+        textarea.shopify-address-box { height: 110px; padding: 10px; resize: none; font-family: inherit; font-size: 13px; line-height: 1.5; font-weight: 500; }
+        .input:focus, select:focus, textarea.shopify-address-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        
+        /* Items Grid Matrix */
+        .items-block-ledger { display: flex; flex-direction: column; gap: 6px; border-bottom: 2px dashed #000; padding-bottom: 10px; }
+        .items-header { display: grid; grid-template-columns: 4fr 1.5fr 45px; gap: 10px; font-weight: 700; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px; }
+        .item-row { display: grid; grid-template-columns: 4fr 1.5fr 45px; gap: 10px; align-items: center; position: relative; }
+        
+        .search-suggestions { position: absolute; top: 38px; left: 0; right: 0; background: white; border: 1px solid var(--primary); border-radius: 6px; max-height: 120px; overflow-y: auto; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
+        .suggestion-item:hover { background: #f1f5f9; color: var(--primary); }
+
+        .btn-minus { background: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; border-radius: 6px; height: 36px; cursor: pointer; font-size: 18px; font-weight: 700; }
+        .btn-add-row { background: #f8fafc; border: 1px dashed var(--border-color); padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; color: var(--primary); }
+        
+        /* Barcode Component Layout blocks */
+        .barcode-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 0; border-bottom: 2px dashed #000; gap: 2px; }
+        .simulated-barcode { font-family: 'monospace'; background: repeating-linear-gradient(90deg, #000, #000 2px, #fff 2px, #fff 6px); color: transparent; height: 32px; width: 100%; max-width: 260px; overflow: hidden; opacity: 0.9; }
+        .barcode-text-label { font-size: 11px; font-weight: 700; font-family: monospace; text-align: center; color: #000; text-transform: uppercase; }
+
+        .routing-footer-grid { display: flex; flex-direction: column; gap: 8px; font-size: 11px; line-height: 1.4; }
+        
+        .software-control-panel { display: flex; justify-content: flex-end; gap: 12px; margin-top: 14px; background: #fff; padding: 16px 24px; border-radius: 10px; border: 1px solid #e2e8f0; max-width: 420px; margin-left: auto; margin-right: auto; width: 100%; }
+        .btn-ctrl { border: none; height: 44px; padding: 0 20px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.3px; transition: 0.15s; display: flex; align-items: center; gap: 6px; }
+        .btn-ctrl-save { background: var(--success); color: white; }
+        .btn-ctrl-delete { background: var(--danger); color: white; }
+        .btn-ctrl-download { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .btn-ctrl-nav { background: #475569; color: white; }
+        .btn-ctrl:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+        
+        .toast-msg { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 30px; border-radius: 6px; font-size: 13px; font-weight: 600; z-index: 999999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid var(--success); }
+        
+        @media print {
+            body { background: #fff; padding: 0; }
+            .software-top-bar, .software-control-panel, .btn-minus, .btn-add-row { display: none !important; }
+            .label-workspace { border: 3px solid #000 !important; box-shadow: none !important; padding: 15px !important; margin: 0 !important; width: 100% !important; max-width: 100% !important; min-height: auto !important; }
+            textarea.shopify-address-box { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; pointer-events: none !important; font-weight: 700 !important; font-size: 14px !important; white-space: pre-wrap !important; }
+            .input, select { border: none !important; background: transparent !important; padding: 0 !important; height: auto !important; pointer-events: none !important; font-weight: 700 !important; font-size: 14px !important; }
+            .search-suggestions { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="workspace-wrapper">
+        
+        <div class="software-top-bar">
+            <div style="font-size:13px; font-weight:700; color:var(--primary);">📦 Logistics Shipping Label Node (Thermal 4x6 Size)</div>
+            <div style="display:flex; gap:15px; font-size:11px; font-weight:500;">
+                <div><span class="shortcut-badge">Alt + PageUp</span> Prev Label</div>
+                <div><span class="shortcut-badge">Alt + PageDown</span> Next/New</div>
+            </div>
+        </div>
+
+        <!-- MASTER 4x6 SHIPPING LABEL BLOCK -->
+        <div class="label-workspace" id="printableShippingLabelArea">
+            
+            <div class="label-brand-block">
+                HARSIDHI VENTURES
+            </div>
+
+            <!-- Single Shopify Address Box Block -->
+            <div class="label-section-block">
+                <h3>Delivery Address (Ship To)</h3>
+                <textarea id="shopifyAddressData" class="shopify-address-box" placeholder="Paste complete details here directly from Shopify&#10;(Name, Full Address, City, State, ZIP, Mobile Number...)" oninput="refreshLabelDataEngine()"></textarea>
+            </div>
+
+            <!-- Logistics Waybill & Barcode Module -->
+            <div class="label-section-block" style="border-top: 2px dashed #000; padding-top: 10px;">
+                <h3>Logistics Routing Manifest</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom: 6px;">
+                    <div class="form-group">
+                        <select id="courierPartner" class="input" style="font-weight:700;" onchange="refreshLabelDataEngine()">
+                            <option value="DELHIVERY">DELHIVERY SURFACE</option>
+                            <option value="BOXD">BOXD LOGISTICS</option>
+                            <option value="MANUAL">MANUAL ROUTING</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="shopifyOrderId" class="input" placeholder="Shopify Order ID (e.g. #1024)" style="font-weight:700;" oninput="refreshLabelDataEngine()">
+                    </div>
+                </div>
+                <div class="form-group" style="width:100%;">
+                    <input type="text" id="trackingWaybill" class="input" placeholder="Enter AWB Tracking Waybill Number" style="text-align:center; font-family:monospace; font-weight:700; font-size:14px;" oninput="refreshLabelDataEngine()">
+                </div>
+            </div>
+
+            <!-- Simulated Route Tracking Barcode Graphic -->
+            <div class="barcode-container">
+                <div class="simulated-barcode">|||||||||||||||||||||||||||||</div>
+                <div class="barcode-text-label" id="awbBarcodeLabel">AWB: -</div>
+                <div class="barcode-text-label" id="orderIdBarcodeLabel" style="font-size:10px; color:var(--text-muted); margin-top:1px;">ORDER: -</div>
+            </div>
+
+            <!-- Shopify Packed Garments Check Logs -->
+            <div class="items-block-ledger">
+                <div class="items-header">
+                    <span>Particular SKU Pattern Items</span>
+                    <span style="text-align: center;">Qty</span>
+                    <span></span>
+                </div>
+                <div id="dynamicProductsLinesBlock">
+                    <!-- Target element rows array items slide in dynamically -->
+                </div>
+                <button type="button" class="btn-add-row" onclick="appendNewProductLineRow()">+ Add SKU Item Variant</button>
+            </div>
+
+            <!-- Return Address Mapping Block -->
+            <div class="routing-footer-grid">
+                <div class="label-section-block">
+                    <h3>Return Address (If Undelivered)</h3>
+                    <div style="font-size:11px; color:#000;">
+                        <strong>HARSIDHI VENTURES</strong><br>
+                        Plot no. 27, Khatri nagar, Near sanganer railway overbridge, New sanganer road, Sanganer, Jaipur-302029 (RAJ)<br>
+                        <strong>Contact Help Desk:</strong> +91 9828222076
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- CORE TERMINAL SOFTWARE FOOTER ACTION CONTROLS -->
+        <div class="software-control-panel">
+            <button class="btn-ctrl btn-ctrl-nav" onclick="navigateHistoryIndex(-1)">◀ Prev</button>
+            <button id="saveEditBtn" class="btn-ctrl btn-ctrl-save" onclick="saveCurrentLabelToDeviceMemory()">💾 Save</button>
+            <button id="deleteBtn" class="btn-ctrl btn-ctrl-delete" onclick="deleteLabelFromMemoryStore()" disabled>❌ Drop</button>
+            <button id="downloadBtn" class="btn-ctrl btn-ctrl-download" onclick="triggerDirectLabelPdfBlob()" disabled>📥 Download 4x6</button>
+            <button class="btn-ctrl btn-ctrl-nav" onclick="navigateHistoryIndex(1)">Next ▶</button>
+        </div>
+    </div>
+
+    <script>
+        const CORE_ERP_APP_URL = "https://script.google.com/macros/s/AKfycbzut_XuQmPmE_sfhivfEB3whXhGN7zhQqxNowrfid4Amaxk1WHY8nT5RIcw1cv798YR/exec";
+        
+        let stockSKUListCache = [];
+        let labelStorageDatabase = [];
+        let activeBrowsingIndex = -1;
+
+        async function initShippingLabelTerminal() {
+            const savedState = localStorage.getItem("hv_shipping_labels_db");
+            if(savedState) labelStorageDatabase = JSON.parse(savedState);
+
+            resetLabelFormToFreshBlankState();
+
+            try {
+                const res = await fetch(`${CORE_ERP_APP_URL}?action=inventoryProducts`);
+                const data = await res.json();
+                if(data.success) stockSKUListCache = data.products || [];
+            } catch(e) {}
+
+            window.addEventListener("keydown", function(e) {
+                if(e.altKey && e.key === "PageUp") { e.preventDefault(); navigateHistoryIndex(-1); }
+                if(e.altKey && e.key === "PageDown") { e.preventDefault(); navigateHistoryIndex(1); }
+            });
+        }
+
+        function appendNewProductLineRow(desc = "", qty = "") {
+            const container = document.getElementById("dynamicProductsLinesBlock");
+            const index = container.children.length;
+            const elementRow = document.createElement("div");
+            elementRow.className = "item-row";
+            elementRow.id = `label-item-line-${index}`;
+            
+            elementRow.innerHTML = `
+                <div style="width:100%; position:relative;">
+                    <input type="text" class="input row-desc" value="${desc}" placeholder="Search SKU code or write details..." oninput="handleInlineFuzzyDropdown('${index}', this.value)">
+                    <div id="suggest-panel-${index}" class="search-suggestions"></div>
+                </div>
+                <input type="number" class="input row-qty" value="${qty}" placeholder="1" style="text-align:center;" oninput="refreshLabelDataEngine()">
+                <button type="button" class="btn-minus" onclick="removeProductLineRow('${index}')">×</button>
+            `;
+            container.appendChild(elementRow);
+            refreshLabelDataEngine();
+        }
+
+        function removeProductLineRow(id) {
+            document.getElementById(`label-item-line-${id}`).remove();
+            refreshLabelDataEngine();
+        }
+
+        function handleInlineFuzzyDropdown(rowIndex, val) {
+            const box = document.getElementById(`suggest-panel-${rowIndex}`);
+            if(!val.trim() || stockSKUListCache.length === 0) { box.style.display = "none"; return; }
+
+            const cleanQuery = val.toLowerCase().replace(/[\s-]/g, "");
+            const matches = stockSKUListCache.filter(p => p.sku.toLowerCase().replace(/[\s-]/g, "").includes(cleanQuery));
+
+            if(matches.length === 0) { box.style.display = "none"; return; }
+            
+            box.innerHTML = "";
+            matches.slice(0, 4).forEach(m => {
+                box.innerHTML += `<div class="suggestion-item" onclick="selectSkuToRow('${rowIndex}', '${m.sku}')">📦 ${m.sku}</div>`;
+            });
+            box.style.display = "block";
+        }
+
+        function selectSkuToRow(rowIndex, sku) {
+            const row = document.getElementById(`label-item-line-${rowIndex}`);
+            row.querySelector(".row-desc").value = sku;
+            document.getElementById(`suggest-panel-${rowIndex}`).style.display = "none";
+            refreshLabelDataEngine();
+        }
+
+        function refreshLabelDataEngine() {
+            const awbNo = document.getElementById("trackingWaybill").value.trim().toUpperCase();
+            const orderId = document.getElementById("shopifyOrderId").value.trim().toUpperCase();
+            const partner = document.getElementById("courierPartner").value;
+
+            document.getElementById("awbBarcodeLabel").innerText = awbNo ? `${partner} AWB: ${awbNo}` : "AWB: -";
+            document.getElementById("orderIdBarcodeLabel").innerText = orderId ? `SHOPIFY ORDER ID: ${orderId}` : "ORDER: -";
+
+            updateButtonStateMatrix();
+        }
+
+        function updateButtonStateMatrix() {
+            const isUnsaved = (activeBrowsingIndex === -1);
+            document.getElementById("deleteBtn").disabled = isUnsaved;
+            document.getElementById("downloadBtn").disabled = isUnsaved;
+            document.getElementById("saveEditBtn").innerText = isUnsaved ? "💾 Save Label" : "📝 Update Label";
+        }
+
+        function saveCurrentLabelToDeviceMemory() {
+            const shopifyAddress = document.getElementById("shopifyAddressData").value.trim();
+            const partner = document.getElementById("courierPartner").value;
+            const orderId = document.getElementById("shopifyOrderId").value.trim();
+            const awb = document.getElementById("trackingWaybill").value.trim();
+
+            if(!shopifyAddress || !awb) { alert("Shopify Address details block and AWB number are strictly compulsory values."); return; }
+
+            const itemsCollected = [];
+            const container = document.getElementById("dynamicProductsLinesBlock");
+            for(let child of container.children) {
+                const desc = child.querySelector(".row-desc").value.trim();
+                const qty = parseInt(child.querySelector(".row-qty").value, 10) || 1;
+                if(desc !== "") itemsCollected.push({ desc: desc, qty: qty });
+            }
+
+            const manifestObject = { shopifyAddress, partner, orderId, awb, items: itemsCollected };
+
+            if(activeBrowsingIndex === -1) {
+                labelStorageDatabase.push(manifestObject);
+                showNotificationToast("Shipping Label Manifest Created!");
+                resetLabelFormToFreshBlankState();
+            } else {
+                labelStorageDatabase[activeBrowsingIndex] = manifestObject;
+                showNotificationToast("Shipping Label Updated Successfully!");
+                refreshLabelDataEngine();
+            }
+
+            localStorage.setItem("hv_shipping_labels_db", JSON.stringify(labelStorageDatabase));
+        }
+
+        function deleteLabelFromMemoryStore() {
+            if(activeBrowsingIndex === -1) return;
+            if(!confirm("Are you sure you want to drop this shipping sticker from local history logs?")) return;
+
+            labelStorageDatabase.splice(activeBrowsingIndex, 1);
+            localStorage.setItem("hv_shipping_labels_db", JSON.stringify(labelStorageDatabase));
+            
+            showNotificationToast("Label Dropped.");
+            resetLabelFormToFreshBlankState();
+        }
+
+        function resetLabelFormToFreshBlankState() {
+            activeBrowsingIndex = -1;
+            document.getElementById("shopifyAddressData").value = "";
+            document.getElementById("courierPartner").value = "DELHIVERY";
+            document.getElementById("shopifyOrderId").value = "";
+            document.getElementById("trackingWaybill").value = "";
+            
+            document.getElementById("dynamicProductsLinesBlock").innerHTML = "";
+            appendNewProductLineRow("", "");
+            refreshLabelDataEngine();
+        }
+
+        function navigateHistoryIndex(direction) {
+            if(labelStorageDatabase.length === 0) { alert("No stored records tracked inside browser storage nodes."); return; }
+
+            let targetIdx = activeBrowsingIndex + direction;
+            if(activeBrowsingIndex === -1 && direction === -1) targetIdx = labelStorageDatabase.length - 1;
+
+            if(targetIdx >= 0 && targetIdx < labelStorageDatabase.length) {
+                activeBrowsingIndex = targetIdx;
+                const data = labelStorageDatabase[activeBrowsingIndex];
+
+                document.getElementById("shopifyAddressData").value = data.shopifyAddress;
+                document.getElementById("courierPartner").value = data.partner;
+                document.getElementById("shopifyOrderId").value = data.orderId || "";
+                document.getElementById("trackingWaybill").value = data.awb;
+
+                const container = document.getElementById("dynamicProductsLinesBlock");
+                container.innerHTML = "";
+                if(data.items) data.items.forEach(it => appendNewProductLineRow(it.desc, it.qty));
+                
+                refreshLabelDataEngine();
+            } else if(targetIdx === labelStorageDatabase.length) {
+                resetLabelFormToFreshBlankState();
+            } else {
+                alert("Sticker storage boundary limits hit.");
+            }
+        }
+
+        /* =====================================================
+           THERMAL 4x6 INCH HIGH DENSITY PDF STICKER EXPORTER ENGINE
+        ===================================================== */
+        function triggerDirectLabelPdfBlob() {
+            if(activeBrowsingIndex === -1) return;
+            const target = document.getElementById("printableShippingLabelArea");
+            const trackingNo = document.getElementById("trackingWaybill").value.trim();
+
+            const minusBtns = document.querySelectorAll('.btn-minus');
+            const addBtn = document.querySelector('.btn-add-row');
+            minusBtns.forEach(b => b.style.display = 'none');
+            if(addBtn) addBtn.style.display = 'none';
+
+            const inputs = target.querySelectorAll('.input, select, textarea');
+            inputs.forEach(i => {
+                i.style.border = 'none';
+                i.style.background = 'transparent';
+                i.style.padding = '0';
+                i.style.height = 'auto';
+            });
+
+            // Standard Thermal Printer Configuration Model Constraints Lock
+            const pdfOptions = {
+                margin: [4, 4, 4, 4], // Micro margins for sticker rolls edge alignments
+                filename: `Label_4x6_${trackingNo}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3.0, useCORS: true, logging: false, letterRendering: true },
+                jsPDF: { unit: 'mm', format: [101.6, 152.4], orientation: 'portrait' } // Precision 4x6 Inches conversion lock
+            };
+
+            html2pdf().set(pdfOptions).from(target).save().then(() => {
+                minusBtns.forEach(b => b.style.display = 'block');
+                if(addBtn) addBtn.style.display = 'block';
+                inputs.forEach(i => i.removeAttribute('style'));
+                refreshLabelDataEngine();
+            });
+        }
+
+        function showNotificationToast(msg) {
+            const toast = document.createElement("div");
+            toast.className = "toast-msg";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        window.onload = initShippingLabelTerminal;
+    </script>
+</body>
+</html>
