@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harsidhi Ventures - ERP Billing & Logistics Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; color: var(--text-main); }
+        body { background: #f1f5f9; padding: 24px; min-height: 100vh; }
+        
+        /* Initial Screen Selection Mode Styles */
+        .module-router-screen { max-width: 650px; margin: 80px auto 0 auto; display: flex; flex-direction: column; gap: 20px; text-align: center; }
+        .router-title h2 { font-size: 24px; font-weight: 700; color: var(--bg-dark); }
+        .router-title p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+        .router-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px; }
+        .router-btn { background: #fff; border: 2px solid var(--border-color); border-radius: 16px; padding: 40px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .router-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(37,99,235,0.08); }
+        .router-btn .icon { font-size: 40px; }
+        .router-btn span { font-size: 16px; font-weight: 700; color: var(--bg-dark); }
+        
+        /* Unified Wrapper & Visibility Toggles */
+        .workspace-wrapper { max-width: 1020px; margin: 0 auto; display: none; flex-direction: column; gap: 14px; }
+        .software-top-bar { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 20px; border-radius: 10px; }
+        .shortcut-badge { background: #e2e8f0; padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; color: #475569; }
+        
+        .module-section { display: none; width: 100%; }
+        
+        /* STYLE SYSTEM MODULE 1: INVOICE GEOMETRY (A4) */
+        .invoice-workspace { background: #fff; border: 1px solid var(--border-color); border-radius: 8px; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 20px; position: relative; }
+        .company-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 14px; }
+        .company-header h1 { font-size: 18px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 0.5px; }
+        .company-header .brand-main-title { font-size: 26px; font-weight: 700; margin-bottom: 2px; color: #000; letter-spacing: 1px; }
+        .company-header p { font-size: 11px; line-height: 1.4; color: #000; font-weight: 500; margin-top: 2px; }
+        
+        .meta-data-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; position: relative; }
+        .form-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+        .input, select, textarea { height: 36px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: 6px; outline: none; font-size: 13px; width: 100%; transition: 0.15s; background: #fff; }
+        .input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .input[readonly] { background: #f1f5f9; font-weight: 700; color: #000; }
+        
+        .items-block-ledger { display: flex; flex-direction: column; gap: 6px; }
+        .items-header { display: grid; grid-template-columns: 4fr 1.2fr 1.5fr 1.5fr 45px; gap: 12px; font-weight: 700; font-size: 11px; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 6px; }
+        .item-row { display: grid; grid-template-columns: 4fr 1.2fr 1.5fr 1.5fr 45px; gap: 12px; align-items: center; position: relative; }
+        
+        .search-suggestions { position: absolute; top: 38px; left: 0; right: 0; background: white; border: 1px solid var(--primary); border-radius: 6px; max-height: 150px; overflow-y: auto; z-index: 99999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: none; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; font-size: 12px; font-weight: 600; border-bottom: 1px solid #f1f5f9; }
+        .suggestion-item:hover { background: #f1f5f9; color: var(--primary); }
+
+        .btn-minus { background: #fee2e2; color: var(--danger); border: 1px solid #fca5a5; border-radius: 6px; height: 36px; cursor: pointer; font-size: 18px; font-weight: 700; }
+        .btn-minus:hover { background: var(--danger); color: white; }
+        .btn-add-row { background: #f8fafc; border: 1px dashed var(--border-color); padding: 8px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; color: var(--primary); margin-top: 2px; }
+        
+        .invoice-bottom-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; margin-top: 10px; border-top: 1px dashed var(--border-color); padding-top: 16px; }
+        .legal-notes-pane { display: flex; flex-direction: column; gap: 10px; justify-content: space-between; }
+        
+        .bank-details { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; font-size: 11px; line-height: 1.4; }
+        .terms-conditions { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+        
+        .math-summary-rows { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; background: #f8fafc; padding: 14px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .math-line { display: flex; justify-content: space-between; padding: 1px 0; }
+        .grand-total-line { border-top: 2px dashed #cbd5e1; border-bottom: 2px solid #000; padding: 6px 0; margin-top: 2px; font-size: 15px; font-weight: 700; color: #000; }
+
+        /* STYLE SYSTEM MODULE 2: LABEL GEOMETRY (4x6 THERMAL) */
+        .label-workspace { background: #fff; border: 3px solid #000; padding: 20px; display: flex; flex-direction: column; gap: 12px; position: relative; width: 100%; max-width: 420px; min-height: 620px; margin: 0 auto; overflow: hidden; }
+        .label-brand-block { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 8px; font-weight: 700; font-size: 18px; letter-spacing: 0.5px; }
+        textarea.shopify-address-box { height: 110px; padding: 10px; resize: none; font-family: inherit; font-size: 13px; line-height: 1.5; font-weight: 500; }
+        .label-items-header { display: grid; grid-template-columns: 4fr 1.5fr 45px; gap: 10px; font-weight: 700; font-size: 10px; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #000; padding-bottom: 4px; }
+        .label-item-row { display: grid; grid-template-columns: 4fr 1.5fr 45px; gap: 10px; align-items: center; position: relative; }
+        .label-bottom-group { border-top: 2px dashed #000; padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+        /* General Controls Footer Styles */
+        .software-control-panel { display: flex; justify-content: flex-end; gap: 12px; margin-top: 14px; background: #fff; padding: 16px 24px; border-radius: 10px; border: 1px solid #e2e8f0; width: 100%; }
+        .btn-ctrl { border: none; height: 44px; padding: 0 22px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.3px; transition: 0.15s; display: flex; align-items: center; gap: 8px; }
+        .btn-ctrl:hover { transform: translateY(-1px); }
+        .btn-ctrl-save { background: var(--success); color: white; }
+        .btn-ctrl-delete { background: var(--danger); color: white; }
+        .btn-ctrl-download { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .btn-ctrl-nav { background: #475569; color: white; }
+        .btn-ctrl:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
+        
+        .toast-msg { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 30px; border-radius: 6px; font-size: 13px; font-weight: 600; z-index: 999999; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-left: 4px solid var(--success); }
+    </style>
+</head>
+<body>
+
+    <!-- STACK 1: GATEWAY MODULE ROUTER DISPLAY -->
+    <div id="routingGatewayScreen" class="module-router-screen">
+        <div class="router-title">
+            <h2>Harsidhi Ventures ERP</h2>
+            <p>Select terminal workflow system layer to load active operational components</p>
+        </div>
+        <div class="router-card-grid">
+            <div class="router-btn" onclick="launchTargetSoftwareModule('LABEL')">
+                <div class="icon">📦</div>
+                <span>Create Shipping Label</span>
+            </div>
+            <div class="router-btn" onclick="launchTargetSoftwareModule('INVOICE')">
+                <div class="icon">🧾</div>
+                <span>Generate Tax Invoice</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- STACK 2: SYSTEM MANAGEMENT CONTAINER SYSTEM -->
+    <div id="masterWorkspaceWrapper" class="workspace-wrapper">
+        
+        <div class="software-top-bar">
+            <div id="moduleIdentityTag" style="font-size:13px; font-weight:700; color:var(--primary);">System Core</div>
+            <button class="btn-ctrl" style="background:#e2e8f0; color:#334155; height:32px; padding:0 12px; font-size:11px;" onclick="returnBackToGatewayScreen()">🔄 Switch Module</button>
+            <div style="display:flex; gap:15px; font-size:11px; font-weight:500;">
+                <div><span class="shortcut-badge">Alt + PageUp</span> Prev</div>
+                <div><span class="shortcut-badge">Alt + PageDown</span> Next/New</div>
+            </div>
+        </div>
+
+        <!-- SUB ENGINE INTERFACE: EXCLUSIVE TAX INVOICE COMPONENT -->
+        <div id="invoiceModuleBlock" class="module-section">
+            <div class="invoice-workspace" id="printableA4InvoiceArea">
+                <div class="company-header">
+                    <div class="brand-main-title">HARSIDHI VENTURES</div>
+                    <h1>TAX INVOICE</h1>
+                    <p>
+                        Plot no. 27, Khatri nagar, Near sanganer railway overbridge, New sanganer road, Sanganer, Jaipur-302029 (RAJ)<br>
+                        <strong>GSTIN: 08AYBPH8726RIZQ</strong>
+                    </p>
+                </div>
+
+                <div class="meta-data-grid">
+                    <div class="form-group"><label>Invoice Date</label><input type="date" id="invDate" class="input" onchange="recalculateInvoiceMath()"></div>
+                    <div class="form-group"><label>Invoice Number</label><input type="text" id="invNo" class="input" readonly></div>
+                    <div class="form-group"><label>Party Name</label><input type="text" id="clientName" class="input" placeholder="Enter party name" oninput="recalculateInvoiceMath()"></div>
+                    <div class="form-group" style="grid-column: span 2;"><label>Full Billing Address</label><input type="text" id="clientCity" class="input" placeholder="Enter destination address" oninput="recalculateInvoiceMath()"></div>
+                    <div class="form-group"><label>GSTIN/PAN No</label><input type="text" id="clientGst" class="input" placeholder="Optional Client GSTIN" oninput="recalculateInvoiceMath()"></div>
+                </div>
+
+                <div class="items-block-ledger">
+                    <div class="items-header"><span>Particulars</span><span style="text-align: center;">Qty</span><span style="text-align: right;">Price (₹ Excl.)</span><span style="text-align: right;">Total Amount (₹)</span><span></span></div>
+                    <div id="invoiceProductsTargetRowsBlock"><!-- Form rows mapped inside script --></div>
+                    <button type="button" class="btn-add-row" onclick="addNewInvoiceItemLineRow()">+ Insert Additional Particular Row</button>
+                </div>
+
+                <div class="invoice-bottom-grid">
+                    <div class="legal-notes-pane">
+                        <div class="bank-details">
+                            <p style="font-weight:700; text-transform:uppercase; border-bottom:1px solid #000; padding-bottom:3px; margin-bottom:5px; color:#000;">Bank details:</p>
+                            <p><strong>Account Holder:</strong> HARSIDHI VENTURES</p>
+                            <p><strong>Account Number:</strong> 50200041739011</p>
+                            <p><strong>IFSC Code:</strong> HDFC0000987 | <strong>Branch:</strong> MANSAROVAR JAIPUR</p>
+                            <p><strong>Account Type:</strong> Current Account | <strong>UPI ID:</strong> 9828222076@hdfc</p>
+                        </div>
+                        <div class="terms-conditions">
+                            <strong>Terms & Conditions:</strong><br>
+                            1. Goods once sold will not be taken back or exchanged. 2. All disputes Jaipur Jurisdiction. 3. Prices are Exclusive of Taxes.
+                        </div>
+                        <p id="pAmountInWords" style="font-weight:600; font-style:italic; font-size:11px; border-top:1px dashed #000; padding-top:6px; color:#000; margin-top: auto;">Total Amount in Words: Zero Only</p>
+                    </div>
+                    <div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label style="font-size:10px; font-weight:700; color:var(--text-muted);">Tax Configuration Route</label>
+                            <select id="taxStrategySelect" class="input" onchange="recalculateInvoiceMath()">
+                                <option value="IGST" selected>Center Tax (IGST 5% Exclusive Default)</option>
+                                <option value="CGST_SGST">State Tax (CGST 2.5% + SGST 2.5% Exclusive)</option>
+                            </select>
+                        </div>
+                        <div class="math-summary-rows">
+                            <div class="math-line"><span>Total Pcs Volume:</span><span id="pTotalPcs">0</span></div>
+                            <div class="math-line"><span>Taxable Base Subtotal:</span>₹<span id="pBaseAmount">0.00</span></div>
+                            <div id="pDynamicTaxRows"></div>
+                            <div class="math-line"><span>Round Add/Less:</span><span id="pRoundOff">0.00</span></div>
+                            <div class="math-line grand-total-line"><span>Grand Total Due:</span>₹<span id="pGrandTotal">0.00</span></div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; float:right; margin-top:30px; text-align:center; width:160px;">
+                            <div style="border-top:1px solid #000; width:100%; font-size:10px; font-weight:700; text-transform:uppercase; padding-top:4px; color:#000;">authorised signatory</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUB ENGINE INTERFACE: THERMAL SHIPPING LABEL COMPONENT -->
+        <div id="labelModuleBlock" class="module-section">
+            <div class="label-workspace" id="printableShippingLabelArea">
+                <div class="label-brand-block">HARSIDHI VENTURES</div>
+                
+                <div class="label-section-block">
+                    <h3>Delivery Address (Ship To)</h3>
+                    <textarea id="shopifyAddressData" class="shopify-address-box" placeholder="Paste complete details here directly from Shopify (Name, Address, Mobile...)" oninput="refreshLabelDataEngine()"></textarea>
+                </div>
+
+                <div class="label-bottom-group">
+                    <div class="form-group">
+                        <label style="font-size:10px; font-weight:700;">Shopify Order ID</label>
+                        <input type="text" id="shopifyOrderId" class="input" placeholder="Shopify Order ID" style="font-weight:700;" oninput="refreshLabelDataEngine()">
+                    </div>
+                </div>
+
+                <div class="items-block-ledger" style="border-top: 2px dashed #000; padding-top: 10px;">
+                    <div class="label-items-header"><span>Particular SKU Pattern Items</span><span style="text-align: center;">Qty</span><span></span></div>
+                    <div id="labelProductsTargetRowsBlock"><!-- Label item fields injected dynamically --></div>
+                    <button type="button" class="btn-add-row" onclick="addNewLabelItemLineRow()">+ Add SKU Item Variant</button>
+                </div>
+
+                <div class="routing-footer-grid">
+                    <div class="label-section-block">
+                        <h3>Return Address (If Undelivered)</h3>
+                        <div style="font-size:11px; color:#000;"><strong>HARSIDHI VENTURES</strong><br>Plot no. 27, Khatri nagar, Sanganer, Jaipur-302029 | Phone: 9828222076</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHARED HARDWARE SYSTEMS MASTER CONTROLS BAR PANEL -->
+        <div class="software-control-panel">
+            <button class="btn-ctrl btn-ctrl-nav" onclick="triggerHardwareIndexNavigation(-1)">◀ Prev</button>
+            <button id="masterSaveBtn" class="btn-ctrl btn-ctrl-save" onclick="commitActiveWorkspaceStateToMemory()">💾 Save Entry</button>
+            <button id="masterDeleteBtn" class="btn-ctrl btn-ctrl-delete" onclick="dropActiveRecordFromPermanentLogs()" disabled>❌ Drop</button>
+            <button id="masterDownloadBtn" class="btn-ctrl btn-ctrl-download" onclick="executeHighDensityPdfBlobDownload()" disabled>📥 Download Document</button>
+            <button class="btn-ctrl btn-ctrl-nav" onclick="triggerHardwareIndexNavigation(1)">Next ▶</button>
+        </div>
+
+    </div>
+
+    <script>
+        const INVENTORY_FETCH_API_URL = "https://script.google.com/macros/s/AKfycbzut_XuQmPmE_sfhivfEB3whXhGN7zhQqxNowrfid4Amaxk1WHY8nT5RIcw1cv798YR/exec";
+        
+        let stockCatalogCache = [];
+        let invoiceDb = [];
+        let labelDb = [];
+        
+        let activeModuleMode = ""; 
+        let activeInvoiceIndex = -1;
+        let activeLabelIndex = -1;
+
+        async function initIntegratedERPApp() {
+            const invLogs = localStorage.getItem("hv_invoice_master_db");
+            if(invLogs) invoiceDb = JSON.parse(invLogs);
+            
+            const labelLogs = localStorage.getItem("hv_shipping_labels_db");
+            if(labelLogs) labelDb = JSON.parse(labelLogs);
+
+            try {
+                const res = await fetch(`${INVENTORY_FETCH_API_URL}?action=inventoryProducts`);
+                const data = await res.json();
+                if(data.success) stockCatalogCache = data.products || [];
+            } catch(e) {}
+
+            window.addEventListener("keydown", function(e) {
+                if(e.altKey && e.key === "PageUp") { e.preventDefault(); triggerHardwareIndexNavigation(-1); }
+                if(e.altKey && e.key === "PageDown") { e.preventDefault(); triggerHardwareIndexNavigation(1); }
+            });
+        }
+
+        function launchTargetSoftwareModule(mode) {
+            activeModuleMode = mode;
+            document.getElementById("routingGatewayScreen").style.display = "none";
+            document.getElementById("masterWorkspaceWrapper").style.display = "flex";
+            
+            document.getElementById("invoiceModuleBlock").style.display = (mode === "INVOICE") ? "block" : "none";
+            document.getElementById("labelModuleBlock").style.display = (mode === "LABEL") ? "block" : "none";
+
+            if(mode === "INVOICE") {
+                document.getElementById("moduleIdentityTag").innerText = "🧾 Tax Invoice Billing Terminal Node";
+                resetInvoiceWorkspaceToFreshState();
+            } else {
+                document.getElementById("moduleIdentityTag").innerText = "📦 Thermal 4x6 Shipping Label Sticker Node";
+                resetLabelWorkspaceToFreshState();
+            }
+        }
+
+        function returnBackToGatewayScreen() {
+            activeModuleMode = "";
+            document.getElementById("masterWorkspaceWrapper").style.display = "none";
+            document.getElementById("routingGatewayScreen").style.display = "flex";
+        }
+
+        /* =====================================================
+           CORE LOGIC CONTROLS: TAX INVOICE MODULE SUB-ENGINE
+        ===================================================== */
+        function resetInvoiceWorkspaceToFreshState() {
+            activeInvoiceIndex = -1;
+            document.getElementById("invDate").value = new Date().toISOString().split('T')[0];
+            document.getElementById("clientName").value = "";
+            document.getElementById("clientCity").value = "";
+            document.getElementById("clientGst").value = "";
+            document.getElementById("taxStrategySelect").value = "IGST";
+            document.getElementById("invoiceProductsTargetRowsBlock").innerHTML = "";
+            
+            let maxNum = 0;
+            invoiceDb.forEach(inv => {
+                const pts = inv.invNo.split('/');
+                const n = parseInt(pts[pts.length - 1], 10);
+                if(!isNaN(n) && n > maxNum) maxNum = n;
+            });
+            document.getElementById("invNo").value = `HV/2025-26/${String(maxNum + 1).padStart(3, '0')}`;
+            
+            addNewInvoiceItemLineRow();
+            recalculateInvoiceMath();
+        }
+
+        function addNewInvoiceItemLineRow(desc = "", qty = "", price = "") {
+            const container = document.getElementById("invoiceProductsTargetRowsBlock");
+            const idx = container.children.length;
+            const row = document.createElement("div");
+            row.className = "item-row";
+            row.id = `inv-line-idx-${idx}`;
+            row.innerHTML = `
+                <div style="width:100%; position:relative;">
+                    <input type="text" class="input row-desc" value="${desc}" placeholder="Item name or search SKU..." oninput="handleFuzzySuggestions('${idx}', this.value, 'INV')">
+                    <div id="inv-suggest-${idx}" class="search-suggestions"></div>
+                </div>
+                <input type="number" class="input row-qty" value="${qty}" placeholder="0" style="text-align:center;" oninput="recalculateInvoiceMath()">
+                <input type="number" class="input row-price" value="${price}" placeholder="0.00" style="text-align:right;" oninput="recalculateInvoiceMath()">
+                <input type="text" class="input row-total" value="0.00" readonly style="text-align:right; font-weight:700; background:#f1f5f9;">
+                <button type="button" class="btn-minus" onclick="removeInvoiceItemLineRow('${idx}')">×</button>`;
+            container.appendChild(row);
+            recalculateInvoiceMath();
+        }
+
+        function removeInvoiceItemLineRow(id) { document.getElementById(`inv-line-idx-${id}`).remove(); recalculateInvoiceMath(); }
+
+        function recalculateInvoiceMath() {
+            if(activeModuleMode !== "INVOICE") return;
+            const container = document.getElementById("invoiceProductsTargetRowsBlock");
+            let baseSubtotal = 0, totalPcs = 0;
+
+            for(let child of container.children) {
+                const q = parseInt(child.querySelector(".row-qty").value, 10) || 0;
+                const p = parseFloat(child.querySelector(".row-price").value) || 0;
+                const total = q * p;
+                child.querySelector(".row-total").value = total.toFixed(2);
+                baseSubtotal += total;
+                totalPcs += q;
+            }
+
+            let taxValue = baseSubtotal * 0.05; 
+            const strategy = document.getElementById("taxStrategySelect").value;
+            const taxArea = document.getElementById("pDynamicTaxRows");
+            taxArea.innerHTML = "";
+
+            if(baseSubtotal > 0) {
+                if(strategy === "CGST_SGST") {
+                    const half = taxValue / 2;
+                    taxArea.innerHTML = `
+                        <div class="math-line"><span>CGST 2.5% (Exclusive):</span><span>₹${half.toFixed(2)}</span></div>
+                        <div class="math-line"><span>SGST 2.5% (Exclusive):</span><span>₹${half.toFixed(2)}</span></div>`;
+                } else {
+                    taxArea.innerHTML = `<div class="math-line"><span>IGST 5% (Exclusive):</span><span>₹${taxValue.toFixed(2)}</span></div>`;
+                }
+            }
+
+            const grossFloat = baseSubtotal + taxValue;
+            const roundedTotal = Math.round(grossFloat);
+            const roundOffDiff = roundedTotal - grossFloat;
+
+            document.getElementById("pTotalPcs").innerText = totalPcs;
+            document.getElementById("pBaseAmount").innerText = baseSubtotal.toFixed(2);
+            document.getElementById("pRoundOff").innerText = roundOffDiff >= 0 ? `+${roundOffDiff.toFixed(2)}` : `${roundOffDiff.toFixed(2)}`;
+            document.getElementById("pGrandTotal").innerText = roundedTotal.toFixed(2);
+            document.getElementById("pAmountInWords").innerHTML = `<strong>Total Amount in Words:</strong> ${convertNumberToTextWords(roundedTotal)} Only`;
+
+            syncButtonControlMatrices();
+        }
+
+        /* =====================================================
+           CORE LOGIC CONTROLS: SHIPPING LABEL MODULE SUB-ENGINE
+        ===================================================== */
+        function resetLabelWorkspaceToFreshState() {
+            activeLabelIndex = -1;
+            document.getElementById("shopifyAddressData").value = "";
+            document.getElementById("shopifyOrderId").value = "";
+            document.getElementById("labelProductsTargetRowsBlock").innerHTML = "";
+            
+            addNewLabelItemLineRow();
+            refreshLabelDataEngine();
+        }
+
+        function addNewLabelItemLineRow(desc = "", qty = "") {
+            const container = document.getElementById("labelProductsTargetRowsBlock");
+            const idx = container.children.length;
+            const row = document.createElement("div");
+            row.className = "label-item-row";
+            row.id = `label-line-idx-${idx}`;
+            row.innerHTML = `
+                <div style="width:100%; position:relative;">
+                    <input type="text" class="input row-desc" value="${desc}" placeholder="Garment SKU or details..." oninput="handleFuzzySuggestions('${idx}', this.value, 'LABEL')">
+                    <div id="label-suggest-${idx}" class="search-suggestions"></div>
+                </div>
+                <input type="number" class="input row-qty" value="${qty}" placeholder="1" style="text-align:center;" oninput="refreshLabelDataEngine()">
+                <button type="button" class="btn-minus" onclick="removeLabelItemLineRow('${idx}')">×</button>`;
+            container.appendChild(row);
+            refreshLabelDataEngine();
+        }
+
+        function removeLabelItemLineRow(id) { document.getElementById(`label-line-idx-${id}`).remove(); refreshLabelDataEngine(); }
+
+        function refreshLabelDataEngine() {
+            syncButtonControlMatrices();
+        }
+
+        /* =====================================================
+           SUGGESTIONS & CONTROL MATRICES INTERFACES
+        ===================================================== */
+        function handleFuzzySuggestions(rowId, val, moduleType) {
+            const suggestBoxId = (moduleType === "INV") ? `inv-suggest-${rowId}` : `label-suggest-${rowId}`;
+            const box = document.getElementById(suggestBoxId);
+            if(!val.trim() || stockCatalogCache.length === 0) { box.style.display = "none"; return; }
+
+            const clean = val.toLowerCase().replace(/[\s-]/g, "");
+            const matches = stockCatalogCache.filter(p => p.sku.toLowerCase().replace(/[\s-]/g, "").includes(clean));
+
+            if(matches.length === 0) { box.style.display = "none"; return; }
+            box.innerHTML = "";
+            matches.slice(0, 4).forEach(m => {
+                box.innerHTML += `<div class="suggestion-item" onclick="bindSelectedSkuToInput('${rowId}', '${m.sku}', '${moduleType}')">📦 ${m.sku}</div>`;
+            });
+            box.style.display = "block";
+        }
+
+        function bindSelectedSkuToInput(rowId, sku, moduleType) {
+            const rowContainerId = (moduleType === "INV") ? `inv-line-idx-${rowId}` : `label-line-idx-${rowId}`;
+            document.getElementById(rowContainerId).querySelector(".row-desc").value = sku;
+            document.getElementById((moduleType === "INV") ? `inv-suggest-${rowId}` : `label-suggest-${rowId}`).style.display = "none";
+            if(moduleType === "INV") recalculateInvoiceMath(); else refreshLabelDataEngine();
+        }
+
+        function syncButtonControlMatrices() {
+            const activeIdx = (activeModuleMode === "INVOICE") ? activeInvoiceIndex : activeLabelIndex;
+            const isUnsaved = (activeIdx === -1);
+            document.getElementById("masterDeleteBtn").disabled = isUnsaved;
+            document.getElementById("masterDownloadBtn").disabled = isUnsaved;
+            document.getElementById("masterSaveBtn").innerText = isUnsaved ? "💾 Save Document" : "📝 Update Record";
+        }
+
+        /* =====================================================
+           STORAGE OPERATIONS: COMMIT & REMOVALS PIPELINES
+        ===================================================== */
+        function commitActiveWorkspaceStateToMemory() {
+            if(activeModuleMode === "INVOICE") {
+                const invNo = document.getElementById("invNo").value;
+                const client = document.getElementById("clientName").value.trim();
+                if(!client) { alert("Party Name is required."); return; }
+
+                const items = [];
+                for(let child of document.getElementById("invoiceProductsTargetRowsBlock").children) {
+                    const desc = child.querySelector(".row-desc").value.trim();
+                    if(desc) items.push({ desc, qty: parseInt(child.querySelector(".row-qty").value,10)||0, price: parseFloat(child.querySelector(".row-price").value)||0 });
+                }
+
+                const obj = {
+                    invNo, dateStr: document.getElementById("invDate").value, client,
+                    city: document.getElementById("clientCity").value.trim(), gstin: document.getElementById("clientGst").value.trim(),
+                    taxStrategy: document.getElementById("taxStrategySelect").value, grandTotal: document.getElementById("pGrandTotal").innerText, items
+                };
+
+                if(activeInvoiceIndex === -1) { invoiceDb.push(obj); showToastAlert("Invoice Log Saved!"); resetInvoiceWorkspaceToFreshState(); }
+                else { invoiceDb[activeInvoiceIndex] = obj; showToastAlert("Invoice Updated Successfully!"); recalculateInvoiceMath(); }
+                localStorage.setItem("hv_invoice_master_db", JSON.stringify(invoiceDb));
+            } else {
+                const shopifyAddress = document.getElementById("shopifyAddressData").value.trim();
+                if(!shopifyAddress) { alert("Shopify Address details block is required!"); return; }
+
+                const items = [];
+                for(let child of document.getElementById("labelProductsTargetRowsBlock").children) {
+                    const desc = child.querySelector(".row-desc").value.trim();
+                    if(desc) items.push({ desc, qty: parseInt(child.querySelector(".row-qty").value,10)||1 });
+                }
+
+                const obj = { shopifyAddress, orderId: document.getElementById("shopifyOrderId").value.trim(), items };
+                
+                if(activeLabelIndex === -1) { labelDb.push(obj); showToastAlert("Shipping Sticker Generated!"); resetLabelWorkspaceToFreshState(); }
+                else { labelDb[activeLabelIndex] = obj; showToastAlert("Shipping Manifest Updated!"); refreshLabelDataEngine(); }
+                localStorage.setItem("hv_shipping_labels_db", JSON.stringify(labelDb));
+            }
+        }
+
+        function dropActiveRecordFromPermanentLogs() {
+            if(!confirm("Are you sure you want to drop this transaction record from offline buffers?")) return;
+            if(activeModuleMode === "INVOICE") {
+                invoiceDb.splice(activeInvoiceIndex, 1);
+                localStorage.setItem("hv_invoice_master_db", JSON.stringify(invoiceDb));
+                resetInvoiceWorkspaceToFreshState();
+            } else {
+                labelDb.splice(activeLabelIndex, 1);
+                localStorage.setItem("hv_shipping_labels_db", JSON.stringify(labelDb));
+                resetLabelWorkspaceToFreshState();
+            }
+            showToastAlert("Entry Dropped.");
+        }
+
+        function triggerHardwareIndexNavigation(direction) {
+            const db = (activeModuleMode === "INVOICE") ? invoiceDb : labelDb;
+            let currentIdx = (activeModuleMode === "INVOICE") ? activeInvoiceIndex : activeLabelIndex;
+            if(db.length === 0) { alert("No stored local data maps recorded to navigate."); return; }
+
+            let targetIdx = currentIdx + direction;
+            if(currentIdx === -1 && direction === -1) targetIdx = db.length - 1;
+
+            if(targetIdx >= 0 && targetIdx < db.length) {
+                if(activeModuleMode === "INVOICE") {
+                    activeInvoiceIndex = targetIdx;
+                    const doc = invoiceDb[activeInvoiceIndex];
+                    document.getElementById("invNo").value = doc.invNo;
+                    document.getElementById("invDate").value = doc.dateStr;
+                    document.getElementById("clientName").value = doc.client;
+                    document.getElementById("clientCity").value = doc.city;
+                    document.getElementById("clientGst").value = doc.gstin;
+                    document.getElementById("taxStrategySelect").value = doc.taxStrategy || "IGST";
+                    
+                    const block = document.getElementById("invoiceProductsTargetRowsBlock"); block.innerHTML = "";
+                    doc.items.forEach(it => addNewInvoiceItemLineRow(it.desc, it.qty, it.price));
+                } else {
+                    activeLabelIndex = targetIdx;
+                    const doc = labelDb[activeLabelIndex];
+                    document.getElementById("shopifyAddressData").value = doc.shopifyAddress;
+                    document.getElementById("shopifyOrderId").value = doc.orderId || "";
+                    
+                    const block = document.getElementById("labelProductsTargetRowsBlock"); block.innerHTML = "";
+                    if(doc.items) doc.items.forEach(it => addNewLabelItemLineRow(it.desc, it.qty));
+                    refreshLabelDataEngine();
+                }
+            } else if(targetIdx === db.length) {
+                if(activeModuleMode === "INVOICE") resetInvoiceWorkspaceToFreshState(); else resetLabelWorkspaceToFreshState();
+            }
+        }
+
+        /* =====================================================
+           DUAL ENGINE CONTEXT-AWARE ADAPTIVE PDF EXPORTER
+        ===================================================== */
+        function executeHighDensityPdfBlobDownload() {
+            const isInvoice = (activeModuleMode === "INVOICE");
+            const targetId = isInvoice ? "printableA4InvoiceArea" : "printableShippingLabelArea";
+            const targetElement = document.getElementById(targetId);
+            
+            const fileIdentity = isInvoice ? document.getElementById("invNo").value : (document.getElementById("shopifyOrderId").value || "Label");
+            const cleanFileName = fileIdentity.replace(/\//g, '-');
+
+            const minusButtons = targetElement.querySelectorAll('.btn-minus');
+            const addBtn = targetElement.querySelector('.btn-add-row');
+            minusButtons.forEach(b => b.style.display = 'none');
+            if(addBtn) addBtn.style.display = 'none';
+
+            const inputs = targetElement.querySelectorAll('.input, select, textarea');
+            inputs.forEach(i => {
+                i.style.border = 'none'; i.style.background = 'transparent'; i.style.padding = '0'; i.style.height = 'auto';
+            });
+
+            const pdfOptions = isInvoice ? {
+                margin: [10, 12, 10, 12],
+                filename: `Invoice_${cleanFileName}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 2.2, useCORS: true, logging: false, letterRendering: true, scrollY: 0 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            } : {
+                margin: [4, 4, 4, 4],
+                filename: `ShippingLabel_${cleanFileName}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3.0, useCORS: true, logging: false, letterRendering: true },
+                jsPDF: { unit: 'mm', format: [101.6, 152.4], orientation: 'portrait' } 
+            };
+
+            html2pdf().set(pdfOptions).from(targetElement).save().then(() => {
+                minusButtons.forEach(b => b.style.display = 'block');
+                if(addBtn) addBtn.style.display = 'block';
+                inputs.forEach(i => i.removeAttribute('style'));
+                if(isInvoice) recalculateInvoiceMath(); else refreshLabelDataEngine();
+            });
+        }
+
+        function showToastAlert(msg) {
+            const toast = document.createElement("div"); toast.className = "toast-msg"; toast.innerText = msg;
+            document.body.appendChild(toast); setTimeout(() => toast.remove(), 3000);
+        }
+
+        function convertNumberToTextWords(amount) {
+            const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            if (amount === 0) return 'Zero';
+            let numStr = Math.floor(amount).toString();
+            let numVal = parseInt(numStr, 10);
+            if (numVal < 20) return units[numVal];
+            if (numStr.length === 2) return tens[numStr[0]] + (numStr[1] !== '0' ? ' ' + units[numStr[1]] : '');
+            if (numStr.length === 3) return units[numStr[0]] + ' Hundred' + (numVal % 100 !== 0 ? ' and ' + convertNumberToTextWords(numVal % 100) : '');
+            if (numStr.length === 4 || numStr.length === 5) {
+                return convertNumberToTextWords(Math.floor(numVal / 1000)) + ' Thousand' + (numVal % 1000 !== 0 ? ' ' + convertNumberToTextWords(numVal % 1000) : '');
+            }
+            return numStr;
+        }
+
+        window.onload = initIntegratedERPApp;
+    </script>
+</body>
+</html>
