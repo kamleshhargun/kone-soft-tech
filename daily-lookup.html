@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Harsidhi Ventures - Daily Scan & Lookup Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a; 
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success: #10b981;
+            --teal: #14b8a6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; color: var(--text-main); }
+        body { background: #f1f5f9; min-height: 100vh; padding: 24px; }
+        
+        .main-workspace { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* Vertical Rows Metric Widgets Framework */
+        .metrics-vertical-stack { display: flex; flex-direction: column; gap: 12px; }
+        .metrics-row-layer { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .counter-card { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 18px 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; }
+        .counter-card span.lbl { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .counter-card h3 { font-size: 28px; font-weight: 700; color: var(--bg-dark); }
+        .pickup-accent { border-left: 5px solid var(--primary); }
+        .return-accent { border-left: 5px solid var(--teal); }
+
+        /* Full Wide Panel System Stack */
+        .panel { background: #fff; border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 4px 15px rgba(0, 0, 0, .03); overflow: hidden; display: flex; flex-direction: column; }
+        .panel-header { padding: 16px 20px; font-weight: 700; font-size: 15px; background: #f8fafc; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; }
+        .panel-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+        
+        .input { height: 44px; padding: 0 14px; border: 1px solid var(--border-color); border-radius: 10px; outline: none; background: #fff; font-size: 14px; width: 100%; font-weight: 500; }
+        .input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+        
+        .mode-row, .action-row { display: flex; gap: 10px; }
+        .mode-btn { flex: 1; height: 46px; border-radius: 10px; border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; transition: .2s; font-size: 14px; text-transform: uppercase; }
+        .pickup { border-color: var(--primary); color: var(--primary); }
+        .return { border-color: var(--teal); color: var(--teal); }
+        .active-pickup { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .active-return { background: var(--teal); color: #fff; border-color: var(--teal); }
+        .scan-panel-box { display: none; flex-direction: column; gap: 14px; padding: 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; }
+        #reader { display: none; width: 100%; overflow: hidden; border-radius: 10px; border: 2px dashed var(--border-color); background: #fff; }
+        
+        .result-card, .card { padding: 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .02); font-size: 13px; line-height: 1.6; }
+        .result-card h3, .card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--bg-dark); border-bottom: 1px dashed var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table td { padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .data-table td.label { color: var(--text-muted); font-weight: 500; width: 35%; }
+        .data-table td.val { color: var(--text-main); font-weight: 600; text-align: right; }
+        
+        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .15s; text-align: center; text-transform: uppercase; }
+        .btn:hover { transform: translateY(-1px); opacity: .95; }
+        .btn-camera { background: var(--primary); color: #fff; }
+        .btn-manual { background: #475569; color: #fff; }
+        .btn-save { background: var(--success); color: #fff; width: 100%; height: 46px; font-size: 14px; }
+        .btn-stop { background: #ef4444; color: #fff; width: 100%; height: 46px; font-size: 14px; }
+        .btn-search { background: var(--primary); color: #fff; height: 44px; width: 130px; }
+        .btn-refresh { background: #475569; color: #fff; margin-top: 12px; width: 100%; }
+        .btn-sync { background: var(--success); color: #fff; margin-top: 12px; width: 100%; }
+        
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-pickup { background: #dbeafe; color: #1e40af; }
+        .badge-return { background: #ccfbf1; color: #115e59; }
+        
+        .status-msg { font-style: italic; color: var(--text-muted); text-align: center; padding: 20px 0; font-size: 13px; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--bg-dark); color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 99999; font-size: 13px; font-weight: 600; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(2px); z-index: 999999; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <div class="main-workspace">
+        
+        <!-- MODULE 1: COUNTERS ACCUMULATOR INTERFACE STACK -->
+        <div class="metrics-vertical-stack">
+            <!-- Row Layer 1: Today Counters -->
+            <div class="metrics-row-layer">
+                <div class="counter-card pickup-accent">
+                    <span class="lbl">Today Pickups</span>
+                    <h3 id="countTodayPickup">0</h3>
+                </div>
+                <div class="counter-card return-accent">
+                    <span class="lbl">Today Returns</span>
+                    <h3 id="countTodayReturn">0</h3>
+                </div>
+            </div>
+            <!-- Row Layer 2: Yesterday Counters -->
+            <div class="metrics-row-layer">
+                <div class="counter-card pickup-accent">
+                    <span class="lbl">Yesterday Pickups</span>
+                    <h3 id="countYestPickup">0</h3>
+                </div>
+                <div class="counter-card return-accent">
+                    <span class="lbl">Yesterday Returns</span>
+                    <h3 id="countYestReturn">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 2: DAILY SCAN OPERATIONAL TERMINAL (daily.html) -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>📲 Daily Scan Registry Node</span>
+                <span style="font-size:11px; background:#e0f2fe; color:#0369a1; padding:4px 10px; border-radius:12px; font-weight:700;">CHANNEL: ACTIVE</span>
+            </div>
+            <div class="panel-body">
+                <div class="mode-row">
+                    <button id="pickupBtn" class="mode-btn pickup" onclick="selectScanOperationMode('Pickup')">Pickup</button>
+                    <button id="returnBtn" class="mode-btn return" onclick="selectScanOperationMode('Return')">Return</button>
+                </div>
+
+                <div id="scanPanelBox" class="scan-panel-box">
+                    <div class="action-row">
+                        <button class="btn btn-camera" style="flex: 1;" onclick="startHardwareCameraScanEngine()">📷 Camera Scan</button>
+                        <button class="btn btn-manual" style="flex: 1;" onclick="focusAwbInputField()">⌨ Manual Input</button>
+                    </div>
+                    <div id="reader"></div>
+                    <input id="awbInput" class="input" placeholder="Scan tracking waybill barcode or hit enter...">
+                    <input id="orderInput" class="input" placeholder="Order ID (Manual Fallback Link Allocation)" style="display: none;">
+                    
+                    <div id="resultCard" class="result-card" style="display:none;"></div>
+                    
+                    <div class="action-row" style="margin-top: 4px;">
+                        <button class="btn btn-save" style="flex: 1;" onclick="commitScannedRowToDatabase()">💾 Document Entry Row</button>
+                        <button class="btn btn-stop" style="flex: 1;" onclick="abortActiveWorkStream()">Stop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE 3: CENTRAL DATA LOOKUP CONTROL ENGINE (lookup.html) -->
+        <div class="panel">
+            <div class="panel-header">
+                <span>🔍 Database Registry Explorer & Status Sync</span>
+            </div>
+            <div class="panel-body">
+                <div style="display:flex; gap:10px;">
+                    <input id="searchInput" class="input" placeholder="Search AWB Number / Shopify Order ID pointer...">
+                    <button class="btn btn-search" onclick="executeDatabaseOrderQuerySearch()">Search</button>
+                </div>
+                
+                <div id="searchResultArea" class="search-result">
+                    <div class="status-msg">Enter a target keyword pointer tracking value above to pull row data nodes.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Global Application Process Spinner -->
+    <div id="loadingOverlay">🔄 Hitting Spreadsheet Core Engine Repositories...</div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyAoZHoPOCEQKOe9uNteojPM-15UE6PWzwtKPBYxgGWZEYmvI8qJfk50js7l6uEPMlk/exec"; 
+
+        let currentType = "";
+        let currentTracking = null;
+        let html5QrCode = null;
+        let scannerBuffer = "";
+        let latestTrackingData = null;
+        
+        const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+
+        /* ===================================
+        LIVE DATA AGGREGATE COURIER COUNTERS
+        =================================== */
+        async function fetchDashboardCountsLive() {
+            try {
+                const res = await fetch(`${API_URL}?action=getDashboardCounts`);
+                const data = await res.json();
+                if(data && data.success) {
+                    document.getElementById("countTodayPickup").innerText = data.todayPickup || 0;
+                    document.getElementById("countTodayReturn").innerText = data.todayReturn || 0;
+                    document.getElementById("countYestPickup").innerText = data.yesterdayPickup || 0;
+                    document.getElementById("countYestReturn").innerText = data.yesterdayReturn || 0;
+                }
+            } catch(e) { console.error("Counter data channel delayed.", e); }
+        }
+
+        /* ===================================
+        SCAN WORKSTATION OPERATIONAL ACTIONS
+        =================================== */
+        function selectScanOperationMode(type) {
+            currentType = type;
+            document.getElementById("scanPanelBox").style.display = "flex";
+            document.getElementById("pickupBtn").classList.remove("active-pickup");
+            document.getElementById("returnBtn").classList.remove("active-return");
+
+            if (type === "Pickup") {
+                document.getElementById("pickupBtn").classList.add("active-pickup");
+            } else {
+                document.getElementById("returnBtn").classList.add("active-return");
+            }
+
+            clearScanFormFields();
+            focusAwbInputField();
+        }
+
+        function clearScanFormFields() {
+            currentTracking = null;
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("resultCard").style.display = "none";
+            document.getElementById("resultCard").innerHTML = "";
+        }
+
+        function focusAwbInputField() { document.getElementById("awbInput").focus(); }
+
+        async function startHardwareCameraScanEngine() {
+            try {
+                if (html5QrCode) await stopHardwareCameraScanEngine();
+                document.getElementById("reader").style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+                
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 20, qrbox: { width: 280, height: 140 } },
+                    function(decodedText) {
+                        document.getElementById("awbInput").value = decodedText;
+                        playSuccessAudioAlert();
+                        stopHardwareCameraScanEngine();
+                        triggerScanTrackingQuery();
+                    }
+                );
+            } catch (err) { toast("Camera Hardware Pipeline Interrupted."); }
+        }
+
+        async function stopHardwareCameraScanEngine() {
+            try {
+                if (html5QrCode) {
+                    await html5QrCode.stop();
+                    await html5QrCode.clear();
+                    html5QrCode = null;
+                }
+            } catch (err) {}
+            document.getElementById("reader").style.display = "none";
+        }
+
+        document.getElementById("awbInput").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") { e.preventDefault(); triggerScanTrackingQuery(); }
+        });
+
+        document.addEventListener("keydown", function(e) {
+            if (document.activeElement.id !== "awbInput") return;
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const awb = scannerBuffer.trim();
+                if (awb.length > 5) {
+                    document.getElementById("awbInput").value = awb;
+                    triggerScanTrackingQuery();
+                }
+                scannerBuffer = "";
+                return;
+            }
+            if (e.key.length === 1) scannerBuffer += e.key;
+        });
+
+        async function triggerScanTrackingQuery() {
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) { toast("AWB Parameter Missing"); return; }
+
+            showLoader();
+            showResultStatusCardBox("<i>Querying Active Courier Gateways Node Logs...</i>");
+
+            try {
+                const response = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const result = await response.json(); hideLoader();
+
+                if (result && result.success) {
+                    currentTracking = result;
+                    renderLeftPreviewCard(result);
+                } else {
+                    openScanManualFallbackView();
+                }
+            } catch (err) { hideLoader(); openScanManualFallbackView(); }
+        }
+
+        function showResultStatusCardBox(htmlContent) {
+            const card = document.getElementById("resultCard");
+            card.style.display = "block";
+            card.innerHTML = htmlContent;
+        }
+
+        function openScanManualFallbackView() {
+            currentTracking = null;
+            const todayStr = new Date().toLocaleDateString('en-GB');
+            
+            showResultStatusCardBox(`
+                <div style="color:#dc2626; font-weight:600; border-bottom:1px solid #e5e7eb; padding-bottom:4px; margin-bottom:6px;">⚠️ 3PL Routing Not Found</div>
+                <table class="data-table">
+                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">AWB:</td><td class="val">${document.getElementById("awbInput").value.trim()}</td></tr>
+                    <tr><td class="label">Order ID:</td><td class="val" style="color:#dc2626;">Manual Insertion Required</td></tr>
+                    <tr><td class="label">Courier:</td><td class="val">MANUAL</td></tr>
+                </table>
+            `);
+            document.getElementById("orderInput").style.display = "block";
+            document.getElementById("orderInput").focus();
+        }
+
+        function renderLeftPreviewCard(data) {
+            const card = document.getElementById("resultCard");
+            card.style.display = "block";
+            const todayStr = new Date().toLocaleDateString('en-GB');
+
+            card.innerHTML = `
+                <div style="color:#10b981; font-weight:600; border-bottom:1px solid #e5e7eb; padding-bottom:4px; margin-bottom:6px;">✅ Server Track Confirmed</div>
+                <table class="data-table">
+                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">AWB:</td><td class="val">${data.awb || ""}</td></tr>
+                    <tr><td class="label">Order ID:</td><td class="val">${data.orderId || ""}</td></tr>
+                    <tr><td class="label">Courier:</td><td class="val">${data.courier || ""}</td></tr>
+                </table>
+            `;
+            document.getElementById("orderInput").value = data.orderId || "";
+            document.getElementById("orderInput").style.display = "block";
+        }
+
+        async function commitScannedRowToDatabase() {
+            if (!currentType) { toast("Select Operations Mode First!"); return; }
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) { toast("AWB Parameter Blank"); return; }
+
+            const payload = {
+                type: currentType, awb: awb,
+                orderId: document.getElementById("orderInput").value.trim(),
+                courier: currentTracking?.courier || "MANUAL",
+                status: currentTracking?.status || "Pending",
+                customerName: currentTracking?.customerName || "",
+                city: currentTracking?.city || "", state: currentTracking?.state || "",
+                destination: currentTracking?.destination || "",
+                pickupDate: currentTracking?.pickupDate || "",
+                deliveredDate: currentTracking?.deliveredDate || "",
+                expectedDate: currentTracking?.expectedDate || currentTracking?.estimatedDate || "",
+                isRTO: currentTracking?.isRTO || false
+            };
+
+            showLoader();
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "saveEntry", payload: payload })
+                });
+
+                const text = await response.text();
+                let result = JSON.parse(text); hideLoader();
+
+                if (result.duplicate) {
+                    toast("❌ Blocked: Duplicate entries caught!");
+                    document.getElementById("awbInput").select();
+                    return;
+                }
+
+                if (!result.success) { toast(result.message || "Save Error"); return; }
+
+                playSuccessAudioAlert();
+                toast("🎉 Transaction Documented Safely!");
+                clearScanFormFields();
+                focusAwbInputField();
+                fetchDashboardCountsLive(); 
+            } catch (err) { hideLoader(); toast("Save channel broken."); }
+        }
+
+        function abortActiveWorkStream() {
+            stopHardwareCameraScanEngine(); currentType = ""; clearScanFormFields();
+            document.getElementById("scanPanelBox").style.display = "none";
+            document.getElementById("pickupBtn").classList.remove("active-pickup");
+            document.getElementById("returnBtn").classList.remove("active-return");
+            toast("Interface Stack Reset.");
+        }
+
+        /* ===================================
+        EXPLORER LOOKUP QUERY ACTIONS 
+        =================================== */
+        async function executeDatabaseOrderQuerySearch() {
+            const keyword = document.getElementById("searchInput").value.trim();
+            if (!keyword) { toast("Please write target keyword reference"); return; }
+
+            const resultBox = document.getElementById("searchResultArea");
+            resultBox.innerHTML = "<div class='status-msg'>Querying Sheet Ledger Blocks...</div>";
+            showLoader();
+
+            try {
+                const response = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(keyword)}`);
+                const data = await response.json(); hideLoader();
+
+                if (!data.success) {
+                    resultBox.innerHTML = `
+                        <div class="card" style="border-left:4px solid #ef4444;">
+                            <b style="color:#dc2626;">No Sheet Log Traced</b><br>
+                            <span style="color:var(--text-muted); font-size:13px;">This target pattern hasn't been scanned inside spreadsheet matrices rows yet.</span>
+                        </div>`;
+                    return;
+                }
+
+                renderRightSearchResultBox(data);
+            } catch (err) { hideLoader(); resultBox.innerHTML = "<div class='status-msg' style='color:red;'>Network pipeline disconnect.</div>"; }
+        }
+
+        function renderRightSearchResultBox(data) {
+            const badgeType = data.type === "Pickup" ? "badge-pickup" : "badge-return";
+            document.getElementById("searchResultArea").innerHTML = `
+                <div class="card" style="border-left: 4px solid var(--primary);">
+                    <h3>📋 Spreadsheet Row Registry</h3>
+                    <div class="info-row"><span class="info-label">Scan Date:</span><span class="info-value">${data.date || "N/A"}</span></div>
+                    <div class="info-row"><span class="info-label">Operation:</span><span class="info-value"><span class="badge ${badgeType}">${data.type}</span></span></div>
+                    <div class="info-row"><span class="info-label">AWB Number:</span><span class="info-value">${data.awb}</span></div>
+                    <div class="info-row"><span class="info-label">Order ID:</span><span class="info-value">${data.orderId || "N/A"}</span></div>
+                    <div class="info-row"><span class="info-label">Courier:</span><span class="info-value">${data.courier || "N/A"}</span></div>
+                    <div class="info-row"><span class="info-label">Status Log:</span><span class="info-value" style="color:var(--primary); font-weight:700;">${data.status || "Pending"}</span></div>
+                    <div class="info-row"><span class="info-label">Customer Name:</span><span class="info-value">${data.customer || "N/A"}</span></div>
+                    <div class="info-row"><span class="info-label">Destination Location:</span><span class="info-value">${data.city || "N/A"}${data.state ? ', '+data.state : ''}</span></div>
+                    
+                    <button class="btn btn-refresh" onclick="fetchLiveCourierTrackingFromRightSide('${data.awb}')">🌐 Fetch Live Status</button>
+                    <div id="liveTrackingBox" style="margin-top: 12px;"></div>
+                </div>
+            `;
+        }
+
+        async function fetchLiveCourierTrackingFromRightSide(awb) {
+            const liveBox = document.getElementById("liveTrackingBox");
+            liveBox.innerHTML = "<div class='status-msg'>Hitting 3PL Router Nodes...</div>";
+            showLoader();
+
+            try {
+                const response = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await response.json(); hideLoader();
+
+                if (!data.success) {
+                    liveBox.innerHTML = `<div class="card" style="background:#fdf2f2; font-size:12px; border:1px solid #fca5a5; color:#991b1b;">⚠️ Waybill record missing on live courier server manifests.</div>`;
+                    return;
+                }
+
+                latestTrackingData = data;
+                liveBox.innerHTML = `
+                    <div class="card" style="background:#f8fafc; border:1px dashed var(--border-color); margin-top:10px;">
+                        <h3>🚚 Live Server Status (${data.courierName || data.courier})</h3>
+                        <div class="info-row"><span class="info-label">Latest Status:</span><span class="info-value" style="color:var(--success); font-weight:700;">${data.status || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">Current Transit Location:</span><span class="info-value">${data.city || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">Pickup Timestamp:</span><span class="info-value">${data.pickupDate || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">Delivered Timestamp:</span><span class="info-value">${data.deliveredDate || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">Expected Date:</span><span class="info-value">${data.expectedDate || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">RTO Exception Flag:</span><span class="info-value">${data.isRTO ? "⚠️ YES (Reverse)" : "NO"}</span></div>
+                        
+                        <button class="btn btn-sync" onclick="syncLiveStatusToSpreadsheetCells()">💾 Sync Status To Sheet</button>
+                    </div>
+                `;
+            } catch (err) { hideLoader(); liveBox.innerHTML = "<div class='status-msg' style='color:red;'>Failed to pull live tracking info.</div>"; }
+        }
+
+        async function syncLiveStatusToSpreadsheetCells() {
+            if (!latestTrackingData) return;
+            showLoader();
+            try {
+                const response = await fetch(`${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(latestTrackingData.awb)}`);
+                const result = await response.json(); hideLoader();
+
+                if (result.success) {
+                    if (result.skipped) toast(`Skipped: Line locked under '${result.reason}' status!`);
+                    else toast("🎉 Spreadsheet Node Cells Overwritten Successfully!");
+                    executeDatabaseOrderQuerySearch(); 
+                } else { toast(result.message || "Execution script rejected."); }
+            } catch (err) { hideLoader(); toast("Sync stream pipeline failure."); }
+        }
+
+        document.getElementById("searchInput").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") { e.preventDefault(); executeDatabaseOrderQuerySearch(); }
+        });
+
+        function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
+        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+        function playSuccessAudioAlert() { try { beep.currentTime = 0; beep.play(); } catch (err) {} }
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 3000);
+        }
+
+        window.onload = function() {
+            fetchDashboardCountsLive();
+            setInterval(fetchDashboardCountsLive, 30000);
+        };
+    </script>
+</body>
+</html>
