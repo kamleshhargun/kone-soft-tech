@@ -14,7 +14,15 @@
         .main-container { width: 100%; max-width: 550px; }
         .header { text-align: center; font-size: 20px; font-weight: 700; color: #2563eb; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         .panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0, 0, 0, .05) }
-        .panel-header { padding: 14px 16px; font-weight: 700; font-size: 15px; background: #fafbfc; border-bottom: 1px solid #eef2f7; text-align: center; color: #475569; }
+        
+        /* Premium Center-Aligned Flex Layout Header */
+        .panel-header { padding: 14px 16px; font-weight: 700; font-size: 14px; background: #fafbfc; border-bottom: 1px solid #eef2f7; display: flex; align-items: center; justify-content: center; gap: 12px; color: #475569; }
+        .header-title-text { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; color: #1e293b; }
+        .badge-wrapper { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 12px; background: #f1f5f9; padding: 4px 10px; border-radius: 20px; border: 1px solid #e2e8f0; }
+        .header-circle-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 26px; padding: 0 6px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; }
+        .circle-pickup { background: #2563eb; }
+        .circle-return { background: #14b8a6; }
+
         .center-content { padding: 20px; display: flex; flex-direction: column; gap: 14px }
         .mode-row, .action-row { display: flex; gap: 10px }
         .mode-btn { flex: 1; height: 50px; border-radius: 12px; border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; transition: .2s; font-size: 15px; }
@@ -51,7 +59,16 @@
         <div class="header">HARSIDHI VENTURES SYSTEM</div>
 
         <div class="panel">
-            <div class="panel-header">📲 Scan Operations (Pickup / Return)</div>
+            <!-- Rearranged Header with Pickup Count and Return Count Sub-Badges -->
+            <div class="panel-header">
+                <div class="badge-wrapper" style="color: #2563eb;">
+                    Pickup <span id="headerPickupCount" class="header-circle-count circle-pickup">0</span>
+                </div>
+                <div class="header-title-text">📲 Scan Operations</div>
+                <div class="badge-wrapper" style="color: #14b8a6;">
+                    Return <span id="headerReturnCount" class="header-circle-count circle-return">0</span>
+                </div>
+            </div>
             <div class="center-content">
                 <!-- Mode Selection -->
                 <div class="mode-row">
@@ -88,7 +105,6 @@
         /* ===================================
         CONFIG
         =================================== */
-        // Yahan par apna exact Google Apps Script Web App URL paste karein
         const API_URL = "https://script.google.com/macros/s/AKfycbzut_XuQmPmE_sfhivfEB3whXhGN7zhQqxNowrfid4Amaxk1WHY8nT5RIcw1cv798YR/exec"; 
 
         /* ===================================
@@ -100,6 +116,22 @@
         let scannerBuffer = "";
         
         const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+
+        /* ===================================
+        HIGH-SPEED ASYNCHRONOUS BACKGROUND WORKER FOR COUNTS
+        =================================== */
+        function fetchTodayCountsLive() {
+            // Fired completely asynchronously preventing layout painting delays
+            fetch(`${API_URL}?action=getDashboardCounts`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.success) {
+                        document.getElementById("headerPickupCount").innerText = data.todayPickup || 0;
+                        document.getElementById("headerReturnCount").innerText = data.todayReturn || 0;
+                    }
+                })
+                .catch(err => console.error("Async payload load deferred.", err));
+        }
 
         /* ===================================
         TYPE SELECTION (Pickup / Return)
@@ -184,7 +216,6 @@
             }
         });
 
-        // USB Scanner Event Handler
         document.addEventListener("keydown", function(e) {
             if (document.activeElement.id !== "awbInput") return;
             
@@ -243,9 +274,8 @@
 
         function openManualFallback() {
             currentTracking = null;
-            const todayStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy format
+            const todayStr = new Date().toLocaleDateString('en-GB');
             
-            // Displaying 5 Columns for Manual Fallback Entry
             showResultStatus(`
                 <div style="color:#dc2626; font-weight:600; border-bottom: 1px solid #e5e7eb; padding-bottom:4px; margin-bottom:6px;">⚠️ Tracking Not Found</div>
                 <table class="data-table">
@@ -265,7 +295,6 @@
             card.style.display = "block";
             const todayStr = new Date().toLocaleDateString('en-GB');
 
-            // Displaying Exact 5 Columns Grid
             card.innerHTML = `
                 <div style="color:#10b981; font-weight:600; border-bottom: 1px solid #e5e7eb; padding-bottom:4px; margin-bottom:6px;">✅ Tracking Data Fetched</div>
                 <table class="data-table">
@@ -281,7 +310,7 @@
         }
 
         /* ===================================
-        SAVE DATA (POST REQUEST TO SHEET WITH BLOCK DUPLICATE)
+        SAVE DATA & REFRESH BUBBLES
         =================================== */
         async function saveEntry() {
             if (!currentType) {
@@ -334,7 +363,6 @@
 
                 hideLoader();
 
-                // If code.gs detects duplicate, block and show error
                 if (result.duplicate) {
                     toast("❌ Blocked: Duplicate AWB detected for this type!");
                     document.getElementById("awbInput").select();
@@ -349,6 +377,7 @@
                 playSuccessSound();
                 toast("🎉 Row Saved Successfully!");
                 clearForm();
+                fetchTodayCountsLive(); 
                 focusAWB();
             } catch (err) {
                 hideLoader();
@@ -357,9 +386,6 @@
             }
         }
 
-        /* ===================================
-        STOP WORK
-        =================================== */
         function stopWork() {
             stopCamera();
             currentType = "";
@@ -370,9 +396,6 @@
             toast("Process Reset");
         }
 
-        /* ===================================
-        HELPERS
-        =================================== */
         function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
         function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
         function playSuccessSound() { try { beep.currentTime = 0; beep.play(); } catch (err) {} }
@@ -384,9 +407,7 @@
         }
 
         window.onload = function() {
-            if(API_URL === "YOUR_SPREADSHEET_WEB_APP_URL_HERE") {
-                alert("Please add your web app URL inside code first!");
-            }
+            fetchTodayCountsLive();
         };
     </script>
 </body>
