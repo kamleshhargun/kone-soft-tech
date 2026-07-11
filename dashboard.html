@@ -45,6 +45,8 @@
         .card-r-yesterday { border-top: 4px solid #2dd4bf; }
         .card-p-total { border-top: 4px solid #1e3a8a; }
         .card-r-total { border-top: 4px solid #115e59; }
+        .card-net-ops { border-top: 4px solid #4f46e5; } /* Indigo Border */
+        .card-rto-rate { border-top: 4px solid #ea580c; } /* Orange Border */
         
         /* Stats Banner */
         .stat-banner { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
@@ -62,6 +64,7 @@
         .badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-pickup { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
         .badge-return { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        
 
         /* Navigation Grid */
         .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -121,6 +124,16 @@
             <div class="card card-r-total">
                 <h3>MTD Return</h3>
                 <div class="big" id="return_total">0</div>
+            </div>
+            <!-- New Card 1: Net Operations -->
+            <div class="card card-net-ops">
+                <h3>Net Successful Volume</h3>
+                <div class="big" id="net_volume">0</div>
+            </div>
+            <!-- New Card 2: Return Rate -->
+            <div class="card card-rto-rate">
+                <h3>MTD Return Rate</h3>
+                <div class="big" id="return_rate">0%</div>
             </div>
         </div>
 
@@ -202,6 +215,13 @@
 
                     const todayTotal = (dbData.todayPickup || 0) + (dbData.todayReturn || 0);
                     const monthTotal = (dbData.monthPickup || 0) + (dbData.monthReturn || 0);
+                    // Naye calculations
+                    const netVolume = (dbData.monthPickup || 0) - (dbData.monthReturn || 0);
+                    const rtoPercentage = monthTotal > 0 ? ((dbData.monthReturn || 0) / monthTotal * 100).toFixed(1) : 0;
+
+                    // UI element mapping updates
+                    document.getElementById("net_volume").innerText = netVolume;
+                    document.getElementById("return_rate").innerText = rtoPercentage + "%";
                     
                     document.getElementById("saved_count").innerText = todayTotal;
                     document.getElementById("pending_count").innerText = monthTotal;
