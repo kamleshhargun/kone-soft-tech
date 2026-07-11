@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Bulk Pickup & Return Tracker</title>
+    <!-- Inter Font for Premium Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background: #ffffff;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+        }
+
+        header {
+            margin-bottom: 28px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 16px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            background: #f8fafc;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #344054;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 14px;
+            border: 1px solid #d0d5dd;
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: #fff;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #7c3aed;
+        }
+
+        .btn {
+            background-color: #7c3aed;
+            color: white;
+            padding: 11px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background-color: #6d28d9;
+        }
+
+        .btn.live-mode {
+            background-color: #059669;
+        }
+
+        .btn.live-mode:hover {
+            background-color: #047857;
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Summary Live Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card p {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 8px;
+        }
+
+        .stat-card.total-box { border-left: 4px solid #7c3aed; }
+        .stat-card.success-box { border-left: 4px solid #059669; }
+        .stat-card.fail-box { border-left: 4px solid #dc2626; }
+
+        #statSuccess { color: #059669; }
+        #statFail { color: #dc2626; }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 9999px;
+            height: 8px;
+            margin-bottom: 24px;
+            display: none;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #059669;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .status-badge.pickup { background-color: #e0f2fe; color: #0369a1; }
+        .status-badge.return { background-color: #fef3c7; color: #d97706; }
+
+        .live-status {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .text-pending { color: #64748b; }
+        .text-loading { color: #7c3aed; font-style: italic; }
+        .text-success { color: #059669; }
+        .text-fail { color: #dc2626; }
+
+        /* Loader */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            font-size: 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Live Bulk Packet Data Manager</h1>
+        <p>Realtime me Boxd aur Delhivery API se packets ka live status track karein.</p>
+    </header>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="form-group">
+            <label for="filterDate">Date Select Karein</label>
+            <input type="date" id="filterDate">
+        </div>
+        
+        <div class="form-group">
+            <label for="packetType">Packet Type</label>
+            <select id="packetType">
+                <option value="pickup">Pickup</option>
+                <option value="return">Return</option>
+            </select>
+        </div>
+
+        <button class="btn" id="actionBtn" onclick="handleButtonClick()">Fetch Data</button>
+    </div>
+
+    <!-- Live Counter Stats Container -->
+    <div class="stats-container" id="statsContainer" style="display: none;">
+        <div class="stat-card total-box">
+            <h3>Total Packets</h3>
+            <p id="statTotal">0</p>
+        </div>
+        <div class="stat-card success-box">
+            <h3>Live Updated (Success)</h3>
+            <p id="statSuccess">0</p>
+        </div>
+        <div class="stat-card fail-box">
+            <h3>Failed / Not Found</h3>
+            <p id="statFail">0</p>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" id="progressWrapper">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">Sheet se records nikale ja rahe hain...</div>
+
+    <!-- Table Output -->
+    <div class="table-responsive" id="tableWrapper" style="display: none;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Row ID</th>
+                    <th>AWB Number</th>
+                    <th>Order ID</th>
+                    <th>Type</th>
+                    <th>Old Status</th>
+                    <th>Realtime Live Status</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data dynamically fill hoga -->
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="no-data" id="noDataText">Date aur Type select karke data load karein.</div>
+</div>
+
+<script>
+    // =====================================================
+    // CONFIG: APNI GOOGLE APPS SCRIPT URL YAHAIN DAALEIN
+    // =====================================================
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8el8-yZkfHY6YxW1o5ikJVg90_V075DMIFBqhZ0-vJmRJqK5b2UJ_SX8G0waAlEkq/exec"; 
+
+    let currentRowsData = []; // Sheet se aaya hua raw data temporary store karne ke liye
+    let isDataLoaded = false; // Flag to track if data is fetched
+
+    // Helper: Format Date YYYY-MM-DD -> DD/MM/YYYY
+    function convertDateFormat(dateString) {
+        if (!dateString) return "";
+        const parts = dateString.split("-");
+        if (parts.length !== 3) return "";
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+
+    // Main Button Click Controller
+    function handleButtonClick() {
+        if (!isDataLoaded) {
+            fetchBulkData();
+        } else {
+            getLiveRealtimeData();
+        }
+    }
+
+    // Step 1: Sheet se select ki hui Date ka data lana
+    async function fetchBulkData() {
+        if (SCRIPT_URL.includes("XXXXXX")) {
+            alert("Kripya code ki script me SCRIPT_URL ko apne Google Apps Script URL se badlein!");
+            return;
+        }
+
+        const rawDate = document.getElementById("filterDate").value;
+        const packetType = document.getElementById("packetType").value;
+
+        if (!rawDate) {
+            alert("Kripya ek valid Date select karein!");
+            return;
+        }
+
+        const formattedDate = convertDateFormat(rawDate);
+
+        // Reset UI States
+        document.getElementById("loader").style.display = "block";
+        document.getElementById("tableWrapper").style.display = "none";
+        document.getElementById("statsContainer").style.display = "none";
+        document.getElementById("progressWrapper").style.display = "none";
+        document.getElementById("noDataText").style.display = "none";
+        document.getElementById("actionBtn").disabled = true;
+
+        try {
+            const requestUrl = `${SCRIPT_URL}?action=getBulkRows&date=${encodeURIComponent(formattedDate)}&type=${encodeURIComponent(packetType)}`;
+            const response = await fetch(requestUrl);
+            const result = await response.json();
+
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("actionBtn").disabled = false;
+
+            if (result.success && result.rows && result.rows.length > 0) {
+                currentRowsData = result.rows;
+                isDataLoaded = true;
+
+                // Update Button Look
+                const actionBtn = document.getElementById("actionBtn");
+                actionBtn.innerText = "Get Live Data";
+                actionBtn.classList.add("live-mode");
+
+                // Initialize Counter UI
+                document.getElementById("statsContainer").style.display = "grid";
+                document.getElementById("statTotal").innerText = currentRowsData.length;
+                document.getElementById("statSuccess").innerText = "0";
+                document.getElementById("statFail").innerText = "0";
+
+                // Render Base Table Grid
+                const tableBody = document.getElementById("tableBody");
+                tableBody.innerHTML = "";
+
+                currentRowsData.forEach(item => {
+                    const row = document.createElement("tr");
+                    row.id = `row-${item.awb}`;
+                    row.innerHTML = `
+                        <td><strong>#${item.row}</strong></td>
+                        <td>${item.awb || 'N/A'}</td>
+                        <td>${item.orderId || 'N/A'}</td>
+                        <td><span class="status-badge ${packetType}">${packetType}</span></td>
+                        <td>${item.status || 'N/A'}</td>
+                        <td id="live-${item.awb}" class="live-status text-pending">Pending Realtime Sync</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                document.getElementById("tableWrapper").style.display = "block";
+            } else {
+                document.getElementById("noDataText").innerText = "Chuni gayi date aur type ke liye sheet me koi data nahi mila.";
+                document.getElementById("noDataText").style.display = "block";
+            }
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById("loader").style.display = "none";
+            document.getElementById("actionBtn").disabled = false;
+            alert("Sheet se data lane me error aayi! Kripya check karein ki deployment Web App correct hai ya nahi.");
+        }
+    }
+
+    // Step 2: Har ek AWB number ko live track karke real-time count badhana
+    async function getLiveRealtimeData() {
+        if (currentRowsData.length === 0) return;
+
+        // UI Prep for live scanning
+        document.getElementById("actionBtn").disabled = true;
+        document.getElementById("progressWrapper").style.display = "block";
+        document.getElementById("progressBar").style.style = "0%";
+
+        let successCount = 0;
+        let failCount = 0;
+        const totalPackets = currentRowsData.length;
+
+        // Loop through all items and hit the updateSingleAWB endpoint one by one
+        for (let i = 0; i < totalPackets; i++) {
+            const item = currentRowsData[i];
+            const awbCell = document.getElementById(`live-${item.awb}`);
+            
+            if (awbCell) {
+                awbCell.innerText = "Tracking Live...";
+                awbCell.className = "live-status text-loading";
+            }
+
+            try {
+                // Apps script ke andar aapka `updateSingleAWB(awb)` function execute hoga jo Boxd aur Delhivery dono ko check karta hai
+                const liveUrl = `${SCRIPT_URL}?action=updateSingleAWB&awb=${encodeURIComponent(item.awb)}`;
+                const response = await fetch(liveUrl);
+                const result = await response.json();
+
+                if (result.success && (result.updated || result.skipped)) {
+                    successCount++;
+                    document.getElementById("statSuccess").innerText = successCount;
+                    
+                    if (awbCell) {
+                        awbCell.innerText = result.skipped ? `Skipped (${result.reason})` : "Successfully Updated!";
+                        awbCell.className = "live-status text-success";
+                    }
+                } else {
+                    failCount++;
+                    document.getElementById("statFail").innerText = failCount;
+                    
+                    if (awbCell) {
+                        awbCell.innerText = result.message || "Not Found / Error";
+                        awbCell.className = "live-status text-fail";
+                    }
+                }
+            } catch (err) {
+                console.error(`Live tracking failed for AWB: ${item.awb}`, err);
+                failCount++;
+                document.getElementById("statFail").innerText = failCount;
+                if (awbCell) {
+                    awbCell.innerText = "Network Error";
+                    awbCell.className = "live-status text-fail";
+                }
+            }
+
+            // Realtime progress bar updating
+            const progressPercent = Math.round(((i + 1) / totalPackets) * 100);
+            document.getElementById("progressBar").style.width = `${progressPercent}%`;
+
+            // Server par load kam karne aur Delhivery/Boxd API limit se bachne ke liye thoda pause
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+
+        // Live syncing complete hone par states restore karein
+        document.getElementById("actionBtn").disabled = false;
+        alert("Realtime data tracking poori ho chuki hai!");
+        
+        // Reset framework for next search
+        isDataLoaded = false;
+        const actionBtn = document.getElementById("actionBtn");
+        actionBtn.innerText = "Fetch Data";
+        actionBtn.classList.remove("live-mode");
+    }
+</script>
+
+</body>
+</html>
