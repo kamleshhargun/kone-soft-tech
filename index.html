@@ -6,36 +6,141 @@
 <title>Harsidhi Ventures ERP</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root { --primary: #2563eb; --bg-dark: #0f172a; --bg-light: #f8fafc; --sidebar-w: 260px; --header-h: 65px; }
+:root { 
+  --primary: #2563eb;          /* कड़क ब्लू (प्राइमरी कलर) */
+  --primary-light: #eff6ff;    /* एक्टिव टैब के बैकग्राउंड के लिए हल्का ब्लू */
+  --bg-dark: #ffffff;          /* साइडबार को डार्क से व्हाइट किया */
+  --bg-light: #f8fafc;         /* मुख्य बैकग्राउंड */
+  --sidebar-w: 270px; 
+  --header-h: 70px; 
+  --border-color: #e2e8f0;     /* क्लीन बॉर्डर्स */
+  --text-main: #0f172a;        /* डार्क टेक्स्ट */
+  --text-muted: #64748b;       /* हल्का टेक्स्ट */
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background: #f1f5f9; height: 100vh; display: flex; overflow: hidden; }
-.sidebar { width: var(--sidebar-w); background: var(--bg-dark); color: #fff; display: flex; flex-direction: column; z-index: 100; box-shadow: 4px 0 15px rgba(0,0,0,0.05); }
-.brand-section { height: var(--header-h); display: flex; align-items: center; gap: 12px; padding: 0 20px; border-bottom: 1px solid #1e293b; }
-.brand-logo { width: 35px; height: 35px; object-fit: contain; border-radius: 6px; }
-.brand-title { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; color: #f8fafc; }
-.nav-menu { flex: 1; padding: 15px 12px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; }
-.nav-item { display: flex; align-items: center; padding: 12px 16px; color: #94a3b8; text-decoration: none; font-size: 13px; font-weight: 500; border-radius: 10px; transition: all 0.2s ease; }
-.nav-item:hover { background: #1e293b; color: #f1f5f9; }
-.nav-item.active { background: var(--primary); color: #ffffff; font-weight: 600; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+body { background: #f1f5f9; height: 100vh; display: flex; overflow: hidden; color: var(--text-main); }
+
+/* --- SIDEBAR UPGRADE --- */
+.sidebar { 
+  width: var(--sidebar-w); 
+  background: var(--bg-dark); 
+  color: var(--text-main); 
+  display: flex; 
+  flex-direction: column; 
+  z-index: 100; 
+  border-right: 1px solid var(--border-color); 
+}
+
+.brand-section { 
+  height: var(--header-h); 
+  display: flex; 
+  align-items: center; 
+  gap: 14px; 
+  padding: 0 24px; 
+  border-bottom: 1px solid var(--border-color); 
+}
+.brand-logo { width: 38px; height: 38px; object-fit: contain; border-radius: 8px; }
+.brand-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-main); }
+
+.nav-menu { flex: 1; padding: 20px 14px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+
+/* --- NAVIGATION ITEMS --- */
+.nav-item { 
+  display: flex; 
+  align-items: center; 
+  padding: 12px 16px; 
+  color: var(--text-muted); 
+  text-decoration: none; 
+  font-size: 14px; 
+  font-weight: 500; 
+  border-radius: 8px; 
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+.nav-item:hover { 
+  background: #f1f5f9; 
+  color: var(--text-main); 
+}
+.nav-item.active { 
+  background: var(--primary-light); 
+  color: var(--primary); 
+  font-weight: 600; 
+  box-shadow: none; 
+}
+
+/* --- MAIN CONTENT & HEADER --- */
 .main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; }
-.top-header { height: var(--header-h); background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
-.page-indicator { font-size: 16px; font-weight: 700; color: #1e293b; }
-.system-tag { font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+.top-header { 
+  height: var(--header-h); 
+  background: #ffffff; 
+  border-bottom: 1px solid var(--border-color); 
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between; 
+  padding: 0 32px; 
+}
+.page-indicator { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; color: var(--text-main); }
+
+.system-tag { 
+  font-size: 12px; 
+  font-weight: 600; 
+  background: #f0fdf4; 
+  color: #16a34a; 
+  padding: 6px 14px; 
+  border-radius: 999px; 
+  border: 1px solid #bbf7d0;
+}
+
 iframe { width: 100%; flex: 1; border: none; background: var(--bg-light); }
 .mobile-nav-bar { display: none; }
 
+/* --- MOBILE RESPONSIVE UPGRADE --- */
 @media (max-width: 768px) {
   body { flex-direction: column; }
   .sidebar { display: none; }
-  .top-header { height: var(--header-h); background: var(--bg-dark); color: white; justify-content: center; padding: 0 15px; position: fixed; top: 0; left: 0; right: 0; z-index: 999; }
-  .page-indicator { display: none; }
-  .top-header::before { content: "HARSIDHI VENTURES ERP"; font-size: 14px; font-weight: 700; letter-spacing: 0.5px; color: #fff; }
-  .system-tag { position: absolute; right: 15px; }
-  .main-content { margin-top: var(--header-h); margin-bottom: 60px; height: calc(100vh - var(--header-h) - 60px); }
-  .mobile-nav-bar { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: #ffffff; border-top: 1px solid #e2e8f0; z-index: 999; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+  .top-header { 
+    height: var(--header-h); 
+    background: #ffffff; 
+    color: var(--text-main); 
+    justify-content: flex-start; 
+    padding: 0 20px; 
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999; 
+    border-bottom: 1px solid var(--border-color);
+  }
+  .page-indicator { display: block; font-size: 16px; }
+  .top-header::before { content: ""; } 
+  .system-tag { position: absolute; right: 20px; font-size: 11px; padding: 4px 10px; }
+  
+  .main-content { margin-top: var(--header-h); margin-bottom: 65px; height: calc(100vh - var(--header-h) - 65px); }
+  
+  .mobile-nav-bar { 
+    display: flex; 
+    position: fixed; bottom: 0; left: 0; right: 0; 
+    height: 65px; 
+    background: #ffffff; 
+    border-top: 1px solid var(--border-color); 
+    z-index: 999; 
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.03); 
+    overflow-x: auto; white-space: nowrap; 
+  }
   .mobile-nav-bar::-webkit-scrollbar { display: none; }
-  .mobile-nav-bar a { display: inline-flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 20px; min-width: 75px; text-decoration: none; font-size: 11px; font-weight: 600; color: #64748b; transition: all 0.15s ease; }
-  .mobile-nav-bar a.active { color: var(--primary); background: #f1f5f9; }
+  .mobile-nav-bar a { 
+    display: inline-flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 0 22px; 
+    min-width: 80px; 
+    text-decoration: none; 
+    font-size: 12px; 
+    font-weight: 500; 
+    color: var(--text-muted); 
+  }
+  .mobile-nav-bar a.active { 
+    color: var(--primary); 
+    background: var(--primary-light); 
+    font-weight: 600;
+  }
 }
 </style>
 </head>
@@ -88,14 +193,56 @@ iframe { width: 100%; flex: 1; border: none; background: var(--bg-light); }
   </div>
 
   <script>
-  function navigateTab(element, titleLabel) {
-    document.querySelectorAll(".nav-item, .mobile-nav-bar a").forEach(item => { item.classList.remove("active"); });
-    document.getElementById("headerTitle").innerText = titleLabel;
-    const destinationUrl = element.getAttribute("href");
-    const matchedSelectors = document.querySelectorAll(`[href="${destinationUrl}"]`);
-    matchedSelectors.forEach(targetNode => { targetNode.classList.add("active"); });
-    if(window.innerWidth <= 768) { element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }
+// 1. जब पेज लोड हो, तब चेक करें कि कोई पिछला टैब सेव था या नहीं
+window.addEventListener('DOMContentLoaded', () => {
+  const savedUrl = localStorage.getItem('activeTabUrl');
+  const savedTitle = localStorage.getItem('activeTabTitle');
+
+  if (savedUrl && savedTitle) {
+    // iframe का सोर्स बदलें
+    document.getElementById("mainSystemFrame").src = savedUrl;
+    // हेडर का टाइटल बदलें
+    document.getElementById("headerTitle").innerText = savedTitle;
+
+    // सभी एक्टिव क्लासेस हटाएँ
+    document.querySelectorAll(".nav-item, .mobile-nav-bar a").forEach(item => { 
+      item.classList.remove("active"); 
+    });
+
+    // जो टैब सेव था, उसे एक्टिव क्लास दें (डेस्कटॉप और मोबाइल दोनों में)
+    const matchedSelectors = document.querySelectorAll(`[href="${savedUrl}"]`);
+    matchedSelectors.forEach(targetNode => { 
+      targetNode.classList.add("active"); 
+      // मोबाइल व्यू में स्क्रॉल पोजीशन सेट करें
+      if(window.innerWidth <= 768) {
+        targetNode.scrollIntoView({ block: 'nearest', inline: 'center' });
+      }
+    });
   }
-  </script>
+});
+
+// 2. जब यूजर किसी टैब पर क्लिक करे
+function navigateTab(element, titleLabel) {
+  // एक्टिव क्लास रीसेट करें
+  document.querySelectorAll(".nav-item, .mobile-nav-bar a").forEach(item => { 
+    item.classList.remove("active"); 
+  });
+  
+  document.getElementById("headerTitle").innerText = titleLabel;
+  const destinationUrl = element.getAttribute("href");
+  
+  // क्लिक किए गए टैब को एक्टिव मार्क करें
+  const matchedSelectors = document.querySelectorAll(`[href="${destinationUrl}"]`);
+  matchedSelectors.forEach(targetNode => { targetNode.classList.add("active"); });
+  
+  // ब्राउज़र मेमोरी (localStorage) में डेटा सेव करें
+  localStorage.setItem('activeTabUrl', destinationUrl);
+  localStorage.setItem('activeTabTitle', titleLabel);
+
+  if(window.innerWidth <= 768) { 
+    element.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); 
+  }
+}
+</script>
 </body>
 </html>
