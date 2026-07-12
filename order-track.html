@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Scan Order Management Directory</title>
+    <!-- Google Fonts Inter & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Global Cloud ERP Theme Alignment matching user request */
+        :root { 
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --bg-dark: #0f172a; 
+            --bg-light: #f8fafc; 
+            --border-color: #cbd5e1;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; color: var(--text-main); }
+        body { background: #f1f5f9; min-height: 100vh; padding: 20px; }
+        .container { max-width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* Premium Header Panel */
+        .header-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,.02); }
+        .title-block h2 { font-size: 20px; color: #1e3a8a; font-weight: 700; }
+        .title-block p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+        .system-tag { font-size: 11px; font-weight: 700; background: #e0f2fe; color: #0369a1; padding: 6px 14px; border-radius: 20px; text-transform: uppercase; }
+        
+        /* Primary Action Buttons */
+        .btn-fetch { background: var(--primary); color: white; padding: 10px 20px; border-radius: 10px; border: none; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-fetch:hover { background: var(--primary-hover); }
+
+        /* Main Layout Box (100% Wide) */
+        .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 4px 10px rgba(0,0,0,.02); display: flex; flex-direction: column; gap: 16px; }
+        
+        /* Controls Cluster Layout */
+        .controls-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+        .search-container { position: relative; max-width: 400px; width: 100%; display: flex; align-items: center; }
+        .search-input { width: 100%; height: 42px; padding: 0 40px 0 14px; border: 1px solid #dbe2ea; border-radius: 10px; outline: none; font-size: 14px; font-weight: 500; }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+        
+        /* Dynamic Column F Status Active Filter Segments */
+        .filter-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 5px; }
+        .filter-btn { border: 1px solid #cbd5e1; background: #fff; padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; gap: 6px; text-transform: capitalize; }
+        .filter-btn span { font-weight: 700; background: #f1f5f9; padding: 1px 5px; border-radius: 5px; font-size: 10px; color: inherit; }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        /* Filter Button Active Status Variant Mapping */
+        .filter-btn.active { background: var(--bg-dark) !important; color: #fff !important; border-color: var(--bg-dark) !important; }
+        .filter-btn.active span { background: rgba(255,255,255,0.2) !important; color: #fff !important; }
+
+        /* Ledger Modern Table Sheet Format (Columns A to Q Mapping) */
+        .table-wrapper { overflow-x: auto; max-height: 600px; border: 1px solid #e5e7eb; border-radius: 12px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; background: #fff; min-width: 1600px; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; padding: 14px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.3px; font-size: 11px; }
+        td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; font-weight: 500; vertical-align: middle; }
+        tr:hover { background: #f8fafc; }
+        
+        /* Status Text Badges Color Engine */
+        .badge-status { padding: 5px 10px; border-radius: 6px; font-weight: 700; font-size: 11px; display: inline-block; text-transform: uppercase; border: 1px solid transparent; }
+        .status-delivered { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .status-pending { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .status-transit { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+        .status-default { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+        
+        /* Processed Checkbox Status Indicator */
+        .badge-processed { background: #e0f2fe; color: #0369a1; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; }
+        .badge-pending-proc { background: #f1f5f9; color: #64748b; border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; }
+
+        /* Dynamic Action Inline Button Customization */
+        .btn-live-update { background: none; border: 1px solid var(--primary); color: var(--primary); font-weight: 600; padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; transition: 0.15s; display: flex; align-items: center; gap: 4px; }
+        .btn-live-update:hover { background: var(--primary); color: #fff; }
+        .btn-live-update:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Overlay System Global Indicators */
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(2px); z-index: 9999999; align-items: center; justify-content: center; flex-direction: column; font-size: 15px; font-weight: 700; color: var(--primary); gap: 10px; }
+        .spinner { border: 4px solid rgba(37, 99, 235, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--primary); animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loadingText">Connecting to Google Sheet Repository...</div>
+    </div>
+
+    <div class="container">
+        <!-- Premium Header Area -->
+        <div class="header-panel">
+            <div class="title-block">
+                <h2>Daily Scan Operations</h2>
+                <p>Live inventory balance synchronization and order metrics panel</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="system-tag">Cloud ERP Active</span>
+                <button class="btn-fetch" onclick="loadAllDailyScanData()">
+                    <i class="fas fa-sync-alt"></i> Fetch Orders
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters Segment Module (Column F Specific Options) -->
+        <div class="panel">
+            <div class="filter-buttons" id="status-filters-container">
+                <button class="filter-btn active" data-status="all" onclick="filterByStatus('all', this)">All Records <span id="count-all">0</span></button>
+                <button class="filter-btn" data-status="pending" onclick="filterByStatus('pending', this)">Pending <span id="count-pending">0</span></button>
+                <button class="filter-btn" data-status="in_transit" onclick="filterByStatus('in_transit', this)">In Transit <span id="count-in_transit">0</span></button>
+                <button class="filter-btn" data-status="ofd" onclick="filterByStatus('ofd', this)">OFD <span id="count-ofd">0</span></button>
+                <button class="filter-btn" data-status="delivered" onclick="filterByStatus('delivered', this)">Delivered <span id="count-delivered">0</span></button>
+                <button class="filter-btn" data-status="ndr" onclick="filterByStatus('ndr', this)">NDR <span id="count-ndr">0</span></button>
+                <button class="filter-btn" data-status="rto" onclick="filterByStatus('rto', this)">RTO <span id="count-rto">0</span></button>
+                <button class="filter-btn" data-status="rto_in_transit" onclick="filterByStatus('rto_in_transit', this)">RTO In Transit <span id="count-rto_in_transit">0</span></button>
+                <button class="filter-btn" data-status="dto" onclick="filterByStatus('dto', this)">DTO <span id="count-dto">0</span></button>
+                <button class="filter-btn" data-status="manifested" onclick="filterByStatus('manifested', this)">Manifested <span id="count-manifested">0</span></button>
+                <button class="filter-btn" data-status="cancelled" onclick="filterByStatus('cancelled', this)">Cancelled <span id="count-cancelled">0</span></button>
+                <button class="filter-btn" data-status="lost" onclick="filterByStatus('lost', this)">Lost <span id="count-lost">0</span></button>
+            </div>
+
+            <!-- Global Search and Operational Layout Controls -->
+            <div class="controls-bar">
+                <div class="search-container">
+                    <input type="text" id="table-search" onkeyup="executeLocalSearch()" placeholder="Search by AWB, OrderID or Customer..." class="search-input">
+                </div>
+            </div>
+
+            <!-- Main Dynamic Grid Data Table (Columns A to Q Framework Alignment) -->
+            <div class="table-wrapper">
+                <table id="daily-scan-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>AWB Number</th>
+                            <th>Order ID</th>
+                            <th>Courier</th>
+                            <th>Status (Col F)</th>
+                            <th>Customer Name</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Destination</th>
+                            <th>Pickup Date</th>
+                            <th>Delivered Date</th>
+                            <th>Expected Date</th>
+                            <th>Is RTO</th>
+                            <th>Updated At</th>
+                            <th>Processed (P)</th>
+                            <th>Mapped SKU (Q)</th>
+                            <th style="position: sticky; right: 0; background: #f8fafc; z-index: 20; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body-rows">
+                        <tr>
+                            <td colspan="18" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                                No records fetched yet. Please trigger the "Fetch Orders" protocol from the control dashboard header.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         BACKEND MICROCODE EXECUTOR LOGIC ENGINE
+         ========================================================================= -->
+    <script>
+        // ⚠️ DEPLOYED GOOGLE APPS SCRIPT WEB APP URL PLACEHOLDER
+        const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwNG13O5IMt7VpXhd2k0g3bDdhSGVkI5GFlZF9c_ZdRkxoy0QncqC0N4g5B3OOxZZkI/exec";
+
+        let serverMasterDataset = [];
+        let currentlySelectedStatus = "all";
+
+        // Auto Load core modules on boot sequence configuration
+        window.addEventListener("DOMContentLoaded", () => {
+            loadAllDailyScanData();
+        });
+
+        // Show/Hide Global Screen Loader Overlays
+        function toggleLoader(showState, messageText = "Processing request...") {
+            const overlay = document.getElementById("loadingOverlay");
+            document.getElementById("loadingText").innerText = messageText;
+            overlay.style.display = showState ? "flex" : "none";
+        }
+
+        // Action Trigger 1: Core Fetch Protocol targeting the total records endpoint module
+        async function loadAllDailyScanData() {
+            toggleLoader(true, "Extracting continuous rows array grid data from Daily-Scan sheet repository...");
+            try {
+                const targetUrl = `${APPS_SCRIPT_WEBAPP_URL}?action=getTotalRecords`;
+                const response = await fetch(targetUrl);
+                const dataResponse = await response.json();
+
+                if (dataResponse.success && dataResponse.rows) {
+                    serverMasterDataset = dataResponse.rows;
+                    calculateFilterCounts(serverMasterDataset);
+                    renderDataTableGrid(serverMasterDataset);
+                } else {
+                    alert("Sheet structure return failure verified: Code.gs did not extract dataset entries array matrix.");
+                }
+            } catch (networkError) {
+                console.error("Endpoint crash details: ", networkError);
+                alert("Network communication dropped. Verify CORS configuration setup inside Web App macro distribution options.");
+            } finally {
+                toggleLoader(false);
+            }
+        }
+
+        // Realtime Metric Badge Calculator Engine loop matching criteria parameters 
+        function calculateFilterCounts(datasetArray) {
+            const staticMetricsMap = {
+                all: 0, pending: 0, in_transit: 0, ofd: 0, delivered: 0,
+                ndr: 0, rto: 0, rto_in_transit: 0, dto: 0, manifested: 0, cancelled: 0, lost: 0
+            };
+
+            staticMetricsMap.all = datasetArray.length;
+            datasetArray.forEach(rowItem => {
+                const statusCleaned = String(rowItem.status || '').trim().toLowerCase();
+                if (statusCleaned in staticMetricsMap) {
+                    staticMetricsMap[statusCleaned]++;
+                }
+            });
+
+            // Update UI Counters elements explicitly inside DOM layout structural segments
+            Object.keys(staticMetricsMap).forEach(key => {
+                const metricTarget = document.getElementById(`count-${key}`);
+                if (metricTarget) metricTarget.innerText = staticMetricsMap[key];
+            });
+        }
+
+        // Status Segment Selector Switch Controls
+        function filterByStatus(statusName, element) {
+            currentlySelectedStatus = statusName;
+            
+            // Re-render UI selector active styling tags configuration classes
+            const filterButtons = document.querySelectorAll(".filter-btn");
+            filterButtons.forEach(btn => btn.classList.remove("active"));
+            element.classList.add("active");
+
+            executeLocalSearch(); // Trigger filter composition together with search input string queries
+        }
+
+        // Advanced Search Grid Compositor System
+        function executeLocalSearch() {
+            const searchQuery = document.getElementById("table-search").value.trim().toLowerCase();
+            
+            let outputDataset = serverMasterDataset;
+
+            // Step 1: Filter row variables validation check by active selected status tab segment
+            if (currentlySelectedStatus !== "all") {
+                outputDataset = outputDataset.filter(r => String(r.status || '').trim().toLowerCase() === currentlySelectedStatus);
+            }
+
+            // Step 2: Query keyword parameter evaluation mapping
+            if (searchQuery) {
+                outputDataset = outputDataset.filter(r => 
+                    String(r.awb || '').toLowerCase().includes(searchQuery) ||
+                    String(r.orderId || '').toLowerCase().includes(searchQuery) ||
+                    String(r.customer || '').toLowerCase().includes(searchQuery) ||
+                    String(r.city || '').toLowerCase().includes(searchQuery)
+                );
+            }
+
+            renderDataTableGrid(outputDataset);
+        }
+
+        // DOM Row Injector Engine Rendering Framework Matrix (Columns A to Q Alignment)
+        function renderDataTableGrid(recordsArray) {
+            const containerTbody = document.getElementById("table-body-rows");
+            containerTbody.innerHTML = "";
+
+            if (recordsArray.length === 0) {
+                containerTbody.innerHTML = `
+                    <tr>
+                        <td colspan="18" style="text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600;">
+                            No matching items or tracking metrics detected relative to current operational filters inside grid directory view.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            recordsArray.forEach(record => {
+                const rowElement = document.createElement("tr");
+                const currentStatus = String(record.status || '').trim().toLowerCase();
+                
+                // Class Mapping matching status variables specifications
+                let badgeClassStyle = "status-default";
+                if (currentStatus === "delivered") badgeClassStyle = "status-delivered";
+                else if (currentStatus === "cancelled" || currentStatus === "lost") badgeClassStyle = "status-cancelled";
+                else if (currentStatus === "pending" || currentStatus === "manifested") badgeClassStyle = "status-pending";
+                else if (["in_transit", "ofd", "rto_in_transit"].includes(currentStatus)) badgeClassStyle = "status-transit";
+
+                // Formatted dates validation parsing configuration logic rules
+                const formattedRowDate = record.date ? formatInputTimestamp(record.date) : "N/A";
+
+                rowElement.innerHTML = `
+                    <td><strong>${formattedRowDate}</strong></td>
+                    <td><span style="font-size:11px; font-weight:700; color:var(--text-muted);">${record.type || 'N/A'}</span></td>
+                    <td><span style="font-family:'Courier New', monospace; font-weight:700; color:#0f172a;">${record.awb || 'N/A'}</span></td>
+                    <td style="color:var(--primary); font-weight:700;">${record.orderId || 'N/A'}</td>
+                    <td><span style="font-weight:600;">${record.courier || 'N/A'}</span></td>
+                    <td><span class="badge-status ${badgeClassStyle}">${record.status || 'N/A'}</span></td>
+                    <td><span style="color:#334155; font-weight:600;">${record.customer || 'N/A'}</span></td>
+                    <td>${record.city || 'N/A'}</td>
+                    <td>${record.state || 'N/A'}</td>
+                    <td>${record.destination || 'N/A'}</td>
+                    <td><span style="font-size:11px;">${record.pickupDate || 'N/A'}</span></td>
+                    <td><span style="font-size:11px;">${record.deliveredDate || 'N/A'}</span></td>
+                    <td><span style="font-size:11px;">${record.expectedDate || 'N/A'}</span></td>
+                    <td><span style="font-weight:700; color: ${record.isRTO ? 'var(--danger)' : 'var(--text-muted)'}">${record.isRTO ? 'TRUE' : 'FALSE'}</span></td>
+                    <td><span style="font-size:11px; color:var(--text-muted);">${record.updatedAt ? formatInputTimestamp(record.updatedAt) : 'N/A'}</span></td>
+                    <td>${record.isProcessed ? '<span class="badge-processed">PROCESSED</span>' : '<span class="badge-pending-proc">PENDING</span>'}</td>
+                    <td><span style="font-family:monospace; font-size:11px; background:#f1f5f9; padding:2px 4px; border-radius:4px;">${record.mappedSku || 'N/A'}</span></td>
+                    <td style="position: sticky; right: 0; background: #fff; z-index: 5; text-align: center; border-left: 1px solid #e2e8f0;">
+                        <button class="btn-live-update" onclick="executeLiveTrackingUpdate('${record.awb}', this)">
+                            <i class="fas fa-satellite-dish"></i> Live Update
+                        </button>
+                    </td>
+                `;
+                containerTbody.appendChild(rowElement);
+            });
+        }
+
+        // Action Trigger 2: Connect real-time webhooks tracking logic to code.gs routing switch configuration
+        async function executeLiveTrackingUpdate(awbNumberString, buttonDomRef) {
+            if (!awbNumberString || awbNumberString === 'N/A') {
+                alert("Cannot perform tracking operations sequence. AWB index number value invalid or missing.");
+                return;
+            }
+
+            const nativeButtonContent = buttonDomRef.innerHTML;
+            buttonDomRef.disabled = true;
+            buttonDomRef.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Syncing...`;
+
+            try {
+                const executionUrl = `${APPS_SCRIPT_WEBAPP_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awbNumberString)}`;
+                const callbackResponse = await fetch(executionUrl);
+                const queryStatusResult = await callbackResponse.json();
+
+                if (queryStatusResult.success) {
+                    if (queryStatusResult.skipped) {
+                        alert(`Dynamic update skipped: Current sheet cell entry is locked inside persistent status terminal category: ${queryStatusResult.reason}`);
+                    } else {
+                        alert(`Live synchronization completed! AWB tracking records synced successfully against Delhivery/Boxd API clusters.`);
+                        loadAllDailyScanData(); // Refresh row grids configurations arrays
+                    }
+                } else {
+                    alert(`Tracking macro sequence compilation exception error: ${queryStatusResult.message || 'Verification return failed'}`);
+                }
+            } catch (networkCallErr) {
+                console.error(networkCallErr);
+                alert("Server infrastructure tracking loop communications breakdown routing package details to Google script API.");
+            } finally {
+                buttonDomRef.disabled = false;
+                buttonDomRef.innerHTML = nativeButtonContent;
+            }
+        }
+
+        // Utilities Helper: Converts server ISO date strings into readable formats layout view
+        function formatInputTimestamp(dateInputValue) {
+            if (!dateInputValue) return "";
+            try {
+                const dateObj = new Date(dateInputValue);
+                if (isNaN(dateObj.getTime())) return String(dateInputValue);
+                
+                const dayStr = String(dateObj.getDate()).padStart(2, '0');
+                const monthStr = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const yearStr = dateObj.getFullYear();
+                return `${dayStr}/${monthStr}/${yearStr}`;
+            } catch (e) {
+                return String(dateInputValue);
+            }
+        }
+    </script>
+</body>
+</html>
