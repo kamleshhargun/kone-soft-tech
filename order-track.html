@@ -173,7 +173,7 @@
          ========================================================================= -->
     <script>
         // ⚠️ DEPLOYED GOOGLE APPS SCRIPT WEB APP URL PLACEHOLDER
-        const APPS_SCRIPT_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwNG13O5IMt7VpXhd2k0g3bDdhSGVkI5GFlZF9c_ZdRkxoy0QncqC0N4g5B3OOxZZkI/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbwNG13O5IMt7VpXhd2k0g3bDdhSGVkI5GFlZF9c_ZdRkxoy0QncqC0N4g5B3OOxZZkI/exec";
 
         let serverMasterDataset = [];
         let currentlySelectedStatus = "all";
@@ -194,7 +194,7 @@
         async function loadAllDailyScanData() {
             toggleLoader(true, "Extracting continuous rows array grid data from Daily-Scan sheet repository...");
             try {
-                const targetUrl = `${APPS_SCRIPT_WEBAPP_URL}?action=getTotalRecords`;
+                const targetUrl = `${API_URL}?action=getTotalRecords`;
                 const response = await fetch(targetUrl);
                 const dataResponse = await response.json();
 
@@ -341,7 +341,7 @@
             buttonDomRef.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Syncing...`;
 
             try {
-                const executionUrl = `${APPS_SCRIPT_WEBAPP_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awbNumberString)}`;
+                const executionUrl = `${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awbNumberString)}`;
                 const callbackResponse = await fetch(executionUrl);
                 const queryStatusResult = await callbackResponse.json();
 
