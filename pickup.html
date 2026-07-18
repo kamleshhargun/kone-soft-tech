@@ -3,198 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Harsidhi Ventures - Pickup Mapping Control</title>
+    <title>Harsidhi Ventures - Compact Shopify Mapping Board</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif }
-        body { background: #fdf2f2; min-height: 100vh; color: #1f2937; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 16px 20px; border-radius: 14px; border: 1px solid #fee2e2; border-left: 5px solid #dc2626; }
+        body { background: #fdf2f2; min-height: 100vh; color: #1f2937; padding: 15px; }
+        .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
         
-        /* Mapping Cards Layout */
-        .row-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; box-shadow: 0 4px 10px rgba(0,0,0,.01); display: flex; flex-direction: column; gap: 12px; position: relative; }
-        .row-card.pending { border-left: 6px solid #ef4444; background: #fff8f8; }
-        .row-card.processed { border-left: 6px solid #10b981; background: #f0fdf4; opacity: 0.85; }
-        
-        .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; font-size: 13px; font-weight: 500; }
-        .meta-grid div span { color: #64748b; font-weight: 400; display: block; font-size: 11px; text-transform: uppercase; }
+        /* Premium Compact Header */
+        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 12px 20px; border-radius: 10px; border: 1px solid #fee2e2; border-left: 5px solid #dc2626; box-shadow: 0 2px 5px rgba(0,0,0,0.02); flex-wrap: wrap; gap: 10px; }
+        .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
-        /* Multi SKU Dynamic Segment */
-        .sku-mapping-zone { border-top: 1px dashed #cbd5e1; padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .sku-input-row { display: flex; gap: 8px; align-items: center; }
+        /* Form Inputs & Select Controls */
+        .select-control { height: 34px; padding: 0 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none; font-size: 13px; font-weight: 500; background: #fff; cursor: pointer; }
+        .select-control:focus { border-color: #dc2626; }
         
-        .input, select { height: 38px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 13px; }
-        .select-sku { flex: 2; }
-        .input-qty { width: 80px; text-align: center; }
+        /* Flipkart Style Compact E-commerce Rows */
+        .compact-row { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 15px; box-shadow: 0 2px 4px rgba(0,0,0,.01); display: flex; align-items: center; justify-content: space-between; gap: 15px; position: relative; transition: all 0.2s; }
+        .compact-row.pending { border-left: 5px solid #ef4444; background: #fffafb; }
+        .compact-row.processed { border-left: 5px solid #10b981; background: #fafdfa; opacity: 0.9; }
+        .compact-row:hover { box-shadow: 0 4px 8px rgba(0,0,0,.04); background: #fff; }
         
-        /* Mini Buttons */
-        .btn-mini { background: #64748b; color: white; border: none; width: 30px; height: 30px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 15px; }
-        .btn-mini.add { background: #2563eb; }
-        .btn-mini.remove { background: #ef4444; }
+        /* Horizontal Meta Grid */
+        .row-meta-data { display: flex; flex: 1; align-items: center; gap: 20px; justify-content: flex-start; flex-wrap: wrap; }
+        .data-block { display: flex; flex-direction: column; min-width: 110px; }
+        .data-block span { color: #64748b; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .data-block b { font-size: 13px; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .status-badge { position: absolute; top: 16px; right: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 5px; }
-        .pending .status-badge { background: #fee2e2; color: #991b1b; }
-        .processed .status-badge { background: #dcfce7; color: #166534; }
+        /* Status Badges */
+        .status-pill { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; display: inline-block; white-space: nowrap; }
+        .pending .status-pill { background: #fee2e2; color: #991b1b; }
+        .processed .status-pill { background: #dcfce7; color: #166534; }
 
-        .btn-save { background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 13px; align-self: flex-end; }
-        .btn-save:hover { background: #b91c1c; }
+        /* Actions Button Styling */
+        .btn-action { height: 34px; padding: 0 14px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s; white-space: nowrap; }
+        .btn-sync { background: #475569; color: white; }
+        .btn-sync:hover { background: #334155; }
+        .btn-bulk { background: #7c3aed; color: white; }
+        .btn-bulk:hover { background: #6d28d9; }
+        .btn-single-fetch { background: #2563eb; color: white; min-width: 150px; }
+        .btn-single-fetch:hover { background: #1d4ed8; }
+        .btn-action:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; }
 
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 12px 16px; border-radius: 12px; z-index: 9999; font-size: 13px; }
-        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #dc2626 }
+        /* Ultra Compact Adaptive Pagination Controls */
+        .pagination-container { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 10px; flex-wrap: wrap; padding: 10px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .page-btn { background: #fff; border: 1px solid #cbd5e1; min-width: 32px; height: 32px; padding: 0 8px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s; color: #475569; }
+        .page-btn:hover:not(:disabled) { background: #f8fafc; border-color: #94a3b8; color: #1e293b; }
+        .page-btn.active { background: #dc2626; color: white; border-color: #dc2626; font-weight: 600; }
+        .page-btn:disabled { background: #f1f5f9; color: #cbd5e1; cursor: not-allowed; border-color: #e2e8f0; }
+        .page-dots { color: #94a3b8; padding: 0 4px; font-size: 14px; font-weight: 600; }
+
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 12px 18px; border-radius: 10px; z-index: 9999; font-size: 13px; font-weight: 500; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #dc2626 }
+        
+        /* Mobile Viewport Handling */
+        @media (max-width: 768px) {
+            .compact-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .row-meta-data { width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .action-zone { width: 100%; text-align: right; }
+            .btn-single-fetch { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- Header Controls -->
         <div class="header">
             <div>
-                <h2 style="color:#b91c1c;">📦 Live Pickups Mapping Board</h2>
-                <p style="font-size:12px; color:#64748b; margin-top:2px;">Mapped SKUs will increment 'Sales' to automatically reduce Net Stock.</p>
+                <h3 style="color:#b91c1c; font-size: 17px; font-weight:700;">📦 Shopify Order Auto-Mapping Dashboard</h3>
+                <p style="font-size:11px; color:#64748b; margin-top:2px;">Flipkart Seller Style Flat Layout Interface</p>
             </div>
-            <button class="btn-save" style="background:#475569;" onclick="loadPickupRows()">🔄 Sync Grid</button>
+            
+            <div class="header-actions">
+                <!-- Limit Selector -->
+                <label style="font-size: 12px; font-weight:600; color:#475569; display:flex; align-items:center; gap:5px;">
+                    Rows:
+                    <select id="rowsLimitSelect" class="select-control" onchange="changeLimitCount(this.value)">
+                        <option value="10" selected>10 Rows</option>
+                        <option value="20">20 Rows</option>
+                        <option value="50">50 Rows</option>
+                        <option value="100">100 Rows</option>
+                    </select>
+                </label>
+
+                <!-- Bulk Sync Action Button -->
+                <button class="btn-action btn-bulk" id="bulkPageBtn" onclick="processAllActivePageOrders()">
+                    ⚡ Fetch All Page Orders (Bulk)
+                </button>
+
+                <button class="btn-action btn-sync" onclick="loadDailyScans()">🔄 Sync</button>
+            </div>
         </div>
 
-        <!-- Dynamic List Container -->
-        <div id="pickupRowsList" style="display:flex; flex-direction:column; gap:14px;">
-            <div style="text-align:center; padding:30px; color:gray; font-style:italic;">Querying filtered entries...</div>
+        <!-- E-commerce Rows List Grid -->
+        <div id="pickupRowsList" style="display:flex; flex-direction:column; gap:8px;">
+            <div style="text-align:center; padding:30px; color:gray; font-style:italic; background:#fff; border-radius:8px;">Loading orders ledger...</div>
         </div>
+
+        <!-- Dynamic Smart Compact Pagination Controls -->
+        <div id="paginationControls" class="pagination-container"></div>
     </div>
 
-    <div id="loadingOverlay">Processing Stock Balancing Nodes...</div>
+    <!-- Processing Overlay Loader Grid -->
+    <div id="loadingOverlay">Processing Stocks Auto Sync...</div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzut_XuQmPmE_sfhivfEB3whXhGN7zhQqxNowrfid4Amaxk1WHY8nT5RIcw1cv798YR/exec";
-        let skuDirectoryList = [];
+        // !! अपना Web App URL यहाँ सुनिश्चित रूप से डालें !!
+        const API_URL = "https://script.google.com/macros/s/AKfycbwJDX32Msr9U4srNgqbvfEyvaZdSmodvDdDcBe2hsQoSYu-QOLKyRPPiH5kF6x9E6Dc/exec";
+        
+        let masterRowsList = [];
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let activePagePendingRows = []; // करंट पेज पर मौजूद पेंडिंग ऑर्डर्स
 
-        async function loadPickupRows() {
+        async function loadDailyScans() {
             showLoader();
             try {
-                // 1. Load active SKU directory list first
-                if(skuDirectoryList.length === 0) {
-                    const skuRes = await fetch(`${API_URL}?action=inventoryProducts`);
-                    const skuData = await skuRes.json();
-                    if(skuData.success) skuDirectoryList = skuData.products || [];
-                }
-
-                // 2. Fetch filtered Pickup Rows from Daily-Scan sheet
                 const response = await fetch(`${API_URL}?action=getFilteredDailyRows&type=Pickup`);
                 const result = await response.json();
                 hideLoader();
 
                 if(result.success) {
-                    renderPickupCards(result.rows || []);
+                    masterRowsList = result.rows || [];
+                    currentPage = 1;
+                    renderPagedView();
+                } else {
+                    toast("❌ Error loading data logs from sheet.");
                 }
-            } catch(e) { hideLoader(); toast("Error connecting to script engine."); }
+            } catch(e) { hideLoader(); toast("❌ Network connectivity error."); }
         }
 
-        function renderPickupCards(rows) {
+        function changeLimitCount(newLimit) {
+            itemsPerPage = parseInt(newLimit, 10);
+            currentPage = 1; // Reset to page 1
+            renderPagedView();
+        }
+
+        function renderPagedView() {
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const endIdx = startIdx + itemsPerPage;
+            const slicedRows = masterRowsList.slice(startIdx, endIdx);
+
+            // करंट पेज के पेंडिंग ऑर्डर्स को बल्क प्रोसेसिंग के लिए ट्रैक करना
+            activePagePendingRows = slicedRows.filter(r => !r.isProcessed);
+            
+            // अगर इस पेज पर कोई भी पेंडिंग नहीं है, तो बल्क बटन को डिसएबल कर दें
+            const bulkBtn = document.getElementById("bulkPageBtn");
+            if (activePagePendingRows.length === 0) {
+                bulkBtn.disabled = true;
+                bulkBtn.innerText = "✓ Page Fully Mapped";
+            } else {
+                bulkBtn.disabled = false;
+                bulkBtn.innerText = `⚡ Fetch All Page Orders (Bulk: ${activePagePendingRows.length})`;
+            }
+
+            renderCompactList(slicedRows);
+            renderSmartPagination();
+        }
+
+        function renderCompactList(rows) {
             const container = document.getElementById("pickupRowsList");
-            if(rows.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; background:white; border-radius:12px;">No pickup row logs found.</div>`;
+            if(masterRowsList.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; background:white; border-radius:8px;">No row logs found in Daily-Scan.</div>`;
                 return;
             }
 
             let html = "";
             rows.forEach(r => {
                 const cardState = r.isProcessed ? "processed" : "pending";
-                const statusText = r.isProcessed ? "SKU Mapped (Green)" : "Required SKU (Red Mark)";
+                const statusLabel = r.isProcessed ? "Mapped" : "Pending";
                 
                 html += `
-                    <div class="row-card ${cardState}" id="card-block-${r.rowId}">
-                        <span class="status-badge">${statusText}</span>
-                        <div class="meta-grid">
-                            <div><span>Scan Date</span><b>${r.date}</b></div>
-                            <div><span>AWB Number</span><b>${r.awb}</b></div>
-                            <div><span>Order Reference</span><b>${r.orderId || 'N/A'}</b></div>
-                            <div><span>Courier Courier</span><b>${r.courier || 'N/A'}</b></div>
+                    <div class="compact-row ${cardState}">
+                        <div class="row-meta-data">
+                            <div style="min-width: 65px;"><span class="status-pill">${statusLabel}</span></div>
+                            <div style="min-width: 85px;"><span>Scan Date</span><b>${r.date}</b></div>
+                            <div style="min-width: 130px;"><span>AWB Number</span><b>${r.awb}</b></div>
+                            <div style="min-width: 120px;"><span>Order Ref (Shopify)</span><b style="color:#2563eb; font-weight:600;">${r.orderId || 'N/A'}</b></div>
+                            <div><span>Courier</span><b>${r.courier || 'N/A'}</b></div>
                         </div>
 
-                        ${!r.isProcessed ? `
-                            <div class="sku-mapping-zone">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <label style="font-size:12px; font-weight:700; color:#475569;">Assign Products Mapped to AWB</label>
-                                    <button class="btn-mini add" onclick="addNewSkuRowLine('${r.rowId}')" type="button">+</button>
-                                </div>
-                                <div id="sku-fields-container-${r.rowId}" style="display:flex; flex-direction:column; gap:6px;">
-                                    <!-- Dynamic Rows populate here -->
-                                    <div class="sku-input-row">
-                                        <select class="select-sku" id="sku-sel-${r.rowId}-0">${generateSkuOptionsHtml()}</select>
-                                        <input type="number" class="input input-qty" id="sku-qty-${r.rowId}-0" min="1" value="1" placeholder="Qty">
-                                        <button class="btn-mini remove" onclick="this.parentElement.remove()">-</button>
-                                    </div>
-                                </div>
-                                <button class="btn-save" onclick="savePickupSkuMapping('${r.rowId}')" style="margin-top:5px;">Confirm & Deduct Stock</button>
-                            </div>
-                        ` : `<div style="font-size:12px; color:#166534; font-weight:600; border-top:1px dashed #cbd5e1; padding-top:6px;">✨ Transaction processed successfully into master database.</div>`}
+                        <div class="action-zone">
+                            ${!r.isProcessed ? `
+                                <button class="btn-action btn-single-fetch" onclick="autoFetchAndProcess('${r.rowId}', '${r.orderId}')">
+                                    🚀 Fetch & Deduct
+                                </button>
+                            ` : `
+                                <span style="font-size:12px; color:#166534; font-weight:600;">✓ Synced Complete</span>
+                            `}
+                        </div>
                     </div>
                 `;
             });
             container.innerHTML = html;
         }
 
-        function generateSkuOptionsHtml() {
-            let options = '<option value="">-- Choose SKU --</option>';
-            skuDirectoryList.forEach(p => {
-                options += `<option value="${p.sku}">${p.sku}</option>`;
-            });
-            return options;
-        }
+        // Smart Adaptive Pagination Logic (कम्पैटिबल व्यू के लिए ताकि पेज नंबर्स ओवरफ्लो न हों)
+        function renderSmartPagination() {
+            const ctrl = document.getElementById("paginationControls");
+            ctrl.innerHTML = "";
+            if(masterRowsList.length <= itemsPerPage) {
+                ctrl.style.display = "none";
+                return;
+            }
+            ctrl.style.display = "flex";
 
-        function addNewSkuRowLine(rowId) {
-            const container = document.getElementById(`sku-fields-container-${rowId}`);
-            const uniqueIndex = container.children.length;
-            const newRow = document.createElement("div");
-            newRow.className = "sku-input-row";
-            newRow.innerHTML = `
-                <select class="select-sku" id="sku-sel-${rowId}-${uniqueIndex}">${generateSkuOptionsHtml()}</select>
-                <input type="number" class="input input-qty" id="sku-qty-${rowId}-${uniqueIndex}" min="1" value="1">
-                <button class="btn-mini remove" onclick="this.parentElement.remove()">-</button>
-            `;
-            container.appendChild(newRow);
-        }
+            const totalPages = Math.ceil(masterRowsList.length / itemsPerPage);
+            
+            // Previous Button
+            const prev = document.createElement("button");
+            prev.className = "page-btn";
+            prev.innerText = "‹";
+            prev.disabled = currentPage === 1;
+            prev.onclick = () => { currentPage--; renderPagedView(); window.scrollTo({top: 0}); };
+            ctrl.appendChild(prev);
 
-        async function savePickupSkuMapping(rowId) {
-            const container = document.getElementById(`sku-fields-container-${rowId}`);
-            const skuItems = [];
-
-            // Compile array datasets dynamically
-            for(let child of container.children) {
-                const selectEl = child.querySelector(".select-sku");
-                const qtyEl = child.querySelector(".input-qty");
+            // Max visible buttons configuration
+            const maxVisible = 2; 
+            
+            // First Page Button
+            if (currentPage > maxVisible + 1) {
+                const firstBtn = document.createElement("button");
+                firstBtn.className = "page-btn";
+                firstBtn.innerText = "1";
+                firstBtn.onclick = () => { currentPage = 1; renderPagedView(); window.scrollTo({top: 0}); };
+                ctrl.appendChild(firstBtn);
                 
-                if(selectEl && selectEl.value && qtyEl && qtyEl.value) {
-                    skuItems.push({ sku: selectEl.value, qty: parseInt(qtyEl.value, 10) });
+                if (currentPage > maxVisible + 2) {
+                    const dots = document.createElement("span");
+                    dots.className = "page-dots";
+                    dots.innerText = "...";
+                    ctrl.appendChild(dots);
                 }
             }
 
-            if(skuItems.length === 0) { toast("Select at least 1 valid SKU code entry."); return; }
+            // Loop Range Calculation
+            let startRange = Math.max(1, currentPage - maxVisible);
+            let endRange = Math.min(totalPages, currentPage + maxVisible);
+
+            for(let i = startRange; i <= endRange; i++) {
+                const pBtn = document.createElement("button");
+                pBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                pBtn.innerText = i;
+                pBtn.onclick = () => { currentPage = i; renderPagedView(); window.scrollTo({top: 0}); };
+                ctrl.appendChild(pBtn);
+            }
+
+            // Last Page Button
+            if (currentPage < totalPages - maxVisible) {
+                if (currentPage < totalPages - maxVisible - 1) {
+                    const dots = document.createElement("span");
+                    dots.className = "page-dots";
+                    dots.innerText = "...";
+                    ctrl.appendChild(dots);
+                }
+                const lastBtn = document.createElement("button");
+                lastBtn.className = "page-btn";
+                lastBtn.innerText = totalPages;
+                lastBtn.onclick = () => { currentPage = totalPages; renderPagedView(); window.scrollTo({top: 0}); };
+                ctrl.appendChild(lastBtn);
+            }
+
+            // Next Button
+            const next = document.createElement("button");
+            next.className = "page-btn";
+            next.innerText = "»";
+            next.disabled = currentPage === totalPages;
+            next.onclick = () => { currentPage++; renderPagedView(); window.scrollTo({top: 0}); };
+            ctrl.appendChild(next);
+        }
+
+        // 1. SINGLE ROW SYNC OPERATION
+        async function autoFetchAndProcess(rowId, orderId) {
+            if(!orderId || orderId === "N/A" || orderId.trim() === "") {
+                toast("❌ Cannot fetch: Order ID is missing.");
+                return;
+            }
 
             showLoader();
             try {
-                const response = await fetch(API_URL, {
+                const res = await fetch(`${API_URL}?action=getShopifyOrder&orderId=${encodeURIComponent(orderId)}`);
+                const shopifyData = await res.json();
+
+                if(!shopifyData.success) {
+                    hideLoader();
+                    alert(shopifyData.message);
+                    return;
+                }
+
+                const submitRes = await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify({
                         action: "processDailyRowSku",
-                        payload: { rowId: rowId, type: "Pickup", skuItems: skuItems }
+                        payload: { rowId: rowId, type: "Pickup", skuItems: shopifyData.items }
                     })
                 });
-                const res = await response.json();
+                
+                const finalRes = await submitRes.json();
                 hideLoader();
-                if(res.success) {
-                    toast("🎉 Saved & Grid updated green!");
-                    loadPickupRows(); // Instantly hot refresh view states
+
+                if(finalRes.success) {
+                    toast(`🎉 Order ${orderId} Mapped & Stock Adjusted!`);
+                    loadDailyScans();
+                } else {
+                    toast("❌ Error updating entry mapping data.");
                 }
-            } catch(e) { hideLoader(); toast("Failed saving entry data."); }
+            } catch(e) { hideLoader(); toast("❌ Communication error with script."); }
+        }
+
+        // 2. BULK PAGE SYNC OPERATION (करंट पेज के सभी पेंडिंग ऑर्डर्स को एक साथ प्रोसेस करना)
+        async function processAllActivePageOrders() {
+            if (activePagePendingRows.length === 0) {
+                toast("✓ No pending mapping records on this page.");
+                return;
+            }
+
+            if (!confirm(`क्या आप इस पेज पर दिख रहे सभी ${activePagePendingRows.length} पेंडिंग ऑर्डर्स को एक साथ Shopify से सिंक करना चाहते हैं?`)) {
+                return;
+            }
+
+            showLoader();
+            let successCount = 0;
+            let failCount = 0;
+
+            // सीक्वेंशियल लूप (Sequential Loop) चलाकर एक-एक करके बैकएंड को रिक्वेस्ट भेजना
+            for (let row of activePagePendingRows) {
+                try {
+                    // Shopify से आइटम्स मंगाना
+                    const res = await fetch(`${API_URL}?action=getShopifyOrder&orderId=${encodeURIComponent(row.orderId)}`);
+                    const shopifyData = await res.json();
+
+                    if(shopifyData.success) {
+                        // इन्वेंट्री रिड्यूस करने के लिए डेटा सबमिट करना
+                        const submitRes = await fetch(API_URL, {
+                            method: "POST",
+                            headers: { "Content-Type": "text/plain;charset=utf-8" },
+                            body: JSON.stringify({
+                                action: "processDailyRowSku",
+                                payload: { rowId: row.rowId, type: "Pickup", skuItems: shopifyData.items }
+                            })
+                        });
+                        const finalRes = await submitRes.json();
+                        if (finalRes.success) successCount++;
+                        else failCount++;
+                    } else {
+                        failCount++;
+                    }
+                } catch (err) {
+                    failCount++;
+                }
+            }
+
+            hideLoader();
+            alert(`Бulk Process Complete!\n🎉 सफल सिंक: ${successCount}\n❌ असफल/Not Found: ${failCount}`);
+            loadDailyScans(); // डेटा दोबारा लोड करके ग्रिड रिफ्रेश करें
         }
 
         function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
         function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
         function toast(msg) {
             const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
-            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+            document.body.appendChild(t); setTimeout(() => t.remove(), 3500);
         }
-        window.onload = loadPickupRows;
+        window.onload = loadDailyScans;
     </script>
 </body>
 </html>
