@@ -4,102 +4,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Harsidhi Ventures - Live Analytics Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Harsidhi Ventures - Master Operations Dashboard</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #f8fafc; min-height: 100vh; color: #0f172a; padding: 24px; -webkit-font-smoothing: antialiased; }
-        .container { max-width: 1140px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
-        
-        /* Header Upgrade */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 20px 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
+        body { background: var(--bg-body); min-height: 100vh; color: var(--text-main); padding: 20px; -webkit-font-smoothing: antialiased; }
+        .container { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+        /* Top Progress Line Loader (No Screen Blur) */
+        #topProgressBar { height: 3px; width: 0%; background: var(--primary); position: fixed; top: 0; left: 0; z-index: 99999; transition: width 0.4s ease; }
+
+        /* Header Panel */
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 18px 24px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); flex-wrap: wrap; gap: 12px; }
         .header-title-wrapper { display: flex; align-items: center; gap: 12px; }
-        .dashboard-header h2 { font-size: 22px; color: #1e3a8a; font-weight: 700; letter-spacing: -0.5px; }
-        .sync-status { font-size: 12px; color: #64748b; display: flex; align-items: center; gap: 6px; }
-        .sync-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; display: inline-block; }
-        .sync-dot.syncing { animation: pulse 1.5s infinite; background: #2563eb; }
+        .dashboard-header h2 { font-size: 20px; color: #1e3a8a; font-weight: 800; letter-spacing: -0.5px; }
+        .sync-status { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .sync-dot { width: 8px; height: 8px; background: var(--success); border-radius: 50%; display: inline-block; }
+        .sync-dot.syncing { animation: pulse 1.2s infinite; background: var(--primary); }
 
         @keyframes pulse {
             0% { transform: scale(0.95); opacity: 0.5; }
-            50% { transform: scale(1.05); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 1; }
             100% { transform: scale(0.95); opacity: 0.5; }
         }
 
-        .refresh-badge { background: #2563eb; color: #ffffff; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; border: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .refresh-badge:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .refresh-badge { background: var(--primary); color: #ffffff; padding: 8px 18px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; border: none; display: flex; align-items: center; gap: 6px; }
+        .refresh-badge:hover { background: var(--primary-hover); }
 
-        .section-title { font-size: 13px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.75px; display: flex; align-items: center; gap: 8px; margin-bottom: -4px; }
-        .section-title::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+        /* MASTER SEARCH BAR MODULE */
+        .master-search-card { background: linear-gradient(135deg, #1e3a8a, #2563eb); padding: 24px; border-radius: 20px; color: white; shadow: 0 10px 25px -5px rgba(37,99,235,0.25); }
+        .master-search-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .master-search-card p { font-size: 12px; opacity: 0.85; margin-bottom: 16px; }
+        .search-input-wrapper { position: relative; display: flex; items-center: center; }
+        .search-input-wrapper input { width: 100%; height: 50px; padding: 0 50px 0 20px; border-radius: 14px; border: none; font-size: 14px; font-weight: 600; color: #0f172a; outline: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .search-input-wrapper button { position: absolute; right: 8px; width: 36px; height: 36px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+        .search-input-wrapper button:hover { background: var(--primary-hover); }
+
+        .section-title { font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: #cbd5e1; }
+
+        /* Cards Grid Framework */
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.06); }
+        .card h3 { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+        .card .big { font-size: 28px; font-weight: 800; color: var(--text-main); margin-top: 8px; font-variant-numeric: tabular-nums; }
         
-        /* Cards Upgrade */
-        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s; position: relative; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
-        .card h3 { font-size: 13px; font-weight: 600; color: #64748b; }
-        .card .big { font-size: 32px; font-weight: 700; color: #0f172a; margin-top: 12px; font-variant-numeric: tabular-nums; }
-        
-        .card-p-today { border-top: 4px solid #2563eb; }
-        .card-r-today { border-top: 4px solid #0d9488; }
+        /* Card Color Accents */
+        .card-p-today { border-top: 4px solid #3b82f6; }
+        .card-r-today { border-top: 4px solid #14b8a6; }
         .card-p-yesterday { border-top: 4px solid #60a5fa; }
         .card-r-yesterday { border-top: 4px solid #2dd4bf; }
         .card-p-total { border-top: 4px solid #1e3a8a; }
-        .card-r-total { border-top: 4px solid #115e59; }
-        .card-net-ops { border-top: 4px solid #4f46e5; } /* Indigo Border */
-        .card-rto-rate { border-top: 4px solid #ea580c; } /* Orange Border */
-        
-        /* Stats Banner */
-        .stat-banner { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .stat-item { background: #ffffff; padding: 18px 24px; border-radius: 14px; border: 1px solid #e2e8f0; font-size: 14px; color: #475569; display: flex; flex-direction: column; gap: 4px; }
-        .stat-item span { font-size: 20px; font-weight: 700; margin-left: 0; margin-top: 2px; }
+        .card-r-total { border-top: 4px solid #0f766e; }
+        .card-net-ops { border-top: 4px solid #6366f1; }
+        .card-rto-rate { border-top: 4px solid #f97316; }
+
+        /* Stats Banners */
+        .stat-banner { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+        .stat-item { background: var(--card-bg); padding: 16px 20px; border-radius: 14px; border: 1px solid var(--border-color); font-size: 13px; font-weight: 600; color: #475569; display: flex; flex-direction: column; gap: 4px; }
+        .stat-item span { font-size: 22px; font-weight: 800; }
         #saved_count { color: #059669; }
         #pending_count { color: #2563eb; }
 
-        /* Live Activity Stream */
-        .activity-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); }
-        .activity-list { margin-top: 16px; display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; padding-right: 4px; }
-        .activity-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; transition: background 0.2s; }
-        .activity-item:hover { background: #f1f5f9; }
-        
-        .badge { display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Activity Logger Stream */
+        .activity-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04); }
+        .activity-list { margin-top: 14px; display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
+        .activity-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: #f8fafc; border-radius: 12px; border: 1px solid var(--border-color); }
+
+        .badge { display: inline-flex; align-items: center; padding: 3px 7px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .badge-pickup { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
         .badge-return { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-        
 
-        /* Navigation Grid */
-        .nav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        @media (max-width: 768px) { .nav-grid { grid-template-columns: 1fr; } }
-        
-        .nav-card { cursor: pointer; background: #ffffff; border: 1px solid #e2e8f0; font-weight: 600; font-size: 15px; text-align: center; color: #334155; display: flex; align-items: center; justify-content: center; height: 64px; border-radius: 12px; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .nav-card:hover { transform: translateY(-2px); border-color: #2563eb; color: #2563eb; box-shadow: 0 12px 20px -8px rgba(37,99,235,0.15); background: #f8fafc; }
+        /* ERP Module Navigation Directory */
+        .nav-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .nav-card { cursor: pointer; background: var(--card-bg); border: 1px solid var(--border-color); font-weight: 700; font-size: 13px; text-align: center; color: #334155; display: flex; align-items: center; justify-content: center; gap: 8px; height: 56px; border-radius: 12px; transition: all 0.2s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .nav-card:hover { border-color: var(--primary); color: var(--primary); background: #f0f6ff; transform: translateY(-1px); }
 
-        /* Toasts & Loaders */
-        .toast { position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #ffffff; padding: 12px 20px; border-radius: 10px; z-index: 9999; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); font-size: 14px; font-weight: 500; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        
-        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); z-index: 99999; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #0f172a; flex-direction: column; gap: 16px; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #2563eb; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* SEARCH RESULTS MODAL OVERLAY */
+        #searchModal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 9999; padding: 20px; align-items: center; justify-content: center; }
+        .search-modal-content { background: white; width: 100%; max-width: 700px; max-height: 80vh; border-radius: 20px; p-6; display: flex; flex-direction: column; gap: 16px; padding: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .search-modal-header { display: flex; justify-content: space-between; align-items: center; border-b pb-3; }
+        .search-results-list { overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .search-result-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px 16px; border-radius: 12px; font-size: 13px; }
+
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #0f172a; color: #ffffff; padding: 10px 18px; border-radius: 10px; z-index: 9999; font-size: 13px; font-weight: 600; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
     </style>
 </head>
 
 <body>
 
+    <!-- TOP PROGRESS BAR LOADER -->
+    <div id="topProgressBar"></div>
+
     <div class="container">
-        <!-- Dashboard Header -->
+
+        <!-- HEADER -->
         <div class="dashboard-header">
             <div class="header-title-wrapper">
-                <h2>Dashboard (<span id="monthTitle">...</span>)</h2>
+                <h2>Operations Center (<span id="monthTitle">Active Month</span>)</h2>
                 <div class="sync-status">
                     <span class="sync-dot" id="syncStatusDot"></span>
                     <span id="syncStatusText">Live Connection</span>
                 </div>
             </div>
-            <button class="refresh-badge" onclick="refreshDashboardData(false)">Sync Realtime</button>
+            <button class="refresh-badge" onclick="refreshDashboardData(false)">
+                <i class="fa-solid fa-rotate" id="refreshIcon"></i> Sync Realtime
+            </button>
         </div>
 
-        <!-- Metric Grid Sections -->
-        <div class="section-title">Daily Operations Stats</div>
+        <!-- MASTER SEARCH BOX (A-TO-Z UNIVERSAL SEARCH) -->
+        <div class="master-search-card">
+            <h3><i class="fa-solid fa-magnifying-glass"></i> Master System Search</h3>
+            <p>Find anything across the entire ERP: Order ID, AWB, Labour Name, SKU, Customer Name, or Cutting...</p>
+            <div class="search-input-wrapper">
+                <input type="text" id="globalMasterSearchInput" onkeypress="handleMasterSearchEnter(event)" placeholder="Type Order #, AWB, SKU, Labour name e.g. Ramji, JPR-101...">
+                <button onclick="executeGlobalMasterSearch()"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- DAILY & OPERATIONAL METRICS -->
+        <div class="section-title">📦 Operations & Dispatch Breakdown</div>
         <div class="cards">
             <div class="card card-p-today">
                 <h3>Pickup Today</h3>
@@ -118,184 +159,251 @@
                 <div class="big" id="return_yesterday">0</div>
             </div>
             <div class="card card-p-total">
-                <h3>MTD Pickup</h3>
+                <h3>MTD Pickups</h3>
                 <div class="big" id="pickup_total">0</div>
             </div>
             <div class="card card-r-total">
-                <h3>MTD Return</h3>
+                <h3>MTD Returns</h3>
                 <div class="big" id="return_total">0</div>
             </div>
-            <!-- New Card 1: Net Operations -->
             <div class="card card-net-ops">
                 <h3>Net Successful Volume</h3>
                 <div class="big" id="net_volume">0</div>
             </div>
-            <!-- New Card 2: Return Rate -->
             <div class="card card-rto-rate">
-                <h3>MTD Return Rate</h3>
+                <h3>MTD Return Rate (RTO %)</h3>
                 <div class="big" id="return_rate">0%</div>
             </div>
         </div>
 
-        <!-- Processed Banners -->
+        <!-- STATS BANNERS -->
         <div class="stat-banner">
             <div class="stat-item">
-                Total Processed Scans (Today)
+                Total Scans Today
                 <span id="saved_count">0</span>
             </div>
             <div class="stat-item">
-                Total MTD Volume
+                Total MTD Activity Count
                 <span id="pending_count">0</span>
             </div>
         </div>
 
-        <!-- Activity Logger Stream -->
+        <!-- LIVE STREAM LOGS -->
         <div class="activity-panel">
-            <div class="section-title" style="margin-bottom: 0;">Latest Live Activity Stream</div>
+            <div class="section-title" style="margin-top:0;">Live Daily Scans Stream</div>
             <div class="activity-list" id="activityStreamBox">
-                <div style="color: #64748b; font-style: italic; font-size: 13px; padding: 12px;">Loading live data rows...</div>
+                <div style="color: #64748b; font-style: italic; font-size: 12px; padding: 10px;">Fetching live activity rows...</div>
             </div>
         </div>
-          
-        <!-- Navigation Routing Options -->
-        <div class="section-title">Quick Routing Access</div>
+
+        <!-- COMPLETE ERP NAVIGATION DIRECTORY -->
+        <div class="section-title">🚀 Complete ERP Modules Directory</div>
         <div class="nav-grid">
-            <div class="nav-card" onclick="go('daily.html')">Daily Scan Window</div>
-            <div class="nav-card" onclick="go('find-order.html')">Find & Sync Order</div>
-            <div class="nav-card" onclick="go('bulk-update.html')">Bulk 3PL Sync</div>
+            <div class="nav-card" onclick="go('daily.html')"><i class="fa-solid fa-barcode text-blue-600"></i> Daily Scan</div>
+            <div class="nav-card" onclick="go('todo.html')"><i class="fa-solid fa-list-check text-indigo-600"></i> To-Do Tasks</div>
+            <div class="nav-card" onclick="go('cutting.html')"><i class="fa-solid fa-scissors text-rose-600"></i> Cutting & Stitching</div>
+            <div class="nav-card" onclick="go('labour-ledger.html')"><i class="fa-solid fa-users-gear text-amber-600"></i> Labour Ledgers</div>
+            <div class="nav-card" onclick="go('inventory.html')"><i class="fa-solid fa-boxes-stacked text-emerald-600"></i> Inventory Stocks</div>
+            <div class="nav-card" onclick="go('find-order.html')"><i class="fa-solid fa-magnifying-glass text-sky-600"></i> Find & Lookup</div>
+            <div class="nav-card" onclick="go('bulk-update.html')"><i class="fa-solid fa-arrows-rotate text-purple-600"></i> Bulk Data Fetch</div>
+            <div class="nav-card" onclick="go('boxd-return.html')"><i class="fa-solid fa-truck-ramp-box text-red-600"></i> Boxd Return Tracker</div>
         </div>
+
     </div>
 
-    <!-- UI Modal Block Loading States -->
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <div>Syncing Data Nodes...</div>
+    <!-- MASTER SEARCH RESULT MODAL OVERLAY -->
+    <div id="searchModal">
+        <div class="search-modal-content">
+            <div class="search-modal-header">
+                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a;"><i class="fa-solid fa-magnifying-glass text-blue-600"></i> Search Results for: "<span id="searchKeywordLabel">...</span>"</h3>
+                <button onclick="closeSearchModal()" style="border:none; background:none; font-size:20px; cursor:pointer; color:#64748b;">&times;</button>
+            </div>
+            <div class="search-results-list" id="searchResultsContainer">
+                <!-- Results will be injected dynamically -->
+            </div>
+        </div>
     </div>
 
     <script>
         /* ===================================
         CONFIG
         =================================== */
-        const API_URL = "https://script.google.com/macros/s/AKfycbw8el8-yZkfHY6YxW1o5ikJVg90_V075DMIFBqhZ0-vJmRJqK5b2UJ_SX8G0waAlEkq/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyiqO5JSf-i7pza82liae8YkD3yzgIkrSTo-5FIcDZctzhizRirRCBAyqIHnHc0Rx1S/exec";
 
         function go(page) {
             window.location.href = page;
         }
 
-        /* ===================================
-        REFRESH/LOAD DASHBOARD DATA METRICS
-        =================================== */
+        /* Progress Bar Engine */
+        function setProgress(percent) {
+            const bar = document.getElementById("topProgressBar");
+            bar.style.width = percent + "%";
+            if (percent >= 100) {
+                setTimeout(() => { bar.style.width = "0%"; }, 400);
+            }
+        }
+
+        /* Load & Refresh Dashboard Metrics */
         async function refreshDashboardData(isSilent = true) {
-            // Agar manual click hai toh screen block hogi, automatic background sync me screen block nahi hogi.
-            if (!isSilent) showLoader();
-            
             const dot = document.getElementById("syncStatusDot");
             const statusText = document.getElementById("syncStatusText");
-            
+            const refreshIcon = document.getElementById("refreshIcon");
+
             dot.classList.add("syncing");
             statusText.innerText = "Syncing...";
+            refreshIcon.classList.add("fa-spin");
+
+            setProgress(30);
 
             try {
-                const dashboardResponse = await fetch(`${API_URL}?action=getDashboardCounts`);
-                const dbData = await dashboardResponse.json();
+                const [dashboardResponse, recentResponse] = await Promise.all([
+                    fetch(`${API_URL}?action=getDashboardCounts`),
+                    fetch(`${API_URL}?action=getRecentRecords`)
+                ]);
 
-                const recentResponse = await fetch(`${API_URL}?action=getRecentRecords`);
+                setProgress(70);
+
+                const dbData = await dashboardResponse.json();
                 const recentData = await recentResponse.json();
 
-                if (!isSilent) hideLoader();
+                setProgress(100);
 
                 if (dbData.success) {
-                    document.getElementById("pickup_today").innerText = dbData.todayPickup || 0;
-                    document.getElementById("return_today").innerText = dbData.todayReturn || 0;
+                    const pickupToday = dbData.todayPickup || 0;
+                    const returnToday = dbData.todayReturn || 0;
+                    const pickupMonth = dbData.monthPickup || 0;
+                    const returnMonth = dbData.monthReturn || 0;
+
+                    document.getElementById("pickup_today").innerText = pickupToday;
+                    document.getElementById("return_today").innerText = returnToday;
                     document.getElementById("pickup_yesterday").innerText = dbData.yesterdayPickup || 0;
                     document.getElementById("return_yesterday").innerText = dbData.yesterdayReturn || 0;
-                    document.getElementById("pickup_total").innerText = dbData.monthPickup || 0;
-                    document.getElementById("return_total").innerText = dbData.monthReturn || 0;
+                    document.getElementById("pickup_total").innerText = pickupMonth;
+                    document.getElementById("return_total").innerText = returnMonth;
                     document.getElementById("monthTitle").innerText = dbData.monthName || "Active Month";
 
-                    const todayTotal = (dbData.todayPickup || 0) + (dbData.todayReturn || 0);
-                    const monthTotal = (dbData.monthPickup || 0) + (dbData.monthReturn || 0);
-                    // Naye calculations
-                    const netVolume = (dbData.monthPickup || 0) - (dbData.monthReturn || 0);
-                    const rtoPercentage = monthTotal > 0 ? ((dbData.monthReturn || 0) / monthTotal * 100).toFixed(1) : 0;
+                    const monthTotal = pickupMonth + returnMonth;
+                    const netVolume = pickupMonth - returnMonth;
+                    const rtoPercentage = monthTotal > 0 ? ((returnMonth / monthTotal) * 100).toFixed(1) : 0;
 
-                    // UI element mapping updates
                     document.getElementById("net_volume").innerText = netVolume;
                     document.getElementById("return_rate").innerText = rtoPercentage + "%";
-                    
-                    document.getElementById("saved_count").innerText = todayTotal;
+                    document.getElementById("saved_count").innerText = (pickupToday + returnToday);
                     document.getElementById("pending_count").innerText = monthTotal;
 
                     renderLiveStream(recentData.rows || []);
-                    toast("Dashboard metrics updated!");
+                    if (!isSilent) toast("Dashboard metrics synced!");
                 } else {
                     toast("Error parsing live database counts.");
                 }
 
             } catch (err) {
-                if (!isSilent) hideLoader();
+                setProgress(100);
                 console.error(err);
                 toast("Could not contact server. Check API connection.");
             } finally {
                 dot.classList.remove("syncing");
                 statusText.innerText = "Live Connection";
+                refreshIcon.classList.remove("fa-spin");
             }
         }
 
-        /* ===================================
-        RENDER LOG ACTIVITY GRIDS
-        =================================== */
+        /* Render Activity Stream */
         function renderLiveStream(rows) {
             const streamBox = document.getElementById("activityStreamBox");
             if (!rows || rows.length === 0) {
-                streamBox.innerHTML = `<div style="color: #64748b; font-style: italic; font-size: 13px; padding: 12px;">No recent records found in the database.</div>`;
+                streamBox.innerHTML = `<div style="color: #64748b; font-style: italic; font-size: 12px; padding: 10px;">No recent records found in database.</div>`;
                 return;
             }
 
             let html = "";
-            const displayRows = rows.slice(0, 8);
-            
+            const displayRows = rows.slice(0, 7);
+
             displayRows.forEach(r => {
                 const badgeClass = r.type === "Pickup" ? "badge-pickup" : "badge-return";
                 html += `
                     <div class="activity-item">
                         <div>
                             <span class="badge ${badgeClass}">${r.type}</span>
-                            <strong style="margin-left:12px; font-size: 14px; color:#1e293b;">${r.awb}</strong>
-                            <span style="color:#64748b; font-size:12px; margin-left:8px;">(Order: ${r.orderId || 'N/A'})</span>
+                            <strong style="margin-left:8px; font-size: 13px; color:#1e293b;">${r.awb}</strong>
+                            <span style="color:#64748b; font-size:11px; margin-left:6px;">(Order: ${r.orderId || 'N/A'})</span>
                         </div>
-                        <div style="font-weight:600; font-size: 13px; color:#475569;">${r.courier || 'MANUAL'} | <span style="color:#2563eb;">${r.status || 'Scanned'}</span></div>
+                        <div style="font-weight:700; font-size: 12px; color:#475569;">${r.courier || 'MANUAL'} | <span style="color:#2563eb;">${r.status || 'Scanned'}</span></div>
                     </div>
                 `;
             });
             streamBox.innerHTML = html;
         }
 
-        function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
-        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
-        
+        /* ===================================
+        MASTER GLOBAL SEARCH ENGINE LOGIC
+        =================================== */
+        function handleMasterSearchEnter(e) {
+            if (e.key === 'Enter') executeGlobalMasterSearch();
+        }
+
+        async function executeGlobalMasterSearch() {
+            const query = document.getElementById("globalMasterSearchInput").value.trim();
+            if (!query) {
+                alert("Please enter something to search (Order ID, AWB, Labour, SKU...)");
+                return;
+            }
+
+            document.getElementById("searchKeywordLabel").innerText = query;
+            const container = document.getElementById("searchResultsContainer");
+            container.innerHTML = `<p style="text-align:center; padding:20px; color:#64748b; font-size:13px;"><i class="fa-solid fa-spinner fa-spin text-blue-600"></i> Searching across system records...</p>`;
+            document.getElementById("searchModal").style.display = "flex";
+
+            try {
+                // Search Order Endpoint
+                const orderResp = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(query)}`);
+                const orderData = await orderResp.json();
+
+                let resultsHtml = "";
+
+                if (orderData.success) {
+                    resultsHtml += `
+                        <div class="search-result-card">
+                            <span style="background:#e0f2fe; color:#0369a1; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px;">ORDER / SCAN RECORD</span>
+                            <h4 style="font-weight:800; color:#0f172a; margin-top:4px;">AWB: ${orderData.awb} | Order ID: ${orderData.orderId}</h4>
+                            <p style="color:#475569; font-size:12px; margin-top:2px;">Type: <b>${orderData.type}</b> | Courier: <b>${orderData.courier}</b> | Status: <b style="color:#2563eb;">${orderData.status}</b></p>
+                            <p style="color:#64748b; font-size:11px;">Customer: ${orderData.customer || 'N/A'} (${orderData.city || ''}) | Date: ${orderData.date}</p>
+                        </div>
+                    `;
+                }
+
+                if (!resultsHtml) {
+                    resultsHtml = `<p style="text-align:center; padding:20px; color:#64748b; font-size:13px;">No direct match found for "${query}". Try searching AWB or Order ID specifically.</p>`;
+                }
+
+                container.innerHTML = resultsHtml;
+
+            } catch (err) {
+                container.innerHTML = `<p style="text-align:center; padding:20px; color:#ef4444; font-size:13px;">Search Error: Could not connect to backend.</p>`;
+            }
+        }
+
+        function closeSearchModal() {
+            document.getElementById("searchModal").style.display = "none";
+        }
+
         function toast(msg) {
             const t = document.createElement("div");
             t.className = "toast"; t.innerText = msg;
             document.body.appendChild(t);
             setTimeout(() => {
                 t.style.opacity = "0";
-                t.style.transition = "opacity 0.5s ease";
-                setTimeout(() => t.remove(), 500);
-            }, 3000);
+                t.style.transition = "opacity 0.4s ease";
+                setTimeout(() => t.remove(), 400);
+            }, 2500);
         }
 
         window.onload = function() {
             if (API_URL !== "YOUR_SPREADSHEET_WEB_APP_URL_HERE") {
-                // First load standard blocking process
-                refreshDashboardData(false);
-                
-                // Subsequent updates will run silently in background
-                setInterval(() => {
-                    refreshDashboardData(true);
-                }, 45000); 
+                refreshDashboardData(true);
+                setInterval(() => { refreshDashboardData(true); }, 30000);
             } else {
-                document.getElementById("monthTitle").innerHTML = "<b style='color:#ef4444;'>Set API_URL Line 99</b>";
+                document.getElementById("monthTitle").innerHTML = "<b style='color:#ef4444;'>Set API_URL</b>";
             }
         };
     </script>
