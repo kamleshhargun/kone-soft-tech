@@ -14,6 +14,7 @@
       --canvas-h: 1920px;
       --jelly-top: 22.5%;
       --jelly-bottom: 22.5%;
+      --icon-size: 58px;
     }
 
     * {
@@ -66,7 +67,8 @@
 
     .control-group input[type="text"],
     .control-group select,
-    .control-group input[type="file"] {
+    .control-group input[type="file"],
+    .control-group input[type="range"] {
       width: 100%;
       padding: 8px 10px;
       border-radius: 6px;
@@ -128,6 +130,28 @@
 
     .btn-export:hover {
       background: #00e676;
+    }
+
+    .btn-cache {
+      width: 100%;
+      padding: 10px;
+      background: #ff3d00;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      font-size: 0.88rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-cache:hover {
+      background: #ff5215;
     }
 
     /* Preview Canvas Area */
@@ -207,8 +231,8 @@
     }
 
     .feature-icon {
-      width: 58px;
-      height: 58px;
+      width: var(--icon-size);
+      height: var(--icon-size);
       object-fit: contain;
       margin-bottom: 10px;
       filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.18));
@@ -250,6 +274,12 @@
         <option value="'Playfair Display', serif">Playfair Display</option>
         <option value="'Roboto', sans-serif">Roboto</option>
       </select>
+    </div>
+
+    <!-- ADDED: ICON SIZE ADJUSTMENT OPTION -->
+    <div class="control-group">
+      <label>Icon Size (Chhota / Bada Karein): <span id="iconSizeVal">58px</span></label>
+      <input type="range" id="iconScale" min="25" max="110" value="58" oninput="changeIconSize(this.value)">
     </div>
 
     <!-- LEFT JELLY BAR EDIT -->
@@ -331,6 +361,11 @@
     </div>
 
     <button id="exportBtn" class="btn-export" onclick="exportJPG()">Export High-Res JPG</button>
+
+    <!-- ADDED: CLEAN CACHE BUTTON -->
+    <button class="btn-cache" onclick="clearSoftwareCache()">
+      🧹 Clean Cache & Reset Memory
+    </button>
   </div>
 
   <!-- CANVAS PREVIEW -->
@@ -404,6 +439,12 @@
       fitCanvasToScreen();
     }
 
+    // Function to dynamically resize icons
+    function changeIconSize(val) {
+      document.documentElement.style.setProperty('--icon-size', val + 'px');
+      document.getElementById('iconSizeVal').innerText = val + 'px';
+    }
+
     function toggleFeature(idPrefix) {
       const isChecked = document.getElementById(`${idPrefix}-check`).checked;
       const targetItem = document.getElementById(`${idPrefix}-item`);
@@ -474,6 +515,23 @@
         btn.innerText = "Export High-Res JPG";
         btn.style.opacity = "1";
       });
+    }
+
+    // Function to clear browser cache and local data
+    function clearSoftwareCache() {
+      localStorage.clear();
+      sessionStorage.clear();
+
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => input.value = '');
+
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          names.forEach(name => caches.delete(name));
+        });
+      }
+
+      alert("🧹 Cache Cleaned Successfully! Software memory has been refreshed.");
     }
 
     window.onload = function() {
