@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product Creative Editor - No Blur Bleed Fix</title>
+  <!-- Modern Rendering Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image-more/3.3.0/dom-to-image-more.min.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Montserrat:wght@400;500;600&family=Playfair+Display:wght@600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --canvas-w: 1080px;
+      --canvas-h: 1920px;
+      --jelly-top: 22.5%;
+      --jelly-bottom: 22.5%;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #18181c;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      width: 420px;
+      background: #24242e;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 1px solid #383846;
+    }
+
+    .controls-panel h2 {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      margin-bottom: 12px;
+      color: #4da6ff;
+      border-bottom: 1px solid #383846;
+      padding-bottom: 6px;
+    }
+
+    .controls-panel h2:first-child {
+      margin-top: 0;
+    }
+
+    .control-group {
+      margin-bottom: 15px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+      color: #ccc;
+    }
+
+    .control-group input[type="text"],
+    .control-group select,
+    .control-group input[type="file"] {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid #424254;
+      background: #1a1a22;
+      color: #fff;
+      font-size: 0.88rem;
+    }
+
+    .feature-edit {
+      background: #1c1c24;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid #343444;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .feature-header h4 {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .toggle-label {
+      font-size: 0.8rem;
+      color: #00e676;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .toggle-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #00c853;
+      cursor: pointer;
+    }
+
+    .btn-export {
+      width: 100%;
+      padding: 14px;
+      background: #00c853;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 15px;
+      transition: 0.2s;
+    }
+
+    .btn-export:hover {
+      background: #00e676;
+    }
+
+    /* Preview Canvas Area */
+    .preview-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: #101014;
+      overflow: auto;
+    }
+
+    #creative-canvas {
+      position: relative;
+      width: var(--canvas-w);
+      height: var(--canvas-h);
+      background: #222;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      transform-origin: center center;
+    }
+
+    .bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* STRICT INSIDE-ONLY JELLY BOX GLASSMORPHISM */
+    .jelly-bar {
+      position: absolute;
+      top: var(--jelly-top);
+      bottom: var(--jelly-bottom);
+      width: 22%;
+      background: rgba(255, 255, 255, 0.38);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 40px;
+      border: 1.5px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      padding: 25px 12px;
+      z-index: 10;
+      
+      /* PREVENT OUTSIDE BLUR BLEED */
+      overflow: hidden;
+      isolation: isolate;
+      clip-path: inset(0 round 40px);
+    }
+
+    .jelly-bar.left {
+      left: 4%;
+    }
+
+    .jelly-bar.right {
+      right: 4%;
+    }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+      transition: all 0.2s ease;
+    }
+
+    .feature-item.hidden {
+      display: none !important;
+    }
+
+    .feature-icon {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      margin-bottom: 10px;
+      filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.18));
+    }
+
+    .feature-text {
+      color: #111;
+      font-size: 26px;
+      font-weight: 500;
+      line-height: 1.25;
+      word-break: break-word;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CONTROL PANEL -->
+  <div class="controls-panel">
+    <h2>1. Size & Image Settings</h2>
+    <div class="control-group">
+      <label>Canvas Dimension</label>
+      <select id="aspectRatio" onchange="updateDimension()">
+        <option value="9:16">9:16 (1080 x 1920 px) - Story/Reel</option>
+        <option value="1:1">1:1 (1080 x 1080 px) - Post</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>Model Shoot Photo</label>
+      <input type="file" id="bgInput" accept="image/*" onchange="loadBgImage(event)">
+    </div>
+
+    <div class="control-group">
+      <label>Text Font Style</label>
+      <select id="fontFamily" onchange="updateFontStyle()">
+        <option value="'Poppins', sans-serif">Poppins</option>
+        <option value="'Montserrat', sans-serif">Montserrat</option>
+        <option value="'Playfair Display', serif">Playfair Display</option>
+        <option value="'Roboto', sans-serif">Roboto</option>
+      </select>
+    </div>
+
+    <!-- LEFT JELLY BAR EDIT -->
+    <h2>2. Left Jelly Bar Features</h2>
+    
+    <div class="feature-edit">
+      <div class="feature-header">
+        <h4>Left Item 1</h4>
+        <label class="toggle-label">
+          <input type="checkbox" id="l1-check" checked onchange="toggleFeature('l1')"> Show
+        </label>
+      </div>
+      <input type="text" id="l1-text" value="100% Cotton Flex" oninput="updateContent()">
+      <label style="margin-top:6px;">Icon Image</label>
+      <input type="file" accept="image/*" onchange="updateIcon(event, 'l1-icon')">
+    </div>
+
+    <div class="feature-edit">
+      <div class="feature-header">
+        <h4>Left Item 2</h4>
+        <label class="toggle-label">
+          <input type="checkbox" id="l2-check" checked onchange="toggleFeature('l2')"> Show
+        </label>
+      </div>
+      <input type="text" id="l2-text" value="Two Deep Pockets" oninput="updateContent()">
+      <label style="margin-top:6px;">Icon Image</label>
+      <input type="file" accept="image/*" onchange="updateIcon(event, 'l2-icon')">
+    </div>
+
+    <div class="feature-edit">
+      <div class="feature-header">
+        <h4>Left Item 3</h4>
+        <label class="toggle-label">
+          <input type="checkbox" id="l3-check" checked onchange="toggleFeature('l3')"> Show
+        </label>
+      </div>
+      <input type="text" id="l3-text" value="Flowy A line Silhouette" oninput="updateContent()">
+      <label style="margin-top:6px;">Icon Image</label>
+      <input type="file" accept="image/*" onchange="updateIcon(event, 'l3-icon')">
+    </div>
+
+    <!-- RIGHT JELLY BAR EDIT -->
+    <h2>3. Right Jelly Bar Features</h2>
+
+    <div class="feature-edit">
+      <div class="feature-header">
+        <h4>Right Item 1</h4>
+        <label class="toggle-label">
+          <input type="checkbox" id="r1-check" checked onchange="toggleFeature('r1')"> Show
+        </label>
+      </div>
+      <input type="text" id="r1-text" value="Easy Exchange Available" oninput="updateContent()">
+      <label style="margin-top:6px;">Icon Image</label>
+      <input type="file" accept="image/*" onchange="updateIcon(event, 'r1-icon')">
+    </div>
+
+    <div class="feature-edit">
+      <div class="feature-header">
+        <h4>Right Item 2</h4>
+        <label class="toggle-label">
+          <input type="checkbox" id="r2-check" checked onchange="toggleFeature('r2')"> Show
+        </label>
+      </div>
+      <input type="text" id="r2-text" value="COD Available" oninput="updateContent()">
+      <label style="margin-top:6px;">Icon Image</label>
+      <input type="file" accept="image/*" onchange="updateIcon(event, 'r2-icon')">
+    </div>
+
+    <div class="feature-edit">
+      <div class="feature-header">
+        <h4>Right Item 3</h4>
+        <label class="toggle-label">
+          <input type="checkbox" id="r3-check" onchange="toggleFeature('r3')"> Show
+        </label>
+      </div>
+      <input type="text" id="r3-text" value="Premium Quality" oninput="updateContent()">
+      <label style="margin-top:6px;">Icon Image</label>
+      <input type="file" accept="image/*" onchange="updateIcon(event, 'r3-icon')">
+    </div>
+
+    <button id="exportBtn" class="btn-export" onclick="exportJPG()">Export High-Res JPG</button>
+  </div>
+
+  <!-- CANVAS PREVIEW -->
+  <div class="preview-area" id="previewArea">
+    <div id="creative-canvas">
+      <!-- Background Model Image -->
+      <img id="bgDisplay" class="bg-image" src="https://via.placeholder.com/1080x1920?text=Upload+Model+Image" alt="Model Shoot">
+
+      <!-- Left Jelly Bar -->
+      <div class="jelly-bar left">
+        <div id="l1-item" class="feature-item">
+          <img id="l1-icon" class="feature-icon" src="https://cdn-icons-png.flaticon.com/512/2965/2965318.png" alt="icon">
+          <div id="l1-disp" class="feature-text">100% Cotton Flex</div>
+        </div>
+        <div id="l2-item" class="feature-item">
+          <img id="l2-icon" class="feature-icon" src="https://cdn-icons-png.flaticon.com/512/888/888034.png" alt="icon">
+          <div id="l2-disp" class="feature-text">Two Deep Pockets</div>
+        </div>
+        <div id="l3-item" class="feature-item">
+          <img id="l3-icon" class="feature-icon" src="https://cdn-icons-png.flaticon.com/512/2763/2763321.png" alt="icon">
+          <div id="l3-disp" class="feature-text">Flowy A line Silhouette</div>
+        </div>
+      </div>
+
+      <!-- Right Jelly Bar -->
+      <div class="jelly-bar right">
+        <div id="r1-item" class="feature-item">
+          <img id="r1-icon" class="feature-icon" src="https://cdn-icons-png.flaticon.com/512/2258/2258478.png" alt="icon">
+          <div id="r1-disp" class="feature-text">Easy Exchange Available</div>
+        </div>
+        <div id="r2-item" class="feature-item">
+          <img id="r2-icon" class="feature-icon" src="https://cdn-icons-png.flaticon.com/512/2838/2838895.png" alt="icon">
+          <div id="r2-disp" class="feature-text">COD Available</div>
+        </div>
+        <div id="r3-item" class="feature-item hidden">
+          <img id="r3-icon" class="feature-icon" src="https://cdn-icons-png.flaticon.com/512/1067/1067566.png" alt="icon">
+          <div id="r3-disp" class="feature-text">Premium Quality</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function fitCanvasToScreen() {
+      const previewArea = document.getElementById('previewArea');
+      const canvas = document.getElementById('creative-canvas');
+      const scale = Math.min(
+        (previewArea.clientWidth - 40) / canvas.offsetWidth,
+        (previewArea.clientHeight - 40) / canvas.offsetHeight
+      );
+      canvas.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', fitCanvasToScreen);
+
+    function updateDimension() {
+      const ratio = document.getElementById('aspectRatio').value;
+      const canvas = document.getElementById('creative-canvas');
+      
+      if (ratio === '1:1') {
+        canvas.style.setProperty('--canvas-w', '1080px');
+        canvas.style.setProperty('--canvas-h', '1080px');
+        canvas.style.setProperty('--jelly-top', '8%');
+        canvas.style.setProperty('--jelly-bottom', '8%');
+      } else {
+        canvas.style.setProperty('--canvas-w', '1080px');
+        canvas.style.setProperty('--canvas-h', '1920px');
+        canvas.style.setProperty('--jelly-top', '22.5%');
+        canvas.style.setProperty('--jelly-bottom', '22.5%');
+      }
+      fitCanvasToScreen();
+    }
+
+    function toggleFeature(idPrefix) {
+      const isChecked = document.getElementById(`${idPrefix}-check`).checked;
+      const targetItem = document.getElementById(`${idPrefix}-item`);
+      if (isChecked) targetItem.classList.remove('hidden');
+      else targetItem.classList.add('hidden');
+    }
+
+    function loadBgImage(event) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        document.getElementById('bgDisplay').src = reader.result;
+      };
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    function updateContent() {
+      ['l1', 'l2', 'l3', 'r1', 'r2', 'r3'].forEach(id => {
+        document.getElementById(`${id}-disp`).innerText = document.getElementById(`${id}-text`).value;
+      });
+    }
+
+    function updateIcon(event, imgId) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        document.getElementById(imgId).src = reader.result;
+      };
+      if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    function updateFontStyle() {
+      const selectedFont = document.getElementById('fontFamily').value;
+      document.querySelectorAll('.feature-text').forEach(el => {
+        el.style.fontFamily = selectedFont;
+      });
+    }
+
+    function exportJPG() {
+      const canvas = document.getElementById('creative-canvas');
+      const btn = document.getElementById('exportBtn');
+      
+      btn.innerText = "Exporting...";
+      btn.style.opacity = "0.7";
+
+      const currentTransform = canvas.style.transform;
+      canvas.style.transform = 'none';
+
+      domtoimage.toJpeg(canvas, {
+        quality: 0.98,
+        width: canvas.offsetWidth,
+        height: canvas.offsetHeight
+      }).then(function (dataUrl) {
+        canvas.style.transform = currentTransform;
+        
+        const link = document.createElement('a');
+        link.download = 'product-creative-clean.jpg';
+        link.href = dataUrl;
+        link.click();
+
+        btn.innerText = "Export High-Res JPG";
+        btn.style.opacity = "1";
+      }).catch(function (error) {
+        console.error('Export Error:', error);
+        canvas.style.transform = currentTransform;
+        btn.innerText = "Export High-Res JPG";
+        btn.style.opacity = "1";
+      });
+    }
+
+    window.onload = function() {
+      updateDimension();
+    };
+  </script>
+</body>
+</html>
