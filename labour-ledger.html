@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Labour Master Ledger & Payment Settlement</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen p-3 sm:p-6">
+
+  <div class="max-w-6xl mx-auto space-y-4">
+    
+    <!-- HEADER -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex justify-between items-center flex-wrap gap-2">
+      <div>
+        <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-calculator text-indigo-600"></i> Labour Master Ledger & Statement
+        </h1>
+        <p class="text-xs text-slate-500">कारीगरों का काम, एडवांस लेजर और पेंडिंग भुगतान हिसाब</p>
+      </div>
+      <button onclick="fetchLedgerData()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700 shadow-sm transition">
+        <i class="fa-solid fa-filter"></i> Apply Filter
+      </button>
+    </div>
+
+    <!-- DATE RANGE & LABOUR FILTER PANEL -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 mb-1 block">Labour Name</label>
+        <select id="filterLabourSelect" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
+          <option value="">All Labours</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 mb-1 block">From Date</label>
+        <input type="date" id="fromDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
+      </div>
+
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 mb-1 block">To Date</label>
+        <input type="date" id="toDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
+      </div>
+    </div>
+
+    <!-- STATS CARDS SUMMARY -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Work Done</p>
+        <h3 id="statTotalWork" class="text-lg font-black text-slate-800">₹0</h3>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Advance Taken</p>
+        <h3 id="statAdvance" class="text-lg font-black text-amber-600">₹0</h3>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Paid</p>
+        <h3 id="statPaid" class="text-lg font-black text-emerald-600">₹0</h3>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-[10px] font-bold text-slate-400 uppercase">Net Balance Due</p>
+        <h3 id="statBalance" class="text-lg font-black text-indigo-600">₹0</h3>
+      </div>
+    </div>
+
+    <!-- MAIN DATA TABLE -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
+              <th class="p-3">Date</th>
+              <th class="p-3">Labour Name</th>
+              <th class="p-3">SKU / Item</th>
+              <th class="p-3">Qty</th>
+              <th class="p-3">Rate (₹)</th>
+              <th class="p-3">Total (₹)</th>
+              <th class="p-3">Type</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody id="ledgerTbody" class="divide-y divide-slate-100">
+            <tr>
+              <td colspan="8" class="text-center py-10 text-slate-400">Loading ledger data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ==========================================
+    // DEPLOYED WEB APP URL
+    // ==========================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbyiqO5JSf-i7pza82liae8YkD3yzgIkrSTo-5FIcDZctzhizRirRCBAyqIHnHc0Rx1S/exec";
+
+    window.onload = function() {
+      loadLabourNames();
+      fetchLedgerData();
+    };
+
+    async function loadLabourNames() {
+      try {
+        const resp = await fetch(`${API_URL}?action=getLabourNames`);
+        const data = await resp.json();
+        if (data.success) {
+          const opts = '<option value="">All Labours</option>' + data.names.map(n => `<option value="${n}">${n}</option>`).join('');
+          document.getElementById("filterLabourSelect").innerHTML = opts;
+        }
+      } catch (e) {}
+    }
+
+    async function fetchLedgerData() {
+      const labour = document.getElementById("filterLabourSelect").value;
+      const fromDate = document.getElementById("fromDate").value;
+      const toDate = document.getElementById("toDate").value;
+      const tbody = document.getElementById("ledgerTbody");
+
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> Fetching records...</td></tr>`;
+
+      try {
+        const url = `${API_URL}?action=getCuttingLedger&name=${encodeURIComponent(labour)}&fromDate=${fromDate}&toDate=${toDate}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
+
+        if (data.success) {
+          renderLedgerTable(data.rows);
+        }
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-red-500">Error loading data</td></tr>`;
+      }
+    }
+
+    function renderLedgerTable(rows) {
+      const tbody = document.getElementById("ledgerTbody");
+      if (!rows || rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-slate-400">No transactions found for selected filters</td></tr>`;
+        
+        document.getElementById("statTotalWork").innerText = "₹0";
+        document.getElementById("statAdvance").innerText = "₹0";
+        document.getElementById("statPaid").innerText = "₹0";
+        document.getElementById("statBalance").innerText = "₹0";
+        return;
+      }
+
+      let totalWork = 0;
+      let totalAdvance = 0;
+      let totalPaid = 0;
+
+      tbody.innerHTML = rows.map(r => {
+        if (r.type === 'Inward') totalWork += r.total;
+        if (r.type === 'Advance') totalAdvance += r.qty; // Advance amount stored in qty
+        if (r.status === 'Paid') totalPaid += r.paidAmount;
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="p-3 font-semibold text-slate-700">${r.date}</td>
+            <td class="p-3 font-bold text-slate-800">${r.labourName}</td>
+            <td class="p-3 font-mono font-bold text-indigo-600">${r.sku}</td>
+            <td class="p-3">${r.qty} Pcs</td>
+            <td class="p-3">₹${r.rate}</td>
+            <td class="p-3 font-bold">₹${r.total}</td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.type === 'Inward' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                ${r.type}
+              </span>
+            </td>
+            <td class="p-3">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.status === 'Paid' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'}">
+                ${r.status}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById("statTotalWork").innerText = "₹" + totalWork.toLocaleString('en-IN');
+      document.getElementById("statAdvance").innerText = "₹" + totalAdvance.toLocaleString('en-IN');
+      document.getElementById("statPaid").innerText = "₹" + totalPaid.toLocaleString('en-IN');
+      
+      const balance = (totalWork - totalAdvance - totalPaid);
+      document.getElementById("statBalance").innerText = "₹" + balance.toLocaleString('en-IN');
+    }
+  </script>
+</body>
+</html>
