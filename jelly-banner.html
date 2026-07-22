@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Product Creative Editor - Original High Resolution Fix</title>
+  <title>Product Creative Editor - No Blur Bleed Fix</title>
   <!-- Modern Rendering Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image-more/3.3.0/dom-to-image-more.min.js"></script>
   <!-- Google Fonts -->
@@ -10,14 +10,10 @@
   
   <style>
     :root {
-      --canvas-w: 1440px;
-      --canvas-h: 2560px;
+      --canvas-w: 1080px;
+      --canvas-h: 1920px;
       --jelly-top: 22.5%;
       --jelly-bottom: 22.5%;
-      --jelly-width: 22%;
-      --font-scale: 1;
-      --icon-size: 78px;
-      --text-size: 34px;
     }
 
     * {
@@ -134,28 +130,6 @@
       background: #00e676;
     }
 
-    .btn-cache {
-      width: 100%;
-      padding: 10px;
-      background: #ff3d00;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 0.88rem;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-cache:hover {
-      background: #ff5215;
-    }
-
     /* Preview Canvas Area */
     .preview-area {
       flex: 1;
@@ -191,24 +165,24 @@
       position: absolute;
       top: var(--jelly-top);
       bottom: var(--jelly-bottom);
-      width: var(--jelly-width);
+      width: 22%;
       background: rgba(255, 255, 255, 0.38);
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
-      border-radius: 50px;
-      border: 2px solid rgba(255, 255, 255, 0.65);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 0 20px rgba(255, 255, 255, 0.4);
+      border-radius: 40px;
+      border: 1.5px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.4);
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       align-items: center;
-      padding: 30px 15px;
+      padding: 25px 12px;
       z-index: 10;
       
       /* PREVENT OUTSIDE BLUR BLEED */
       overflow: hidden;
       isolation: isolate;
-      clip-path: inset(0 round 50px);
+      clip-path: inset(0 round 40px);
     }
 
     .jelly-bar.left {
@@ -233,16 +207,16 @@
     }
 
     .feature-icon {
-      width: var(--icon-size);
-      height: var(--icon-size);
+      width: 58px;
+      height: 58px;
       object-fit: contain;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.18));
     }
 
     .feature-text {
       color: #111;
-      font-size: var(--text-size);
+      font-size: 26px;
       font-weight: 500;
       line-height: 1.25;
       word-break: break-word;
@@ -258,8 +232,8 @@
     <div class="control-group">
       <label>Canvas Dimension</label>
       <select id="aspectRatio" onchange="updateDimension()">
-        <option value="9:16">6:19 Aspect Ratio (1440 x 2560 px)</option>
-        <option value="1:1">1:1 Square (1080 x 1080 px)</option>
+        <option value="9:16">9:16 (1080 x 1920 px) - Story/Reel</option>
+        <option value="1:1">1:1 (1080 x 1080 px) - Post</option>
       </select>
     </div>
 
@@ -357,18 +331,13 @@
     </div>
 
     <button id="exportBtn" class="btn-export" onclick="exportJPG()">Export High-Res JPG</button>
-    
-    <!-- Clean Cache Button -->
-    <button class="btn-cache" onclick="clearSoftwareCache()">
-      🧹 Clean Cache & Reset Memory
-    </button>
   </div>
 
   <!-- CANVAS PREVIEW -->
   <div class="preview-area" id="previewArea">
     <div id="creative-canvas">
       <!-- Background Model Image -->
-      <img id="bgDisplay" class="bg-image" src="https://via.placeholder.com/1440x2560?text=Upload+Model+Image" alt="Model Shoot">
+      <img id="bgDisplay" class="bg-image" src="https://via.placeholder.com/1080x1920?text=Upload+Model+Image" alt="Model Shoot">
 
       <!-- Left Jelly Bar -->
       <div class="jelly-bar left">
@@ -408,14 +377,9 @@
     function fitCanvasToScreen() {
       const previewArea = document.getElementById('previewArea');
       const canvas = document.getElementById('creative-canvas');
-      
-      // Calculate scale based on current target dimensions
-      const canvasW = parseInt(getComputedStyle(canvas).width);
-      const canvasH = parseInt(getComputedStyle(canvas).height);
-
       const scale = Math.min(
-        (previewArea.clientWidth - 40) / canvasW,
-        (previewArea.clientHeight - 40) / canvasH
+        (previewArea.clientWidth - 40) / canvas.offsetWidth,
+        (previewArea.clientHeight - 40) / canvas.offsetHeight
       );
       canvas.style.transform = `scale(${scale})`;
     }
@@ -427,23 +391,15 @@
       const canvas = document.getElementById('creative-canvas');
       
       if (ratio === '1:1') {
-        // Exact 1:1 Dimensions (1080 x 1080 px)
         canvas.style.setProperty('--canvas-w', '1080px');
         canvas.style.setProperty('--canvas-h', '1080px');
         canvas.style.setProperty('--jelly-top', '8%');
         canvas.style.setProperty('--jelly-bottom', '8%');
-        canvas.style.setProperty('--jelly-width', '24%');
-        canvas.style.setProperty('--icon-size', '58px');
-        canvas.style.setProperty('--text-size', '26px');
       } else {
-        // Exact 6:19 / 9:16 High-Res Dimensions (1440 x 2560 px)
-        canvas.style.setProperty('--canvas-w', '1440px');
-        canvas.style.setProperty('--canvas-h', '2560px');
+        canvas.style.setProperty('--canvas-w', '1080px');
+        canvas.style.setProperty('--canvas-h', '1920px');
         canvas.style.setProperty('--jelly-top', '22.5%');
         canvas.style.setProperty('--jelly-bottom', '22.5%');
-        canvas.style.setProperty('--jelly-width', '22%');
-        canvas.style.setProperty('--icon-size', '78px');
-        canvas.style.setProperty('--text-size', '34px');
       }
       fitCanvasToScreen();
     }
@@ -492,30 +448,21 @@
       const canvas = document.getElementById('creative-canvas');
       const btn = document.getElementById('exportBtn');
       
-      btn.innerText = "Exporting High-Res...";
+      btn.innerText = "Exporting...";
       btn.style.opacity = "0.7";
 
       const currentTransform = canvas.style.transform;
-      // Reset scale transform to capture full exact pixel dimensions
       canvas.style.transform = 'none';
 
-      // Read exact pixel width and height
-      const targetW = canvas.offsetWidth;
-      const targetH = canvas.offsetHeight;
-
       domtoimage.toJpeg(canvas, {
-        quality: 1.0, // Maximum Original Quality
-        width: targetW,
-        height: targetH,
-        style: {
-          transform: 'none',
-          transformOrigin: 'center center'
-        }
+        quality: 0.98,
+        width: canvas.offsetWidth,
+        height: canvas.offsetHeight
       }).then(function (dataUrl) {
         canvas.style.transform = currentTransform;
         
         const link = document.createElement('a');
-        link.download = `product-creative-${targetW}x${targetH}.jpg`;
+        link.download = 'product-creative-clean.jpg';
         link.href = dataUrl;
         link.click();
 
@@ -527,32 +474,6 @@
         btn.innerText = "Export High-Res JPG";
         btn.style.opacity = "1";
       });
-    }
-
-    /* Clean Cache & Temporary Memory Clear Function */
-    function clearSoftwareCache() {
-      // 1. Clear LocalStorage and SessionStorage
-      localStorage.clear();
-      sessionStorage.clear();
-
-      // 2. Clear File Inputs
-      const fileInputs = document.querySelectorAll('input[type="file"]');
-      fileInputs.forEach(input => input.value = '');
-
-      // 3. Reset Preview Image to Default Placeholder
-      const ratio = document.getElementById('aspectRatio').value;
-      const targetW = ratio === '1:1' ? 1080 : 1440;
-      const targetH = ratio === '1:1' ? 1080 : 2560;
-      document.getElementById('bgDisplay').src = `https://via.placeholder.com/${targetW}x${targetH}?text=Upload+Model+Image`;
-
-      // 4. Force Browser Garbage Collection / Reload Cache
-      if ('caches' in window) {
-        caches.keys().then(names => {
-          names.forEach(name => caches.delete(name));
-        });
-      }
-
-      alert("🧹 Cache Cleaned Successfully! Software memory has been refreshed.");
     }
 
     window.onload = function() {
