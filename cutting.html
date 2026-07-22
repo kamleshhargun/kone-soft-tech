@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cutting & Stitching Issue Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-100 font-sans min-h-screen p-3 sm:p-6">
+
+  <div class="max-w-4xl mx-auto space-y-4">
+    
+    <!-- HEADER -->
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex justify-between items-center flex-wrap gap-2">
+      <div>
+        <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-scissors text-indigo-600"></i> Cutting & Stitching Management
+        </h1>
+        <p class="text-xs text-slate-500">कारीगरों को कटिंग देने और रेडी माल जमा करने की एंट्री</p>
+      </div>
+      <button onclick="loadDropdownData()" class="bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-indigo-100">
+        <i class="fa-solid fa-rotate"></i> Reload Dropdowns
+      </button>
+    </div>
+
+    <!-- TABS SWITCHER -->
+    <div class="bg-slate-200 p-1 rounded-xl flex text-xs font-bold">
+      <button onclick="switchTab('give')" id="tabGive" class="flex-1 py-2.5 rounded-lg bg-white text-indigo-600 shadow-sm transition">
+        <i class="fa-solid fa-hand-holding-hand mr-1"></i> Give Cutting (कटिंग इश्यू करें)
+      </button>
+      <button onclick="switchTab('receive')" id="tabReceive" class="flex-1 py-2.5 rounded-lg text-slate-500 transition">
+        <i class="fa-solid fa-box-archive mr-1"></i> Receive Ready (रेडी जमा करें)
+      </button>
+    </div>
+
+    <!-- TAB 1: GIVE CUTTING FORM -->
+    <div id="giveSection" class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4">
+      <h2 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+        <i class="fa-solid fa-plus-circle text-indigo-600"></i> Issue New Stitching Batch
+      </h2>
+
+      <form id="giveCuttingForm" onsubmit="handleGiveCutting(event)" class="space-y-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-slate-600 mb-1 block">Labour Name (कारीगर का नाम)</label>
+            <select id="giveLabourSelect" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="">-- Select Labour --</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-bold text-slate-600 mb-1 block">Product SKU (Inventory)</label>
+            <select id="giveSkuSelect" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="">-- Select SKU Product --</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold text-slate-600 mb-1 block">Quantity (Pcs / जोड़े)</label>
+            <input type="number" id="giveQty" required min="1" placeholder="e.g. 50" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+
+          <div>
+            <label class="text-xs font-bold text-slate-600 mb-1 block">Stitching Rate/Pc (₹) <span class="text-slate-400 font-normal">(Optional)</span></label>
+            <input type="number" id="giveRate" step="0.01" placeholder="e.g. 25 (खाली छोड़ सकते हैं)" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+        </div>
+
+        <button type="submit" id="giveBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-xs shadow-md transition">
+          Save Cutting Entry
+        </button>
+      </form>
+    </div>
+
+    <!-- TAB 2: RECEIVE READY GOODS -->
+    <div id="receiveSection" class="bg-white rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200 space-y-4 hidden">
+      <h2 class="text-sm font-bold text-slate-800 border-b pb-2 flex items-center gap-2">
+        <i class="fa-solid fa-list-check text-emerald-600"></i> Receive Ready Goods from Labour
+      </h2>
+
+      <div>
+        <label class="text-xs font-bold text-slate-600 mb-1 block">Filter by Labour Name</label>
+        <select id="receiveLabourSelect" onchange="fetchPendingStitching()" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
+          <option value="">-- Select Labour to See Pending Cutting --</option>
+        </select>
+      </div>
+
+      <!-- Pending Stitching List Grid -->
+      <div id="pendingContainer" class="space-y-2 pt-2">
+        <p class="text-center text-xs text-slate-400 py-6">कृपया कारीगर का नाम चुनें ताकि उसकी पेंडिंग कटिंग दिख सके</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ==========================================
+    // DEPLOYED WEB APP URL
+    // ==========================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbyiqO5JSf-i7pza82liae8YkD3yzgIkrSTo-5FIcDZctzhizRirRCBAyqIHnHc0Rx1S/exec"; 
+
+    window.onload = function() {
+      loadDropdownData();
+    };
+
+    async function loadDropdownData() {
+      try {
+        // Fetch Labour Names
+        const lResp = await fetch(`${API_URL}?action=getLabourNames`);
+        const lData = await lResp.json();
+        
+        // Fetch Inventory Products
+        const pResp = await fetch(`${API_URL}?action=inventoryProducts`);
+        const pData = await pResp.json();
+
+        if (lData.success) {
+          const lOpts = '<option value="">-- Select Labour --</option>' + lData.names.map(n => `<option value="${n}">${n}</option>`).join('');
+          document.getElementById("giveLabourSelect").innerHTML = lOpts;
+          document.getElementById("receiveLabourSelect").innerHTML = lOpts;
+        }
+
+        if (pData.success) {
+          const pOpts = '<option value="">-- Select SKU Product --</option>' + pData.products.map(p => `<option value="${p.sku}">${p.sku}</option>`).join('');
+          document.getElementById("giveSkuSelect").innerHTML = pOpts;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function handleGiveCutting(e) {
+      e.preventDefault();
+      const btn = document.getElementById("giveBtn");
+      btn.disabled = true;
+      btn.innerText = "Saving Entry...";
+
+      const payload = {
+        action: "saveLabourTransaction",
+        payload: {
+          labourName: document.getElementById("giveLabourSelect").value,
+          sku: document.getElementById("giveSkuSelect").value,
+          qty: Number(document.getElementById("giveQty").value),
+          rate: Number(document.getElementById("giveRate").value || 0),
+          type: "Advance" // Store as Pending Stitching Cutting Issue
+        }
+      };
+
+      try {
+        const resp = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const res = await resp.json();
+        if (res.success) {
+          alert("Cutting allocated to Labour successfully!");
+          document.getElementById("giveCuttingForm").reset();
+        } else {
+          alert("Error: " + res.message);
+        }
+      } catch (err) {
+        alert("Server Error");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Save Cutting Entry";
+      }
+    }
+
+    async function fetchPendingStitching() {
+      const labourName = document.getElementById("receiveLabourSelect").value;
+      const container = document.getElementById("pendingContainer");
+
+      if (!labourName) {
+        container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6">कृपया कारीगर का नाम चुनें</p>`;
+        return;
+      }
+
+      container.innerHTML = `<p class="text-center text-xs text-slate-400 py-6"><i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> Fetching pending tasks...</p>`;
+
+      try {
+        const resp = await fetch(`${API_URL}?action=getCuttingLedger&name=${encodeURIComponent(labourName)}`);
+        const data = await resp.json();
+
+        if (data.success) {
+          const pendingRows = data.rows.filter(r => r.type === "Advance" && r.status === "Unpaid");
+
+          if (pendingRows.length === 0) {
+            container.innerHTML = `<p class="text-center text-xs text-emerald-600 font-bold py-6">इस लेबर के पास कोई पेंडिंग कटिंग नहीं है!</p>`;
+            return;
+          }
+
+          container.innerHTML = pendingRows.map(r => `
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">PENDING STITCHING</span>
+                  <b class="text-xs text-slate-800">${r.sku}</b>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-1">Issue Date: ${r.date} | Qty Given: <b>${r.qty} Pcs</b> ${r.rate ? `| Rate: ₹${r.rate}` : ''}</p>
+              </div>
+
+              <button onclick="markAsReady('${r.rowId}', '${r.sku}', ${r.qty}, ${r.rate})" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-lg shadow-sm transition">
+                <i class="fa-solid fa-check-circle mr-1"></i> Receive Ready (Inward)
+              </button>
+            </div>
+          `).join('');
+        }
+      } catch (e) {
+        container.innerHTML = `<p class="text-center text-xs text-red-500 py-6">Data loading error</p>`;
+      }
+    }
+
+    async function markAsReady(rowId, sku, qty, rate) {
+      let finalRate = rate;
+      if (!rate || rate === 0) {
+        const inputRate = prompt(`Enter stitching rate per piece for SKU '${sku}':`, "25");
+        if (inputRate === null) return;
+        finalRate = Number(inputRate) || 0;
+      }
+
+      try {
+        const resp = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "processLabourPayment",
+            payload: {
+              rowId: rowId,
+              paymentDate: new Date().toISOString().split('T')[0],
+              paidAmount: qty * finalRate
+            }
+          })
+        });
+        const res = await resp.json();
+        if (res.success) {
+          alert("Marked as Received Ready! Stock added to Inventory.");
+          fetchPendingStitching();
+        }
+      } catch (e) {
+        alert("Error receiving ready goods");
+      }
+    }
+
+    function switchTab(tab) {
+      if (tab === 'give') {
+        document.getElementById("giveSection").classList.remove("hidden");
+        document.getElementById("receiveSection").classList.add("hidden");
+        document.getElementById("tabGive").className = "flex-1 py-2.5 rounded-lg bg-white text-indigo-600 shadow-sm transition";
+        document.getElementById("tabReceive").className = "flex-1 py-2.5 rounded-lg text-slate-500 transition";
+      } else {
+        document.getElementById("giveSection").classList.add("hidden");
+        document.getElementById("receiveSection").classList.remove("hidden");
+        document.getElementById("tabReceive").className = "flex-1 py-2.5 rounded-lg bg-white text-indigo-600 shadow-sm transition";
+        document.getElementById("tabGive").className = "flex-1 py-2.5 rounded-lg text-slate-500 transition";
+      }
+    }
+  </script>
+</body>
+</html>
