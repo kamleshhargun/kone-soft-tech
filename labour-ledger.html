@@ -1,189 +1,316 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Labour Master Ledger & Payment Settlement</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-</head>
-<body class="bg-slate-100 font-sans min-h-screen p-3 sm:p-6">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Labour Financial Ledger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <div class="max-w-6xl mx-auto space-y-4">
-    
-    <!-- HEADER -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 flex justify-between items-center flex-wrap gap-2">
-      <div>
-        <h1 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-calculator text-indigo-600"></i> Labour Master Ledger & Statement
-        </h1>
-        <p class="text-xs text-slate-500">कारीगरों का काम, एडवांस लेजर और पेंडिंग भुगतान हिसाब</p>
-      </div>
-      <button onclick="fetchLedgerData()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-indigo-700 shadow-sm transition">
-        <i class="fa-solid fa-filter"></i> Apply Filter
-      </button>
-    </div>
-
-    <!-- DATE RANGE & LABOUR FILTER PANEL -->
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 mb-1 block">Labour Name</label>
-        <select id="filterLabourSelect" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
-          <option value="">All Labours</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 mb-1 block">From Date</label>
-        <input type="date" id="fromDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
-      </div>
-
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 mb-1 block">To Date</label>
-        <input type="date" id="toDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold outline-none">
-      </div>
-    </div>
-
-    <!-- STATS CARDS SUMMARY -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Work Done</p>
-        <h3 id="statTotalWork" class="text-lg font-black text-slate-800">₹0</h3>
-      </div>
-      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-        <p class="text-[10px] font-bold text-slate-400 uppercase">Advance Taken</p>
-        <h3 id="statAdvance" class="text-lg font-black text-amber-600">₹0</h3>
-      </div>
-      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-        <p class="text-[10px] font-bold text-slate-400 uppercase">Total Paid</p>
-        <h3 id="statPaid" class="text-lg font-black text-emerald-600">₹0</h3>
-      </div>
-      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
-        <p class="text-[10px] font-bold text-slate-400 uppercase">Net Balance Due</p>
-        <h3 id="statBalance" class="text-lg font-black text-indigo-600">₹0</h3>
-      </div>
-    </div>
-
-    <!-- MAIN DATA TABLE -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase font-bold text-[10px]">
-              <th class="p-3">Date</th>
-              <th class="p-3">Labour Name</th>
-              <th class="p-3">SKU / Item</th>
-              <th class="p-3">Qty</th>
-              <th class="p-3">Rate (₹)</th>
-              <th class="p-3">Total (₹)</th>
-              <th class="p-3">Type</th>
-              <th class="p-3">Status</th>
-            </tr>
-          </thead>
-          <tbody id="ledgerTbody" class="divide-y divide-slate-100">
-            <tr>
-              <td colspan="8" class="text-center py-10 text-slate-400">Loading ledger data...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-  <script>
-    // ==========================================
-    // DEPLOYED WEB APP URL
-    // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbyiqO5JSf-i7pza82liae8YkD3yzgIkrSTo-5FIcDZctzhizRirRCBAyqIHnHc0Rx1S/exec";
-
-    window.onload = function() {
-      loadLabourNames();
-      fetchLedgerData();
-    };
-
-    async function loadLabourNames() {
-      try {
-        const resp = await fetch(`${API_URL}?action=getLabourNames`);
-        const data = await resp.json();
-        if (data.success) {
-          const opts = '<option value="">All Labours</option>' + data.names.map(n => `<option value="${n}">${n}</option>`).join('');
-          document.getElementById("filterLabourSelect").innerHTML = opts;
-        }
-      } catch (e) {}
-    }
-
-    async function fetchLedgerData() {
-      const labour = document.getElementById("filterLabourSelect").value;
-      const fromDate = document.getElementById("fromDate").value;
-      const toDate = document.getElementById("toDate").value;
-      const tbody = document.getElementById("ledgerTbody");
-
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-slate-400"><i class="fa-solid fa-spinner fa-spin text-indigo-600"></i> Fetching records...</td></tr>`;
-
-      try {
-        const url = `${API_URL}?action=getCuttingLedger&name=${encodeURIComponent(labour)}&fromDate=${fromDate}&toDate=${toDate}`;
-        const resp = await fetch(url);
-        const data = await resp.json();
-
-        if (data.success) {
-          renderLedgerTable(data.rows);
-        }
-      } catch (e) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-red-500">Error loading data</td></tr>`;
-      }
-    }
-
-    function renderLedgerTable(rows) {
-      const tbody = document.getElementById("ledgerTbody");
-      if (!rows || rows.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-10 text-slate-400">No transactions found for selected filters</td></tr>`;
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif }
+        body { background: #f0fdf4; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #1f2937; padding: 15px; }
+        .main-container { width: 100%; max-width: 650px; }
+        .header { text-align: center; font-size: 20px; font-weight: 800; color: #059669; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        document.getElementById("statTotalWork").innerText = "₹0";
-        document.getElementById("statAdvance").innerText = "₹0";
-        document.getElementById("statPaid").innerText = "₹0";
-        document.getElementById("statBalance").innerText = "₹0";
-        return;
-      }
+        .panel { background: #fff; border: 1px solid #a7f3d0; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(5, 150, 105, .06) }
+        .panel-header { padding: 12px 16px; background: #ecfdf5; border-bottom: 1px solid #d1fae5; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Slide-down Accordion Bar */
+        .slide-trigger { background: #059669; color: white; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+        .slide-panel { display: none; background: #faf0f6; border: 1px solid #a7f3d0; border-radius: 14px; padding: 14px; margin-top: 8px; flex-direction: column; gap: 10px; }
+        
+        .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .sum-card { background: #fff; padding: 8px 12px; border-radius: 10px; border: 1px solid #d1fae5; }
+        .sum-card p { font-size: 10px; font-weight: 700; color: #64748b; uppercase; }
+        .sum-card h4 { font-size: 14px; font-weight: 800; color: #065f46; margin-top: 2px; }
 
-      let totalWork = 0;
-      let totalAdvance = 0;
-      let totalPaid = 0;
+        .center-content { padding: 16px; display: flex; flex-direction: column; gap: 12px }
+        .input, .select { height: 42px; padding: 0 12px; border: 1px solid #a7f3d0; border-radius: 10px; outline: none; background: #fff; font-size: 13px; font-weight: 600; width: 100%; }
+        .input:focus, .select:focus { border-color: #059669; box-shadow: 0 0 0 3px rgba(5, 150, 105, .12) }
 
-      tbody.innerHTML = rows.map(r => {
-        if (r.type === 'Inward') totalWork += r.total;
-        if (r.type === 'Advance') totalAdvance += r.qty; // Advance amount stored in qty
-        if (r.status === 'Paid') totalPaid += r.paidAmount;
+        .btn { border: none; border-radius: 10px; padding: 10px 14px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; text-align: center; }
+        .btn-adv { background: #d97706; color: #fff }
+        .btn-adv:hover { background: #b45309 }
 
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-semibold text-slate-700">${r.date}</td>
-            <td class="p-3 font-bold text-slate-800">${r.labourName}</td>
-            <td class="p-3 font-mono font-bold text-indigo-600">${r.sku}</td>
-            <td class="p-3">${r.qty} Pcs</td>
-            <td class="p-3">₹${r.rate}</td>
-            <td class="p-3 font-bold">₹${r.total}</td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.type === 'Inward' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                ${r.type}
-              </span>
-            </td>
-            <td class="p-3">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.status === 'Paid' ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-600'}">
-                ${r.status}
-              </span>
-            </td>
-          </tr>
-        `;
-      }).join('');
+        /* Master Table */
+        .table-wrapper { overflow-x: auto; max-height: 350px; border-radius: 12px; border: 1px solid #a7f3d0; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        th { background: #ecfdf5; padding: 10px; font-weight: 700; color: #065f46; border-bottom: 1px solid #a7f3d0; position: sticky; top: 0; }
+        td { padding: 8px 10px; border-bottom: 1px solid #f0fdf4; font-weight: 600; }
+        
+        .inline-rate-input { width: 55px; height: 28px; padding: 2px 6px; border: 1px solid #059669; border-radius: 6px; font-size: 12px; font-weight: 700; text-align: center; }
 
-      document.getElementById("statTotalWork").innerText = "₹" + totalWork.toLocaleString('en-IN');
-      document.getElementById("statAdvance").innerText = "₹" + totalAdvance.toLocaleString('en-IN');
-      document.getElementById("statPaid").innerText = "₹" + totalPaid.toLocaleString('en-IN');
-      
-      const balance = (totalWork - totalAdvance - totalPaid);
-      document.getElementById("statBalance").innerText = "₹" + balance.toLocaleString('en-IN');
-    }
-  </script>
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #111827; color: #fff; padding: 12px 16px; border-radius: 12px; z-index: 9999; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #059669 }
+    </style>
+</head>
+
+<body>
+
+    <div class="main-container">
+        <div class="header">💰 LABOUR FINANCIAL LEDGER</div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <span style="font-size:12px; font-weight:800; color:#065f46;">FINANCIAL ACCOUNTING</span>
+                <button class="btn btn-adv" onclick="openAdvanceModal()">+ ADVANCE PAYMENT</button>
+            </div>
+
+            <div class="center-content">
+                
+                <!-- SLIDE-DOWN PAYMENT LEDGER SUMMARY -->
+                <div>
+                    <div class="slide-trigger" onclick="toggleSlidePanel()">
+                        <span>💳 PAYMENT LEDGER SUMMARY (LABOUR-NAMES)</span>
+                        <i id="slideIcon" class="fa-solid fa-chevron-down"></i>
+                    </div>
+
+                    <div id="slidePanel" class="slide-panel">
+                        <select id="summaryLabourSelect" class="select" onchange="fetchLabourSummaryStatement()">
+                            <option value="">-- Select Labour for Summary --</option>
+                        </select>
+
+                        <div class="summary-grid">
+                            <div class="sum-card"><p>Total Due Work</p><h4 id="sumDue">₹0</h4></div>
+                            <div class="sum-card"><p>Advance Less</p><h4 id="sumAdvance" style="color:#d97706;">₹0</h4></div>
+                            <div class="sum-card"><p>Final Paid</p><h4 id="sumPaid" style="color:#2563eb;">₹0</h4></div>
+                            <div class="sum-card"><p>Net Balance</p><h4 id="sumBalance" style="color:#059669;">₹0</h4></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AUTO-APPLY FILTERS -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px;">
+                    <div>
+                        <select id="filterLabour" class="select" onchange="fetchLedgerData()">
+                            <option value="">All Labours</option>
+                        </select>
+                    </div>
+                    <input type="date" id="fromDate" class="input" onchange="fetchLedgerData()">
+                    <input type="date" id="toDate" class="input" onchange="fetchLedgerData()">
+                </div>
+
+                <!-- MASTER TABLE -->
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Labour</th>
+                                <th>SKU</th>
+                                <th>Rec. Pcs</th>
+                                <th>Rate (₹)</th>
+                                <th>Total (₹)</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerTbody">
+                            <tr><td colspan="7" style="text-align: center; padding: 15px; color: #94a3b8;">Loading records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ADVANCE PAYMENT MODAL -->
+    <div id="advModal" class="slide-panel" style="position:fixed; inset:20px; max-width:400px; height:fit-content; margin:auto; z-index:99999; background:#fff; border:2px solid #059669; box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">
+            <b style="font-size:13px; color:#065f46;">💸 Give Advance Payment</b>
+            <button onclick="closeAdvModal()" style="border:none; background:none; font-size:18px; cursor:pointer;">&times;</button>
+        </div>
+        <form onsubmit="saveAdvanceEntry(event)" style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+            <input type="text" id="advDate" class="input" readonly style="background:#f1f5f9;">
+            <select id="advLabourSelect" class="select" required><option value="">-- Select Labour --</option></select>
+            <input type="number" id="advAmount" class="input" placeholder="Enter Amount (₹)" required min="1">
+            <button type="submit" class="btn btn-adv">Confirm Payment</button>
+        </form>
+    </div>
+
+    <div id="loadingOverlay">Processing, please wait...</div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbwL_Wp-sHGigG_4PvK4_o5s4owP4uGKlcIgOFFvG8QedN3uSs0DutCMcxZchrsDK1E3/exec";
+
+        window.onload = function() {
+            loadLabourNames();
+            fetchLedgerData();
+        };
+
+        function toggleSlidePanel() {
+            const p = document.getElementById("slidePanel");
+            const isHidden = p.style.display === "none" || p.style.display === "";
+            p.style.display = isHidden ? "flex" : "none";
+            document.getElementById("slideIcon").className = isHidden ? "fa-solid fa-chevron-up" : "fa-solid fa-chevron-down";
+        }
+
+        async function loadLabourNames() {
+            try {
+                const resp = await fetch(`${API_URL}?action=getLabourNames`);
+                const data = await resp.json();
+                if (data.success && data.names) {
+                    const opts = '<option value="">All Labours</option>' + data.names.map(n => `<option value="${n}">${n}</option>`).join('');
+                    document.getElementById("filterLabour").innerHTML = opts;
+                    document.getElementById("summaryLabourSelect").innerHTML = '<option value="">-- Select Labour for Summary --</option>' + data.names.map(n => `<option value="${n}">${n}</option>`).join('');
+                    document.getElementById("advLabourSelect").innerHTML = '<option value="">-- Select Labour --</option>' + data.names.map(n => `<option value="${n}">${n}</option>`).join('');
+                }
+            } catch (e) {}
+        }
+
+        async function fetchLedgerData() {
+            const labour = document.getElementById("filterLabour").value;
+            const fromDate = document.getElementById("fromDate").value;
+            const toDate = document.getElementById("toDate").value;
+            const tbody = document.getElementById("ledgerTbody");
+
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 15px; color: #94a3b8;">Loading...</td></tr>`;
+
+            try {
+                const url = `${API_URL}?action=getCuttingLedger&name=${encodeURIComponent(labour)}&fromDate=${fromDate}&toDate=${toDate}`;
+                const resp = await fetch(url);
+                const data = await resp.json();
+
+                if (data.success) {
+                    renderLedgerTable(data.rows || []);
+                }
+            } catch (e) {}
+        }
+
+        function renderLedgerTable(rows) {
+            const tbody = document.getElementById("ledgerTbody");
+            if (!rows || rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 15px; color: #94a3b8;">No records found</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = rows.map(r => {
+                const recQty = Number(r.receivedQty || 0);
+                
+                // 13-DIGIT BUG FIX: Rate 0 or RecQty 0 = Total Amount 0
+                const calcTotal = recQty > 0 ? Number(r.totalAmount || 0) : 0;
+
+                return `
+                    <tr>
+                        <td style="color:#64748b;">${r.date}</td>
+                        <td style="font-weight:700; color:#065f46;">${r.labourName}</td>
+                        <td style="font-family:monospace; color:#2563eb;">${r.sku}</td>
+                        <td style="font-weight:800; color:#059669;">${recQty} Pcs</td>
+                        
+                        <!-- INLINE RATE BOX (NO POPUP, DEFAULT 0) -->
+                        <td>
+                            <input type="number" class="inline-rate-input" value="${r.rate || 0}" 
+                                   onchange="updateInlineRate('${r.rowId}', this.value, ${recQty})">
+                        </td>
+
+                        <td style="font-weight:800; color:#0f172a;">₹${calcTotal}</td>
+                        
+                        <td>
+                            <button onclick="deleteRow('${r.rowId}')" style="border:none; background:none; color:#ef4444; cursor:pointer;" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        /* INLINE RATE UPDATE ENGINE */
+        async function updateInlineRate(rowId, newRate, recQty) {
+            if (recQty <= 0) {
+                toast("⚠️ Cannot set rate for 0 Received Pcs!");
+                fetchLedgerData();
+                return;
+            }
+
+            showLoader();
+            try {
+                const resp = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "updateLabourRate", rowId: rowId, rate: Number(newRate || 0) })
+                });
+                const res = await resp.json();
+                hideLoader();
+                if (res.success) {
+                    toast("Rate & Total Updated!");
+                    fetchLedgerData();
+                }
+            } catch (e) { hideLoader(); }
+        }
+
+        async function fetchLabourSummaryStatement() {
+            const labour = document.getElementById("summaryLabourSelect").value;
+            if (!labour) return;
+
+            try {
+                const resp = await fetch(`${API_URL}?action=getLabourSummary&name=${encodeURIComponent(labour)}`);
+                const data = await resp.json();
+                if (data.success && data.summary) {
+                    const s = data.summary;
+                    document.getElementById("sumDue").innerText = "₹" + s.dueAmount;
+                    document.getElementById("sumAdvance").innerText = "₹" + s.advanceLess;
+                    document.getElementById("sumPaid").innerText = "₹" + s.finalPaid;
+                    document.getElementById("sumBalance").innerText = "₹" + s.netBalance;
+                }
+            } catch (e) {}
+        }
+
+        function openAdvanceModal() {
+            document.getElementById("advDate").value = new Date().toLocaleDateString('en-GB');
+            document.getElementById("advModal").style.display = "flex";
+        }
+
+        function closeAdvModal() { document.getElementById("advModal").style.display = "none"; }
+
+        async function saveAdvanceEntry(e) {
+            e.preventDefault();
+            const labour = document.getElementById("advLabourSelect").value;
+            const amt = Number(document.getElementById("advAmount").value);
+
+            showLoader();
+            try {
+                const resp = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        action: "saveAdvancePayment",
+                        payload: { labourName: labour, amount: amt }
+                    })
+                });
+                const res = await resp.json();
+                hideLoader();
+                if (res.success) {
+                    toast("Advance Logged!");
+                    closeAdvModal();
+                    fetchLedgerData();
+                }
+            } catch (e) { hideLoader(); }
+        }
+
+        async function deleteRow(rowId) {
+            if (!confirm("Delete row?")) return;
+            showLoader();
+            try {
+                const resp = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "deleteLabourTransaction", rowId: rowId })
+                });
+                const res = await resp.json();
+                hideLoader();
+                if (res.success) { fetchLedgerData(); }
+            } catch (e) { hideLoader(); }
+        }
+
+        function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
+        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+        function toast(msg) {
+            const t = document.createElement("div");
+            t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+    </script>
 </body>
+
 </html>
