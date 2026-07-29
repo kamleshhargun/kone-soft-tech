@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Request Lifecycle Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, sans-serif; }
+        body { background: #f8fafc; color: #1e293b; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        .header-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .btn-primary { background: #2563eb; color: #fff; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .btn-primary:hover { background: #1d4ed8; }
+        
+        /* Filter Tabs Buttons */
+        .filter-tabs { display: flex; gap: 12px; }
+        .tab-btn { border: 2px solid transparent; border-radius: 12px; padding: 14px 20px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
+        
+        .tab-requested { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .tab-requested.active { background: #d97706; color: white; border-color: #b45309; }
+        
+        .tab-dispatch { background: #e0f2fe; color: #075985; border-color: #bae6fd; }
+        .tab-dispatch.active { background: #0284c7; color: white; border-color: #0369a1; }
+        
+        .tab-completed { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .tab-completed.active { background: #16a34a; color: white; border-color: #15803d; }
+
+        /* Table */
+        .table-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,.02); }
+        .table-wrapper { overflow-x: auto; max-height: 550px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { background: #f8fafc; color: #475569; font-weight: 600; padding: 14px 16px; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; }
+        td { padding: 14px 16px; border-bottom: 1px solid #f1f5f9; color: #334155; vertical-align: middle; }
+        tr:hover { background: #f8fafc; }
+        
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-req { background: #fef3c7; color: #92400e; }
+        .badge-disp { background: #e0f2fe; color: #075985; }
+        .badge-comp { background: #dcfce7; color: #166534; }
+
+        .action-btn { padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-act-pickup { background: #0284c7; color: white; }
+        .btn-act-pickup:hover { background: #0369a1; }
+        .btn-act-dispatch { background: #16a34a; color: white; }
+        .btn-act-dispatch:hover { background: #15803d; }
+
+        /* Modal Popup */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center; }
+        .modal-card { background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 12px; font-weight: 700; color: #475569; }
+        .form-group input, .form-group textarea { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #2563eb; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 12px; z-index: 99999; font-size: 13px; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header-panel">
+            <div>
+                <h2 style="color:#0f172a;">🔄 Exchange Request Lifecycle Engine</h2>
+                <p style="font-size:12px; color:#64748b; margin-top:2px;">Track and process customer return pickups & exchange dispatches.</p>
+            </div>
+            <button class="btn-primary" onclick="openAddRequestModal()">➕ Add Exchange Request</button>
+        </div>
+
+        <!-- Filter Count Tabs -->
+        <div class="filter-tabs">
+            <button id="tabReqBtn" class="tab-btn tab-requested active" onclick="switchTab('REQUESTED')">
+                📩 New Requested (<span id="cntReq">0</span>)
+            </button>
+            <button id="tabDispBtn" class="tab-btn tab-dispatch" onclick="switchTab('DISPATCH_PENDING')">
+                🚚 Exchange Dispatch Pending (<span id="cntDisp">0</span>)
+            </button>
+            <button id="tabCompBtn" class="tab-btn tab-completed" onclick="switchTab('COMPLETED')">
+                ✅ Completed Exchanges (<span id="cntComp">0</span>)
+            </button>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-panel">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr id="tableHeaderRow">
+                            <!-- Dynamic Header Inserted by JS -->
+                        </tr>
+                    </thead>
+                    <tbody id="exchangeTableBody">
+                        <tr><td colspan="7" style="text-align: center; color: gray; padding: 30px;">Loading exchange data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: ADD NEW EXCHANGE REQUEST -->
+    <div id="addModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="color:#0f172a;">➕ Add New Exchange Request</h3>
+            <div class="form-group">
+                <label>Order ID *</label>
+                <input type="text" id="addOrderId" placeholder="e.g. HV-10294">
+            </div>
+            <div class="form-group">
+                <label>Mobile Number *</label>
+                <input type="text" id="addMobile" placeholder="e.g. 98290XXXXX">
+            </div>
+            <div class="form-group">
+                <label>Last Original AWB Number *</label>
+                <input type="text" id="addOriginalAwb" placeholder="e.g. 143256987">
+            </div>
+            <div class="form-group">
+                <label>Reason / Description</label>
+                <textarea id="addDescription" rows="3" placeholder="Size change M to L..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="action-btn" style="background:#e2e8f0; color:#334155;" onclick="closeModals()">Cancel</button>
+                <button class="btn-primary" onclick="submitAddRequest()">Save Request</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MARK RETURN PICKUP (UPDATED) -->
+    <div id="pickupModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="color:#0284c7;">📦 Mark Return Pickup Initiated</h3>
+            <p style="font-size:12px; color:#64748b;">Original Order ID: <b id="pickupTargetOrder"></b></p>
+            <input type="hidden" id="pickupTargetRow">
+            <div class="form-group">
+                <label>Return Pickup Order ID *</label>
+                <input type="text" id="pickupReturnOrderId" placeholder="Enter Return Order ID (e.g. RET-HV-10294)">
+            </div>
+            <div class="form-group">
+                <label>Return Pickup AWB Tracking Number *</label>
+                <input type="text" id="pickupReturnAwb" placeholder="Enter Return AWB No">
+            </div>
+            <div class="modal-actions">
+                <button class="action-btn" style="background:#e2e8f0; color:#334155;" onclick="closeModals()">Cancel</button>
+                <button class="action-btn btn-act-pickup" onclick="submitReturnPickup()">Mark Pickup & Shift to Dispatch</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: COMPLETE DISPATCH -->
+    <div id="dispatchModal" class="modal-overlay">
+        <div class="modal-card">
+            <h3 style="color:#16a34a;">🚀 Complete Exchange Dispatch</h3>
+            <p style="font-size:12px; color:#64748b;">Return AWB: <b id="dispatchTargetAwb"></b></p>
+            <input type="hidden" id="dispatchTargetRow">
+            <div class="form-group">
+                <label>New Exchange Dispatch Order ID *</label>
+                <input type="text" id="dispatchNewOrderId" placeholder="e.g. EX-HV-10294">
+            </div>
+            <div class="form-group">
+                <label>New Dispatch AWB Tracking Number *</label>
+                <input type="text" id="dispatchNewAwb" placeholder="Enter New Dispatch AWB">
+            </div>
+            <div class="modal-actions">
+                <button class="action-btn" style="background:#e2e8f0; color:#334155;" onclick="closeModals()">Cancel</button>
+                <button class="action-btn btn-act-dispatch" onclick="submitCompleteDispatch()">Complete Process</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingOverlay">Processing...</div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbymhPA67TnKqBNFKxMBgumC2KoY4t1s2D3D7yjXSvUy8uJB_hVj93LHEUMGDnDO1BlK/exec";
+
+        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let activeTab = "REQUESTED";
+
+        async function fetchExchangeData() {
+            showLoader("Loading Exchange Registry...");
+            try {
+                const response = await fetch(`${API_URL}?action=getExchangeReport`);
+                const res = await response.json();
+                hideLoader();
+
+                if (res.success) {
+                    exchangeCache.requested = res.requested || [];
+                    exchangeCache.dispatchPending = res.dispatchPending || [];
+                    exchangeCache.completed = res.completed || [];
+
+                    document.getElementById("cntReq").innerText = res.counts.requested || 0;
+                    document.getElementById("cntDisp").innerText = res.counts.dispatchPending || 0;
+                    document.getElementById("cntComp").innerText = res.counts.completed || 0;
+
+                    renderTable();
+                } else {
+                    toast(res.message || "Failed fetching data.");
+                }
+            } catch (e) {
+                hideLoader();
+                toast("Network Communication Error.");
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById("exchangeTableBody");
+            const thead = document.getElementById("tableHeaderRow");
+            let data = [];
+
+            if (activeTab === "REQUESTED") {
+                data = exchangeCache.requested;
+                thead.innerHTML = `
+                    <th>Date</th><th>Order ID</th><th>Mobile</th><th>Original AWB</th><th>Description</th><th>Status</th><th>Action</th>
+                `;
+            } else if (activeTab === "DISPATCH_PENDING") {
+                data = exchangeCache.dispatchPending;
+                thead.innerHTML = `
+                    <th>Request Date</th><th>Original Order ID</th><th>Return Order ID</th><th>Return AWB</th><th>Marked Time</th><th>Status</th><th>Action</th>
+                `;
+            } else {
+                data = exchangeCache.completed;
+                thead.innerHTML = `
+                    <th>Original Order ID</th><th>Return Order ID & AWB</th><th>Dispatch Order ID & AWB</th><th>Completed Date</th><th>Status</th>
+                `;
+            }
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:gray;">No exchange records in this queue.</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            data.forEach(row => {
+                if (activeTab === "REQUESTED") {
+                    html += `
+                        <tr>
+                            <td>${row.date}</td>
+                            <td><b>${row.orderId}</b></td>
+                            <td>${row.mobile}</td>
+                            <td><code>${row.originalAwb}</code></td>
+                            <td>${row.description || "-"}</td>
+                            <td><span class="badge badge-req">REQUESTED</span></td>
+                            <td>
+                                <button class="action-btn btn-act-pickup" onclick="openPickupModal(${row.rowId}, '${row.orderId}')">
+                                    📦 Mark Return Pickup
+                                </button>
+                            </td>
+                        </tr>`;
+                } else if (activeTab === "DISPATCH_PENDING") {
+                    html += `
+                        <tr>
+                            <td>${row.date}</td>
+                            <td><b>${row.orderId}</b></td>
+                            <td><b style="color:#0284c7;">${row.returnOrderId || "-"}</b></td>
+                            <td><code>${row.returnAwb}</code></td>
+                            <td>${row.returnMarkedDate}</td>
+                            <td><span class="badge badge-disp">DISPATCH PENDING</span></td>
+                            <td>
+                                <button class="action-btn btn-act-dispatch" onclick="openDispatchModal(${row.rowId}, '${row.returnAwb}')">
+                                    🚀 Complete Dispatch
+                                </button>
+                            </td>
+                        </tr>`;
+                } else {
+                    html += `
+                        <tr>
+                            <td><b>${row.orderId}</b></td>
+                            <td><b>${row.returnOrderId}</b> <br><small>(${row.returnAwb})</small></td>
+                            <td><b style="color:#16a34a;">${row.dispatchOrderId}</b> <br><small>(${row.dispatchAwb})</small></td>
+                            <td>${row.completedDate}</td>
+                            <td><span class="badge badge-comp">COMPLETED</span></td>
+                        </tr>`;
+                }
+            });
+            tbody.innerHTML = html;
+        }
+
+        function switchTab(tabName) {
+            activeTab = tabName;
+            document.getElementById("tabReqBtn").classList.remove("active");
+            document.getElementById("tabDispBtn").classList.remove("active");
+            document.getElementById("tabCompBtn").classList.remove("active");
+
+            if (tabName === "REQUESTED") document.getElementById("tabReqBtn").classList.add("active");
+            else if (tabName === "DISPATCH_PENDING") document.getElementById("tabDispBtn").classList.add("active");
+            else document.getElementById("tabCompBtn").classList.add("active");
+
+            renderTable();
+        }
+
+        /* MODAL CONTROLS */
+        function openAddRequestModal() { document.getElementById("addModal").style.display = "flex"; }
+        function openPickupModal(rowId, orderId) {
+            document.getElementById("pickupTargetRow").value = rowId;
+            document.getElementById("pickupTargetOrder").innerText = orderId;
+            document.getElementById("pickupReturnOrderId").value = "";
+            document.getElementById("pickupReturnAwb").value = "";
+            document.getElementById("pickupModal").style.display = "flex";
+        }
+        function openDispatchModal(rowId, returnAwb) {
+            document.getElementById("dispatchTargetRow").value = rowId;
+            document.getElementById("dispatchTargetAwb").innerText = returnAwb;
+            document.getElementById("dispatchNewOrderId").value = "";
+            document.getElementById("dispatchNewAwb").value = "";
+            document.getElementById("dispatchModal").style.display = "flex";
+        }
+        function closeModals() {
+            document.getElementById("addModal").style.display = "none";
+            document.getElementById("pickupModal").style.display = "none";
+            document.getElementById("dispatchModal").style.display = "none";
+        }
+
+        /* SUBMIT ACTIONS */
+        async function submitAddRequest() {
+            const orderId = document.getElementById("addOrderId").value.trim();
+            const mobile = document.getElementById("addMobile").value.trim();
+            const originalAwb = document.getElementById("addOriginalAwb").value.trim();
+            const description = document.getElementById("addDescription").value.trim();
+
+            if (!orderId || !mobile || !originalAwb) {
+                toast("Please fill all required fields!");
+                return;
+            }
+
+            closeModals();
+            showLoader("Saving Exchange Request...");
+
+            await postData({
+                action: "addExchangeRequest",
+                payload: { orderId, mobile, originalAwb, description }
+            });
+        }
+
+        async function submitReturnPickup() {
+            const rowId = document.getElementById("pickupTargetRow").value;
+            const returnOrderId = document.getElementById("pickupReturnOrderId").value.trim();
+            const returnAwb = document.getElementById("pickupReturnAwb").value.trim();
+
+            if (!returnOrderId || !returnAwb) {
+                toast("Please enter both Return Order ID and Return AWB!");
+                return;
+            }
+
+            closeModals();
+            showLoader("Updating Return Pickup Status...");
+
+            await postData({
+                action: "markReturnPickup",
+                payload: { rowId, returnOrderId, returnAwb }
+            });
+        }
+
+        async function submitCompleteDispatch() {
+            const rowId = document.getElementById("dispatchTargetRow").value;
+            const dispatchOrderId = document.getElementById("dispatchNewOrderId").value.trim();
+            const dispatchAwb = document.getElementById("dispatchNewAwb").value.trim();
+
+            if (!dispatchOrderId || !dispatchAwb) {
+                toast("Please fill Dispatch details!");
+                return;
+            }
+
+            closeModals();
+            showLoader("Completing Exchange Process...");
+
+            await postData({
+                action: "completeExchangeDispatch",
+                payload: { rowId, dispatchOrderId, dispatchAwb }
+            });
+        }
+
+        async function postData(bodyData) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(bodyData)
+                });
+                const res = await response.json();
+                if (res.success) {
+                    toast(res.message);
+                    fetchExchangeData();
+                } else {
+                    hideLoader();
+                    toast(res.message || "Operation failed.");
+                }
+            } catch (e) {
+                hideLoader();
+                toast("Transmission Error.");
+            }
+        }
+
+        function showLoader(txt) {
+            const el = document.getElementById("loadingOverlay");
+            el.innerText = txt || "Processing...";
+            el.style.display = "flex";
+        }
+        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+        function toast(msg) {
+            const t = document.createElement("div");
+            t.className = "toast";
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3500);
+        }
+
+        window.onload = function() { fetchExchangeData(); };
+    </script>
+</body>
+</html>
