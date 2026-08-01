@@ -3,75 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find & Sync Order</title>
+    <title>Find & Sync Order Status</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #f8fafc; color: #0f172a; padding: 20px; }
+        body { background: #f8fafc; min-height: 100vh; color: #0f172a; padding: 20px; }
         .container { max-width: 580px; margin: 0 auto; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .top-bar a { text-decoration: none; color: #2563eb; font-weight: 600; font-size: 13px; }
-        .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,.02); }
-        .input { height: 46px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; font-size: 14px; width: 100%; margin-bottom: 10px; }
-        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; width: 100%; }
+        .header { text-align: center; font-size: 22px; font-weight: 700; color: #2563eb; margin-bottom: 20px; text-transform: uppercase; }
+        .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 18px; padding: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, .03); display: flex; flex-direction: column; gap: 15px; }
+        .input { height: 46px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 12px; outline: none; font-size: 14px; width: 100%; }
+        .input:focus { border-color: #2563eb; }
+        .btn { border: none; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; width: 100%; }
         .btn-search { background: #2563eb; color: #fff; }
         .btn-sync { background: #16a34a; color: #fff; margin-top: 10px; }
-        .card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; margin-top: 16px; font-size: 13px; line-height: 1.6; }
-        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding: 6px 0; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; }
+        .card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; font-size: 14px; line-height: 1.6; }
+        .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+        .info-label { color: #64748b; font-weight: 500; }
+        .info-value { color: #0f172a; font-weight: 600; text-align: right; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 16px; border-radius: 12px; font-size: 13px; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #2563eb; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="top-bar">
-            <a href="?">← Back to Dashboard</a>
-            <span style="font-weight:700; font-size:14px; color:#2563eb;">SEARCH & SYNC</span>
-        </div>
+        <div class="header">Harsidhi Ventures</div>
         <div class="panel">
-            <h3 style="margin-bottom:12px;">🔍 Search Order Status</h3>
-            <input id="searchInput" class="input" placeholder="Enter AWB Number / Order ID">
-            <button class="btn btn-search" onclick="searchOrder()">Search Order</button>
+            <h3 style="color:#334155;">🔍 Find & Sync Order Status</h3>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <input id="searchInput" class="input" placeholder="Enter AWB Number / Order ID">
+                <button class="btn btn-search" onclick="searchOrder()">Search Order</button>
+            </div>
             <div id="searchResult"></div>
         </div>
     </div>
 
+    <div id="loadingOverlay">Processing, please wait...</div>
+
     <script>
-        let currentRecord = null;
-        function searchOrder() {
-            const kw = document.getElementById("searchInput").value.trim();
-            if (!kw) return toast("Enter keyword");
-            document.getElementById("searchResult").innerHTML = "Searching...";
-            
-            google.script.run.withSuccessHandler(res => {
-                if (!res.success) {
-                    document.getElementById("searchResult").innerHTML = `<div class="card" style="border-left:4px solid #dc2626;">No record found for input keyword.</div>`;
+        // 📍 APNA WEB APP DEPLOYMENT URL YAHAAN PASTE KAREIN[cite: 4]
+        const API_URL = "https://script.google.com/macros/s/AKfycbykhomyGJgZPo3hrmRzduevvfeD8Hb7T8wYV2JaJgK7X6u7z5eUK5NayLL6YbYY8W0wsQ/exec";
+
+        let latestTrackingData = null;
+
+        async function searchOrder() {
+            const keyword = document.getElementById("searchInput").value.trim();
+            if (!keyword) return toast("Please enter AWB or Order ID");
+
+            showLoader();
+            try {
+                const response = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(keyword)}`);
+                const data = await response.json();
+                hideLoader();
+
+                if (!data.success) {
+                    document.getElementById("searchResult").innerHTML = `<div class="card" style="border-left: 4px solid #dc2626;"><b>No Record Found</b></div>`;
                     return;
                 }
-                currentRecord = res;
+
                 document.getElementById("searchResult").innerHTML = `
-                    <div class="card">
-                        <b>📋 Sheet Record (${res.type})</b>
-                        <div class="info-row"><span>Date:</span><b>${res.date}</b></div>
-                        <div class="info-row"><span>AWB:</span><b>${res.awb}</b></div>
-                        <div class="info-row"><span>Order ID:</span><b>${res.orderId || "N/A"}</b></div>
-                        <div class="info-row"><span>Status:</span><b style="color:#2563eb;">${res.status || "Pending"}</b></div>
-                        <button class="btn btn-sync" onclick="syncSingle('${res.awb}')">🌐 Sync Live Status</button>
+                    <div class="card" style="border-left: 4px solid #2563eb;">
+                        <h3>📋 Google Sheet Record</h3>
+                        <div class="info-row"><span class="info-label">Date:</span><span class="info-value">${data.date || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">Type:</span><span class="info-value">${data.type}</span></div>
+                        <div class="info-row"><span class="info-label">AWB:</span><span class="info-value">${data.awb}</span></div>
+                        <div class="info-row"><span class="info-label">Order ID:</span><span class="info-value">${data.orderId || "N/A"}</span></div>
+                        <div class="info-row"><span class="info-label">Current Status:</span><span class="info-value" style="color:#2563eb;">${data.status || "Pending"}</span></div>
+                        <button class="btn btn-sync" onclick="syncLatestStatusToSheet('${data.awb}')">💾 Sync Live Status</button>
                     </div>
                 `;
-            }).searchOrder(kw);
+            } catch (err) { hideLoader(); toast("Error connecting to Server."); }
         }
 
-        function syncSingle(awb) {
-            toast("Syncing live API status...");
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    if (res.skipped) toast(`Skipped: Row locked (${res.reason})`);
-                    else { toast("🎉 Synced!"); searchOrder(); }
-                } else toast(res.message || "Sync Failed");
-            }).updateSingleAWB(awb);
+        async function syncLatestStatusToSheet(awb) {
+            showLoader();
+            try {
+                const response = await fetch(`${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awb)}`);
+                const result = await response.json();
+                hideLoader();
+
+                if (result.success) {
+                    if (result.skipped) toast(`Skipped: Locked (${result.reason})`);
+                    else { toast("🎉 Sheet synced!"); searchOrder(); }
+                } else toast("Update failed.");
+            } catch (err) { hideLoader(); toast("Error updating sheet."); }
         }
 
-        function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
+        function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
+        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+        }
     </script>
 </body>
 </html>
