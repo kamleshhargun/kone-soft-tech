@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find & Sync Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f8fafc; color: #0f172a; padding: 20px; }
+        .container { max-width: 580px; margin: 0 auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .top-bar a { text-decoration: none; color: #2563eb; font-weight: 600; font-size: 13px; }
+        .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,.02); }
+        .input { height: 46px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; font-size: 14px; width: 100%; margin-bottom: 10px; }
+        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; width: 100%; }
+        .btn-search { background: #2563eb; color: #fff; }
+        .btn-sync { background: #16a34a; color: #fff; margin-top: 10px; }
+        .card { padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; margin-top: 16px; font-size: 13px; line-height: 1.6; }
+        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding: 6px 0; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <a href="?">← Back to Dashboard</a>
+            <span style="font-weight:700; font-size:14px; color:#2563eb;">SEARCH & SYNC</span>
+        </div>
+        <div class="panel">
+            <h3 style="margin-bottom:12px;">🔍 Search Order Status</h3>
+            <input id="searchInput" class="input" placeholder="Enter AWB Number / Order ID">
+            <button class="btn btn-search" onclick="searchOrder()">Search Order</button>
+            <div id="searchResult"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentRecord = null;
+        function searchOrder() {
+            const kw = document.getElementById("searchInput").value.trim();
+            if (!kw) return toast("Enter keyword");
+            document.getElementById("searchResult").innerHTML = "Searching...";
+            
+            google.script.run.withSuccessHandler(res => {
+                if (!res.success) {
+                    document.getElementById("searchResult").innerHTML = `<div class="card" style="border-left:4px solid #dc2626;">No record found for input keyword.</div>`;
+                    return;
+                }
+                currentRecord = res;
+                document.getElementById("searchResult").innerHTML = `
+                    <div class="card">
+                        <b>📋 Sheet Record (${res.type})</b>
+                        <div class="info-row"><span>Date:</span><b>${res.date}</b></div>
+                        <div class="info-row"><span>AWB:</span><b>${res.awb}</b></div>
+                        <div class="info-row"><span>Order ID:</span><b>${res.orderId || "N/A"}</b></div>
+                        <div class="info-row"><span>Status:</span><b style="color:#2563eb;">${res.status || "Pending"}</b></div>
+                        <button class="btn btn-sync" onclick="syncSingle('${res.awb}')">🌐 Sync Live Status</button>
+                    </div>
+                `;
+            }).searchOrder(kw);
+        }
+
+        function syncSingle(awb) {
+            toast("Syncing live API status...");
+            google.script.run.withSuccessHandler(res => {
+                if (res.success) {
+                    if (res.skipped) toast(`Skipped: Row locked (${res.reason})`);
+                    else { toast("🎉 Synced!"); searchOrder(); }
+                } else toast(res.message || "Sync Failed");
+            }).updateSingleAWB(awb);
+        }
+
+        function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
+    </script>
+</body>
+</html>

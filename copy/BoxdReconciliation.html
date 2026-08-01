@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boxd Return Reconciliation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f8fafc; color: #0f172a; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .top-bar a { text-decoration: none; color: #2563eb; font-weight: 600; font-size: 13px; }
+        .upload-card { background: #fff; border: 2px dashed #cbd5e1; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 20px; cursor: pointer; }
+        .table-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { background: #f1f5f9; padding: 12px; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <a href="?">← Back to Dashboard</a>
+            <span style="font-weight:700; font-size:14px; color:#2563eb;">BOXD RECONCILIATION</span>
+        </div>
+        <div class="upload-card">
+            <label style="cursor:pointer;">
+                📁 <b>Click to Select Boxd CSV File</b>
+                <input type="file" id="csvFile" accept=".csv" style="display:none;" onchange="uploadCsv(this)">
+            </label>
+        </div>
+        <div class="table-panel">
+            <table>
+                <thead><tr><th>Order ID</th><th>Boxd Ref</th><th>City</th><th>AWB</th><th>Reconciliation Status</th></tr></thead>
+                <tbody id="boxdBody"><tr><td colspan="5" style="text-align:center; padding:20px;">Upload CSV file to view audit logs.</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function uploadCsv(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const lines = e.target.result.split("\n").map(l => l.split(","));
+                google.script.run.withSuccessHandler(res => {
+                    toast("🎉 CSV Uploaded! Processing report...");
+                    loadReport();
+                }).uploadBoxdCsv({ rows: lines });
+            };
+            reader.readAsText(file);
+        }
+
+        function loadReport() {
+            google.script.run.withSuccessHandler(res => {
+                if (!res.success) return;
+                let html = "";
+                [...(res.pending || []), ...(res.received || [])].forEach(r => {
+                    html += `<tr><td><b>${r.customerOrderNumber}</b></td><td>${r.orderNumber || "-"}</td><td>${r.city || "-"}</td><td><code>${r.awb || "-"}</code></td><td><b>${r.status}</b></td></tr>`;
+                });
+                document.getElementById("boxdBody").innerHTML = html || `<tr><td colspan="5" style="text-align:center;">No data found</td></tr>`;
+            }).getBoxdReturnReport();
+        }
+
+        function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
+        window.onload = loadReport;
+    </script>
+</body>
+</html>
