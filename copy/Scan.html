@@ -3,83 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Scan Operations</title>
+    <title>Harsidhi Ventures Scan System</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #0f172a; padding: 16px; }
+        body { background: #f8fafc; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #0f172a; padding: 15px; }
         .main-container { width: 100%; max-width: 520px; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .top-bar a { text-decoration: none; color: #2563eb; font-weight: 600; font-size: 13px; }
-        .panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, .03); }
-        .panel-header { padding: 14px 16px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 13px; }
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; background: #fff; border: 1px solid #cbd5e1; font-size: 12px; }
-        .circle-count { width: 20px; height: 20px; border-radius: 50%; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; }
+        .header { text-align: center; font-size: 20px; font-weight: 700; color: #2563eb; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 18px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0, 0, 0, .03); }
+        .panel-header { padding: 14px 16px; font-weight: 700; font-size: 14px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; color: #475569; }
+        .badge-wrapper { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 12px; background: #ffffff; padding: 4px 10px; border-radius: 20px; border: 1px solid #cbd5e1; }
+        .circle-count { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; border-radius: 50%; font-size: 11px; font-weight: 700; color: #fff; }
+        .circle-pickup { background: #2563eb; }
+        .circle-return { background: #0d9488; }
         .center-content { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
-        .mode-row { display: flex; gap: 10px; }
-        .mode-btn { flex: 1; height: 48px; border-radius: 10px; border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; transition: .2s; font-size: 14px; }
+        .mode-row, .action-row { display: flex; gap: 10px; }
+        .mode-btn { flex: 1; height: 48px; border-radius: 12px; border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; transition: .2s; font-size: 14px; }
         .pickup { border-color: #2563eb; color: #2563eb; }
         .return { border-color: #0d9488; color: #0d9488; }
         .active-pickup { background: #2563eb; color: #fff; }
         .active-return { background: #0d9488; color: #fff; }
-        .scan-panel { display: none; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
-        .input { height: 46px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; background: #fff; font-size: 14px; width: 100%; }
-        .input:focus { border-color: #2563eb; }
-        #reader { display: none; width: 100%; border-radius: 10px; overflow: hidden; border: 1px dashed #cbd5e1; }
-        .result-card { padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; font-size: 13px; display: none; }
-        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; text-align: center; }
+        .scan-panel { display: none; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #e2e8f0; border-radius: 14px; background: #f8fafc; }
+        .input { height: 46px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 12px; outline: none; background: #fff; font-size: 14px; width: 100%; }
+        .input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, .12); }
+        #reader { display: none; width: 100%; overflow: hidden; border-radius: 12px; margin-bottom: 5px; border: 1px dashed #cbd5e1; }
+        .result-card { padding: 14px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; display: none; font-size: 13px; line-height: 1.6; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+        .data-table td { padding: 4px 0; border-bottom: 1px solid #f1f5f9; }
+        .data-table td.label { color: #64748b; font-weight: 500; width: 35%; }
+        .data-table td.val { color: #0f172a; font-weight: 600; }
+        .btn { border: none; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; text-align: center; }
         .btn-camera { background: #2563eb; color: #fff; }
         .btn-manual { background: #475569; color: #fff; }
         .btn-save { background: #16a34a; color: #fff; }
         .btn-stop { background: #dc2626; color: #fff; }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 13px; z-index: 999; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 16px; border-radius: 12px; z-index: 9999; font-size: 13px; }
+        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, .85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #2563eb; }
     </style>
 </head>
 <body>
+
     <div class="main-container">
-        <div class="top-bar">
-            <a href="?">← Back to Dashboard</a>
-            <span style="font-weight:700; font-size:14px; color:#2563eb;">LIVE SCANNER</span>
-        </div>
+        <div class="header">HARSIDHI VENTURES SYSTEM</div>
+
         <div class="panel">
             <div class="panel-header">
-                <div class="badge" style="color: #2563eb;">Pickup <span id="headerPickupCount" class="circle-count" style="background:#2563eb;">0</span></div>
-                <span>📲 Scan Terminal</span>
-                <div class="badge" style="color: #0d9488;">Return <span id="headerReturnCount" class="circle-count" style="background:#0d9488;">0</span></div>
+                <div class="badge-wrapper" style="color: #2563eb;">
+                    Pickup <span id="headerPickupCount" class="circle-count circle-pickup">0</span>
+                </div>
+                <div>📲 Scan Operations</div>
+                <div class="badge-wrapper" style="color: #0d9488;">
+                    Return <span id="headerReturnCount" class="circle-count circle-return">0</span>
+                </div>
             </div>
             <div class="center-content">
                 <div class="mode-row">
-                    <button id="pickupBtn" class="mode-btn pickup" onclick="selectType('Pickup')">Pickup Mode</button>
-                    <button id="returnBtn" class="mode-btn return" onclick="selectType('Return')">Return Mode</button>
+                    <button id="pickupBtn" class="mode-btn pickup" onclick="selectType('Pickup')">Pickup</button>
+                    <button id="returnBtn" class="mode-btn return" onclick="selectType('Return')">Return</button>
                 </div>
+
                 <div id="scanPanel" class="scan-panel">
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-camera" style="flex:1;" onclick="startCamera()">📷 Camera Scan</button>
-                        <button class="btn btn-manual" style="flex:1;" onclick="focusAWB()">⌨ Manual Focus</button>
+                    <div class="action-row">
+                        <button class="btn btn-camera" style="flex: 1;" onclick="startCamera()">📷 Camera Scan</button>
+                        <button class="btn btn-manual" style="flex: 1;" onclick="focusAWB()">⌨ Manual Input</button>
                     </div>
                     <div id="reader"></div>
                     <input id="awbInput" class="input" placeholder="Scan AWB or Type & Press Enter">
-                    <input id="orderInput" class="input" placeholder="Order ID (Fallback)" style="display: none;">
+                    <input id="orderInput" class="input" placeholder="Order ID (Manual Fallback)" style="display: none;">
+                    
                     <div id="resultCard" class="result-card"></div>
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn btn-save" style="flex:1;" onclick="saveEntry()">Next (Save)</button>
-                        <button class="btn btn-stop" style="flex:1;" onclick="stopWork()">Stop</button>
+                    
+                    <div class="action-row" style="margin-top: 5px;">
+                        <button class="btn btn-save" style="flex: 1;" onclick="saveEntry()">Next (Save)</button>
+                        <button class="btn btn-stop" style="flex: 1;" onclick="stopWork()">Stop</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <div id="loadingOverlay">Processing, please wait...</div>
+
     <script>
-        let currentType = "", currentTracking = null, html5QrCode = null;
+        // 📍 APNA WEB APP DEPLOYMENT URL YAHAAN PASTE KAREIN[cite: 3]
+        const API_URL = "https://script.google.com/macros/s/AKfycbykhomyGJgZPo3hrmRzduevvfeD8Hb7T8wYV2JaJgK7X6u7z5eUK5NayLL6YbYY8W0wsQ/exec"; 
+
+        let currentType = "";
+        let currentTracking = null;
+        let html5QrCode = null;
+        let scannerBuffer = "";
+
+        function fetchTodayCountsLive() {
+            fetch(`${API_URL}?action=getDashboardCounts`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.success) {
+                        document.getElementById("headerPickupCount").innerText = data.todayPickup || 0;
+                        document.getElementById("headerReturnCount").innerText = data.todayReturn || 0;
+                    }
+                }).catch(err => console.error(err));
+        }
 
         function selectType(type) {
             currentType = type;
             document.getElementById("scanPanel").style.display = "flex";
-            document.getElementById("pickupBtn").className = "mode-btn pickup " + (type === "Pickup" ? "active-pickup" : "");
-            document.getElementById("returnBtn").className = "mode-btn return " + (type === "Return" ? "active-return" : "");
-            clearForm(); focusAWB();
+            document.getElementById("pickupBtn").classList.remove("active-pickup");
+            document.getElementById("returnBtn").classList.remove("active-return");
+
+            if (type === "Pickup") document.getElementById("pickupBtn").classList.add("active-pickup");
+            else document.getElementById("returnBtn").classList.add("active-return");
+
+            clearForm();
+            focusAWB();
         }
 
         function clearForm() {
@@ -88,49 +124,100 @@
             document.getElementById("orderInput").value = "";
             document.getElementById("orderInput").style.display = "none";
             document.getElementById("resultCard").style.display = "none";
+            document.getElementById("resultCard").innerHTML = "";
         }
 
         function focusAWB() { document.getElementById("awbInput").focus(); }
 
         async function startCamera() {
-            if (html5QrCode) await stopCamera();
-            document.getElementById("reader").style.display = "block";
-            html5QrCode = new Html5Qrcode("reader");
-            await html5QrCode.start({ facingMode: "environment" }, { fps: 20, qrbox: { width: 250, height: 130 } }, decodedText => {
-                document.getElementById("awbInput").value = decodedText;
-                stopCamera(); trackShipment();
-            });
+            try {
+                if (html5QrCode) await stopCamera();
+                document.getElementById("reader").style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 20, qrbox: { width: 280, height: 140 } },
+                    function(decodedText) {
+                        document.getElementById("awbInput").value = decodedText;
+                        stopCamera();
+                        trackShipment();
+                    }
+                );
+            } catch (err) { toast("Camera Permission Error"); }
         }
 
         async function stopCamera() {
-            if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; }
+            try {
+                if (html5QrCode) {
+                    await html5QrCode.stop();
+                    await html5QrCode.clear();
+                    html5QrCode = null;
+                }
+            } catch (err) {}
             document.getElementById("reader").style.display = "none";
         }
 
-        document.getElementById("awbInput").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); trackShipment(); } });
+        document.getElementById("awbInput").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") { e.preventDefault(); trackShipment(); }
+        });
 
-        function trackShipment() {
+        async function trackShipment() {
             const awb = document.getElementById("awbInput").value.trim();
-            if (!awb) return toast("Enter AWB First");
-            
-            google.script.run.withSuccessHandler(res => {
-                if (res && res.success) {
-                    currentTracking = res;
-                    document.getElementById("resultCard").style.display = "block";
-                    document.getElementById("resultCard").innerHTML = `<b>✅ Fetched:</b> ${res.courier} | Order: ${res.orderId || "N/A"}`;
-                    document.getElementById("orderInput").value = res.orderId || "";
-                    document.getElementById("orderInput").style.display = "block";
-                } else {
-                    document.getElementById("resultCard").style.display = "block";
-                    document.getElementById("resultCard").innerHTML = `<span style="color:#dc2626;">⚠️ Tracking Not Found - Enter Order ID manually</span>`;
-                    document.getElementById("orderInput").style.display = "block";
-                }
-            }).trackShipment(awb);
+            if (!awb) return toast("Please Scan/Enter AWB");
+
+            showLoader();
+            try {
+                const response = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const result = await response.json();
+                hideLoader();
+
+                if (result && result.success) {
+                    currentTracking = result;
+                    renderTrackingCard(result);
+                } else openManualFallback();
+            } catch (err) { hideLoader(); openManualFallback(); }
         }
 
-        function saveEntry() {
+        function openManualFallback() {
+            currentTracking = null;
+            const todayStr = new Date().toLocaleDateString('en-GB');
+            const card = document.getElementById("resultCard");
+            card.style.display = "block";
+            card.innerHTML = `
+                <div style="color:#dc2626; font-weight:600; border-bottom: 1px solid #e2e8f0; padding-bottom:4px; margin-bottom:6px;">⚠️ Tracking Not Found</div>
+                <table class="data-table">
+                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">AWB:</td><td class="val">${document.getElementById("awbInput").value.trim()}</td></tr>
+                    <tr><td class="label">Order ID:</td><td class="val" style="color:#dc2626;">Manual Input Required</td></tr>
+                </table>
+            `;
+            document.getElementById("orderInput").style.display = "block";
+            document.getElementById("orderInput").focus();
+        }
+
+        function renderTrackingCard(data) {
+            const card = document.getElementById("resultCard");
+            card.style.display = "block";
+            const todayStr = new Date().toLocaleDateString('en-GB');
+            card.innerHTML = `
+                <div style="color:#16a34a; font-weight:600; border-bottom: 1px solid #e2e8f0; padding-bottom:4px; margin-bottom:6px;">✅ Tracking Data Fetched</div>
+                <table class="data-table">
+                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">AWB:</td><td class="val">${data.awb || ""}</td></tr>
+                    <tr><td class="label">Order ID:</td><td class="val">${data.orderId || ""}</td></tr>
+                    <tr><td class="label">Courier:</td><td class="val">${data.courier || ""}</td></tr>
+                </table>
+            `;
+            document.getElementById("orderInput").value = data.orderId || "";
+            document.getElementById("orderInput").style.display = "block";
+        }
+
+        async function saveEntry() {
+            if (!currentType) return toast("Select Pickup / Return Mode First");
             const awb = document.getElementById("awbInput").value.trim();
-            if (!awb || !currentType) return toast("Missing AWB or Mode");
+            if (!awb) return toast("AWB Missing");
 
             const payload = {
                 type: currentType, awb: awb, orderId: document.getElementById("orderInput").value.trim(),
@@ -141,24 +228,41 @@
                 expectedDate: currentTracking?.expectedDate || "", isRTO: currentTracking?.isRTO || false
             };
 
-            google.script.run.withSuccessHandler(res => {
-                if (res.duplicate) toast("❌ Blocked: Duplicate AWB!");
-                else if (res.success) { toast("🎉 Saved!"); clearForm(); loadCounts(); focusAWB(); }
-                else toast(res.message || "Save Error");
-            }).saveEntry(payload);
+            showLoader();
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "saveEntry", payload: payload })
+                });
+                const result = await response.json();
+                hideLoader();
+
+                if (result.duplicate) return toast("❌ Blocked: Duplicate AWB!");
+                if (!result.success) return toast(result.message || "Save Failed");
+
+                toast("🎉 Row Saved Successfully!");
+                clearForm();
+                fetchTodayCountsLive(); 
+                focusAWB();
+            } catch (err) { hideLoader(); toast("Save Error"); }
         }
 
-        function stopWork() { stopCamera(); clearForm(); document.getElementById("scanPanel").style.display = "none"; }
-        function loadCounts() {
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) {
-                    document.getElementById("headerPickupCount").innerText = res.todayPickup || 0;
-                    document.getElementById("headerReturnCount").innerText = res.todayReturn || 0;
-                }
-            }).getDashboardCounts();
+        function stopWork() {
+            stopCamera(); currentType = ""; clearForm();
+            document.getElementById("scanPanel").style.display = "none";
+            document.getElementById("pickupBtn").classList.remove("active-pickup");
+            document.getElementById("returnBtn").classList.remove("active-return");
         }
-        function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2500); }
-        window.onload = loadCounts;
+
+        function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
+        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+        }
+
+        window.onload = fetchTodayCountsLive;
     </script>
 </body>
 </html>
