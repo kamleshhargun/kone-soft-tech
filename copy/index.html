@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harsidhi Ventures - Control Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* Top Header Navbar */
+    .navbar { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 14px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .brand { font-size: 18px; font-weight: 700; color: #2563eb; display: flex; align-items: center; gap: 8px; }
+    .status-pill { background: #dcfce7; color: #15803d; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 20px; border: 1px solid #bbf7d0; }
+
+    /* Dashboard Grid Layout */
+    .main-container { padding: 24px; max-width: 1280px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 24px; }
+    .hero-welcome { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); border-radius: 16px; padding: 28px; color: #ffffff; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+    .hero-welcome h1 { font-size: 24px; font-weight: 700; }
+    .hero-welcome p { font-size: 14px; opacity: 0.9; margin-top: 6px; }
+
+    .grid-tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .tool-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px; text-decoration: none; color: inherit; transition: all 0.2s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .tool-card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.05); border-color: #3b82f6; }
+    .tool-icon { width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 14px; }
+    .tool-title { font-size: 16px; font-weight: 700; color: #1e293b; }
+    .tool-desc { font-size: 13px; color: #64748b; margin-top: 6px; line-height: 1.5; }
+    .tool-action { margin-top: 16px; font-size: 13px; font-weight: 600; color: #2563eb; display: flex; align-items: center; gap: 4px; }
+
+    @media (max-width: 640px) {
+      .main-container { padding: 16px; }
+      .hero-welcome { padding: 20px; }
+      .hero-welcome h1 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="brand">📦 HARSIDHI VENTURES</div>
+    <div class="status-pill">● System Live</div>
+  </header>
+
+  <main class="main-container">
+    <section class="hero-welcome">
+      <h1>Operations Hub & Utility Control</h1>
+      <p>Select any tool module below to process live daily scans, tracking updates, and return reconciliations.</p>
+    </section>
+
+    <section class="grid-tools">
+      <!-- Tool 1 -->
+      <a href="?page=scan" class="tool-card">
+        <div>
+          <div class="tool-icon">📲</div>
+          <div class="tool-title">Scan Operations</div>
+          <div class="tool-desc">Fast camera barcode & hardware scanner for live Pickup & Return logs.</div>
+        </div>
+        <div class="tool-action">Open Scanner ➔</div>
+      </a>
+
+      <!-- Tool 2 -->
+      <a href="?page=search" class="tool-card">
+        <div>
+          <div class="tool-icon">🔍</div>
+          <div class="tool-title">Search & Sync</div>
+          <div class="tool-desc">Look up order status from Google Sheet and sync with Delhivery & Boxd APIs.</div>
+        </div>
+        <div class="tool-action">Search Records ➔</div>
+      </a>
+
+      <!-- Tool 3 -->
+      <a href="?page=master" class="tool-card">
+        <div>
+          <div class="tool-icon">📋</div>
+          <div class="tool-title">Master Data Grid</div>
+          <div class="tool-desc">View paginated sheet entries and run non-stop automated sync loops.</div>
+        </div>
+        <div class="tool-action">Manage Sheet Grid ➔</div>
+      </a>
+
+      <!-- Tool 4 -->
+      <a href="?page=bulk" class="tool-card">
+        <div>
+          <div class="tool-icon">⚡</div>
+          <div class="tool-title">Bulk Packet Manager</div>
+          <div class="tool-desc">Fetch bulk date-wise records and trigger live real-time API status updates.</div>
+        </div>
+        <div class="tool-action">Run Bulk Sync ➔</div>
+      </a>
+
+      <!-- Tool 5 -->
+      <a href="?page=exchange" class="tool-card">
+        <div>
+          <div class="tool-icon">🔄</div>
+          <div class="tool-title">Exchange Lifecycle</div>
+          <div class="tool-desc">Track exchange requests, return pickup assignments, and dispatches.</div>
+        </div>
+        <div class="tool-action">Open Exchange Hub ➔</div>
+      </a>
+
+      <!-- Tool 6 -->
+      <a href="?page=boxd" class="tool-card">
+        <div>
+          <div class="tool-icon">📁</div>
+          <div class="tool-title">Boxd Reconciliation</div>
+          <div class="tool-desc">Upload Boxd CSV files to cross-verify and audit warehouse returns.</div>
+        </div>
+        <div class="tool-action">Audit Boxd CSV ➔</div>
+      </a>
+    </section>
+  </main>
+
+</body>
+</html>
