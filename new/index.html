@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Harsidhi Ventures - iOS All-in-One Operations System</title>
+    <title>Harsidhi Ventures - Operations Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -24,32 +24,33 @@
         .ios-btn-icon { background: #f2f2f7; border: none; color: #007aff; font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         .ios-btn-icon:active { background: #e5e5ea; transform: scale(0.96); }
 
-        .index-content { padding: 20px 18px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+        .index-content { padding: 20px 18px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
         .ios-section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #8e8e93; margin-left: 4px; letter-spacing: 0.2px; }
 
-        .ios-dashboard-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 18px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 14px; }
+        .ios-dashboard-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 16px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 12px; }
         .ios-dashboard-card:hover { border-color: #007aff; transform: translateY(-1px); }
         .ios-dashboard-card:active { transform: scale(0.98); }
 
         .card-top-row { display: flex; align-items: center; justify-content: space-between; }
-        .card-title { font-size: 16px; font-weight: 700; color: #1c1c1e; }
-        .card-badge-open { font-size: 12px; font-weight: 600; color: #007aff; background: #e5f1ff; padding: 4px 10px; border-radius: 12px; }
+        .card-title { font-size: 15px; font-weight: 700; color: #1c1c1e; }
+        .card-badge-open { font-size: 11px; font-weight: 600; color: #007aff; background: #e5f1ff; padding: 4px 10px; border-radius: 12px; }
 
         .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .metric-box { background: #f9f9fb; border: 1px solid #f0f0f5; padding: 12px; border-radius: 14px; }
+        .metric-box { background: #f9f9fb; border: 1px solid #f0f0f5; padding: 10px; border-radius: 14px; }
         .metric-box.pickup { border-left: 4px solid #007aff; }
         .metric-box.return { border-left: 4px solid #34c759; }
         .metric-box.yesterday-pickup { border-left: 4px solid #5856d6; }
         .metric-box.yesterday-return { border-left: 4px solid #ff9500; }
 
         .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #8e8e93; margin-bottom: 2px; }
-        .metric-value { font-size: 22px; font-weight: 700; color: #1c1c1e; }
+        .metric-value { font-size: 20px; font-weight: 700; color: #1c1c1e; }
 
         /* Feature Views Common Styles */
         .feature-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
-        .input { height: 44px; padding: 0 14px; border: 1px solid #d1d1d6; border-radius: 12px; outline: none; background: #fff; font-size: 14px; width: 100%; }
+        .input { height: 44px; padding: 0 14px; border: 1px solid #d1d1d6; border-radius: 12px; outline: none; background: #fff; font-size: 13px; width: 100%; }
         .input:focus { border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12); }
-        .btn { border: none; border-radius: 12px; padding: 11px 16px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; width: 100%; }
+        .textarea { padding: 10px 14px; border: 1px solid #d1d1d6; border-radius: 12px; outline: none; background: #fff; font-size: 13px; width: 100%; resize: none; }
+        .btn { border: none; border-radius: 12px; padding: 11px 16px; font-size: 13px; font-weight: 600; cursor: pointer; text-align: center; width: 100%; }
         .btn-blue { background: #007aff; color: #fff; }
         .btn-green { background: #34c759; color: #fff; }
         .btn-gray { background: #8e8e93; color: #fff; }
@@ -79,15 +80,17 @@
 
         .table-panel { border: 1px solid #e5e5ea; border-radius: 14px; overflow: hidden; max-height: 400px; overflow-y: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        th { background: #f2f2f7; color: #636366; font-weight: 600; padding: 10px 12px; position: sticky; top: 0; }
-        td { padding: 10px 12px; border-bottom: 1px solid #f2f2f7; color: #1c1c1e; }
+        th { background: #f2f2f7; color: #636366; font-weight: 600; padding: 10px 12px; position: sticky; top: 0; z-index: 10; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f2f2f7; color: #1c1c1e; vertical-align: middle; }
 
         .badge { display: inline-block; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
         .badge-pickup { background: #e5f1ff; color: #007aff; }
         .badge-return { background: #e1f9e6; color: #34c759; }
 
-        .progress-bar-wrap { height: 6px; background: #e5e5ea; border-radius: 10px; overflow: hidden; display: none; }
-        .progress-bar-fill { height: 100%; background: #34c759; width: 0%; transition: width 0.2s; }
+        .track-link { color: #007aff; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+        .modal-overlay { display: none; position: absolute; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+        .modal-card { background: #fff; width: 100%; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 12px; }
 
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.85); color: #fff; padding: 10px 18px; border-radius: 20px; z-index: 9999; font-size: 12px; font-weight: 500; backdrop-filter: blur(10px); }
         #loadingOverlay { display: none; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #007aff; }
@@ -106,7 +109,7 @@
             </div>
             
             <div class="index-content">
-                <div class="ios-section-label">Operations Dashboard</div>
+                <div class="ios-section-label">Operations Control Center</div>
                 
                 <!-- CARD 1: DAILY SCAN OPERATIONS -->
                 <div class="ios-dashboard-card" onclick="navigateTo('dailyPage')">
@@ -134,7 +137,16 @@
                     </div>
                 </div>
 
-                <!-- CARD 2: LIVE BULK TRACKER -->
+                <!-- CARD 2: EXCHANGE LIFECYCLE ENGINE -->
+                <div class="ios-dashboard-card" onclick="navigateTo('exchangePage')">
+                    <div class="card-top-row">
+                        <div class="card-title">🔄 Exchange Request Lifecycle</div>
+                        <div class="card-badge-open">Manage Requests ➔</div>
+                    </div>
+                    <div style="font-size: 12px; color: #8e8e93;">Track 3-step customer return pickup & exchange dispatch lifecycle.</div>
+                </div>
+
+                <!-- CARD 3: LIVE BULK TRACKER -->
                 <div class="ios-dashboard-card" onclick="navigateTo('bulkTrackerPage')">
                     <div class="card-top-row">
                         <div class="card-title">⚡ Live Bulk Packet Tracker</div>
@@ -143,7 +155,7 @@
                     <div style="font-size: 12px; color: #8e8e93;">Realtime API status updater for Boxd & Delhivery packets.</div>
                 </div>
 
-                <!-- CARD 3: FIND & SYNC ORDER -->
+                <!-- CARD 4: FIND & SYNC ORDER -->
                 <div class="ios-dashboard-card" onclick="navigateTo('findSyncPage')">
                     <div class="card-top-row">
                         <div class="card-title">🔍 Find & Sync Order Status</div>
@@ -152,11 +164,11 @@
                     <div style="font-size: 12px; color: #8e8e93;">Search any scanned AWB / Order ID and update live status.</div>
                 </div>
 
-                <!-- CARD 4: BOXD RETURN RECONCILIATION -->
+                <!-- CARD 5: BOXD RETURN RECONCILIATION -->
                 <div class="ios-dashboard-card" onclick="navigateTo('reconcilePage')">
                     <div class="card-top-row">
-                        <div class="card-title">🔄 Boxd Return Reconciliation</div>
-                        <div class="card-badge-open">Open Reconciliation ➔</div>
+                        <div class="card-title">📋 Boxd Return Reconciliation</div>
+                        <div class="card-badge-open">Open Audit ➔</div>
                     </div>
                     <div style="font-size: 12px; color: #8e8e93;">Cross-verify Boxd CSV return reports with physical scans.</div>
                 </div>
@@ -193,7 +205,36 @@
             </div>
         </div>
 
-        <!-- PAGE 3: LIVE BULK PACKET TRACKER -->
+        <!-- PAGE 3: EXCHANGE REQUEST LIFECYCLE ENGINE -->
+        <div id="exchangePage" class="page-view page-hidden-right">
+            <div class="ios-header">
+                <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
+                <div class="ios-title">EXCHANGE ENGINE</div>
+                <button class="ios-btn-icon" onclick="fetchExchangeData()">🔄 Refresh</button>
+            </div>
+            <div class="feature-body">
+                <button class="btn btn-blue" onclick="openAddExchangeModal()">➕ Add New Exchange Request</button>
+                
+                <div style="display:flex; gap:6px;">
+                    <button id="tabExReq" class="btn btn-gray" style="flex:1; font-size:11px;" onclick="switchExchangeTab('REQUESTED')">New (<span id="cntExReq">0</span>)</button>
+                    <button id="tabExDisp" class="btn btn-gray" style="flex:1; font-size:11px;" onclick="switchExchangeTab('DISPATCH_PENDING')">Dispatch Pending (<span id="cntExDisp">0</span>)</button>
+                    <button id="tabExComp" class="btn btn-gray" style="flex:1; font-size:11px;" onclick="switchExchangeTab('COMPLETED')">Completed (<span id="cntExComp">0</span>)</button>
+                </div>
+
+                <div class="table-panel">
+                    <table>
+                        <thead>
+                            <tr id="exTableHeader"></tr>
+                        </thead>
+                        <tbody id="exTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="exLiveTrackCard" class="result-card"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: LIVE BULK PACKET TRACKER -->
         <div id="bulkTrackerPage" class="page-view page-hidden-right">
             <div class="ios-header">
                 <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
@@ -216,10 +257,6 @@
                     <div class="stat-card-mini"><span>Failed</span><strong id="statFail" style="color:#ff3b30;">0</strong></div>
                 </div>
 
-                <div id="progressWrapper" class="progress-bar-wrap">
-                    <div id="progressBar" class="progress-bar-fill"></div>
-                </div>
-
                 <div class="table-panel" id="bulkTablePanel" style="display:none;">
                     <table>
                         <thead>
@@ -236,7 +273,7 @@
             </div>
         </div>
 
-        <!-- PAGE 4: FIND & SYNC ORDER -->
+        <!-- PAGE 5: FIND & SYNC ORDER -->
         <div id="findSyncPage" class="page-view page-hidden-right">
             <div class="ios-header">
                 <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
@@ -252,7 +289,7 @@
             </div>
         </div>
 
-        <!-- PAGE 5: BOXD RETURN RECONCILIATION -->
+        <!-- PAGE 6: BOXD RETURN RECONCILIATION -->
         <div id="reconcilePage" class="page-view page-hidden-right">
             <div class="ios-header">
                 <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
@@ -282,6 +319,47 @@
             </div>
         </div>
 
+        <!-- MODALS FOR EXCHANGE LIFECYCLE ENGINE -->
+        <div id="modalAddEx" class="modal-overlay">
+            <div class="modal-card">
+                <div style="font-weight:700; font-size:15px;">➕ Add Exchange Request</div>
+                <input id="addExOrderId" class="input" placeholder="Order ID (e.g. HV-10294)">
+                <input id="addExMobile" class="input" placeholder="Mobile Number">
+                <input id="addExAwb" class="input" placeholder="Original AWB Number">
+                <textarea id="addExDesc" class="textarea" rows="2" placeholder="Reason / Description"></textarea>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-gray" onclick="closeExModals()">Cancel</button>
+                    <button class="btn btn-blue" onclick="submitAddExchange()">Save Request</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalPickupEx" class="modal-overlay">
+            <div class="modal-card">
+                <div style="font-weight:700; font-size:15px; color:#007aff;">📦 Mark Return Pickup</div>
+                <input type="hidden" id="pickupExRowId">
+                <input id="pickupExOrderId" class="input" placeholder="Return Order ID (e.g. RET-HV-10294)">
+                <input id="pickupExAwb" class="input" placeholder="Return AWB Number">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-gray" onclick="closeExModals()">Cancel</button>
+                    <button class="btn btn-blue" onclick="submitPickupExchange()">Mark Pickup</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalDispatchEx" class="modal-overlay">
+            <div class="modal-card">
+                <div style="font-weight:700; font-size:15px; color:#34c759;">🚀 Complete Exchange Dispatch</div>
+                <input type="hidden" id="dispatchExRowId">
+                <input id="dispatchExOrderId" class="input" placeholder="Dispatch Order ID (e.g. EX-HV-10294)">
+                <input id="dispatchExAwb" class="input" placeholder="New Dispatch AWB Number">
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-gray" onclick="closeExModals()">Cancel</button>
+                    <button class="btn btn-green" onclick="submitDispatchExchange()">Complete Dispatch</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Global Loader Overlay -->
         <div id="loadingOverlay">Processing...</div>
 
@@ -291,12 +369,11 @@
         /* ===================================
         GLOBAL CONFIG & STATE
         =================================== */
-        const API_URL = "https://script.google.com/macros/s/AKfycbwuHIbAWkfpoBRRg0mpbF6g4BZSkcmBw1KFTb7W1-fgLQsQ6Q5qRcJz_fkFIrSbUp-J/exec"; // Apps Script URL
+        const API_URL = "https://script.google.com/macros/s/AKfycbwZsQgf5HwFRlQ8wQj3qpLc69iGyP_YYR9hPlgA_0S6F7HFBkQCz1p3Qw24OFl9vcFs/exec"; // Apps Script URL
 
         let currentScanType = "";
         let currentTracking = null;
         let html5QrCode = null;
-        let scannerBuffer = "";
         
         let bulkRowsCache = [];
         let isBulkLoaded = false;
@@ -305,25 +382,27 @@
         let reconcileCache = { pending: [], received: [] };
         let activeReconcileTab = "Pending";
 
+        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let activeExchangeTab = "REQUESTED";
+
         const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
 
         /* ===================================
         NAVIGATION ENGINE
         =================================== */
         function navigateTo(targetPageId) {
-            const pages = ["indexPage", "dailyPage", "bulkTrackerPage", "findSyncPage", "reconcilePage"];
+            const pages = ["indexPage", "dailyPage", "exchangePage", "bulkTrackerPage", "findSyncPage", "reconcilePage"];
             pages.forEach(pid => {
                 const el = document.getElementById(pid);
-                if (pid === targetPageId) {
-                    el.className = "page-view";
-                } else {
-                    el.className = "page-view page-hidden-right";
-                }
+                if (pid === targetPageId) el.className = "page-view";
+                else el.className = "page-view page-hidden-right";
             });
 
             if (targetPageId === "indexPage") {
                 stopScanCamera();
                 fetchDashboardCounts();
+            } else if (targetPageId === "exchangePage") {
+                fetchExchangeData();
             } else if (targetPageId === "reconcilePage") {
                 fetchBoxdReport();
             }
@@ -516,7 +595,163 @@
         }
 
         /* ===================================
-        3. LIVE BULK TRACKER
+        3. EXCHANGE LIFECYCLE ENGINE
+        =================================== */
+        async function fetchExchangeData() {
+            showLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getExchangeReport`);
+                const data = await res.json();
+                hideLoader();
+
+                if (data.success) {
+                    exchangeCache.requested = data.requested || [];
+                    exchangeCache.dispatchPending = data.dispatchPending || [];
+                    exchangeCache.completed = data.completed || [];
+
+                    document.getElementById("cntExReq").innerText = data.counts.requested || 0;
+                    document.getElementById("cntExDisp").innerText = data.counts.dispatchPending || 0;
+                    document.getElementById("cntExComp").innerText = data.counts.completed || 0;
+
+                    renderExchangeTable();
+                }
+            } catch (err) { hideLoader(); toast("Exchange Data Fetch Error"); }
+        }
+
+        function renderExchangeTable() {
+            const tbody = document.getElementById("exTableBody");
+            const thead = document.getElementById("exTableHeader");
+            let data = [];
+
+            if (activeExchangeTab === "REQUESTED") {
+                data = exchangeCache.requested;
+                thead.innerHTML = `<th>Order ID</th><th>Original AWB</th><th>Action</th>`;
+            } else if (activeExchangeTab === "DISPATCH_PENDING") {
+                data = exchangeCache.dispatchPending;
+                thead.innerHTML = `<th>Return Order</th><th>Return AWB</th><th>Action</th>`;
+            } else {
+                data = exchangeCache.completed;
+                thead.innerHTML = `<th>Return Order & AWB</th><th>Dispatch Order & AWB</th>`;
+            }
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#8e8e93; padding:20px;">No records</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            data.forEach(row => {
+                if (activeExchangeTab === "REQUESTED") {
+                    html += `
+                        <tr>
+                            <td><b>${row.orderId}</b><br><small>${row.mobile}</small></td>
+                            <td><span class="track-link" onclick="trackExchangeAwb('${row.originalAwb}')">${row.originalAwb}</span></td>
+                            <td><button class="btn btn-blue" style="padding:4px 8px; font-size:11px;" onclick="openPickupExModal(${row.rowId})">Mark Pickup</button></td>
+                        </tr>`;
+                } else if (activeExchangeTab === "DISPATCH_PENDING") {
+                    html += `
+                        <tr>
+                            <td><b>${row.returnOrderId || row.orderId}</b></td>
+                            <td><span class="track-link" onclick="trackExchangeAwb('${row.returnAwb}')">${row.returnAwb}</span></td>
+                            <td><button class="btn btn-green" style="padding:4px 8px; font-size:11px;" onclick="openDispatchExModal(${row.rowId})">Dispatch</button></td>
+                        </tr>`;
+                } else {
+                    html += `
+                        <tr>
+                            <td><b>${row.returnOrderId}</b><br><span class="track-link" onclick="trackExchangeAwb('${row.returnAwb}')">${row.returnAwb}</span></td>
+                            <td><b>${row.dispatchOrderId}</b><br><span class="track-link" onclick="trackExchangeAwb('${row.dispatchAwb}')">${row.dispatchAwb}</span></td>
+                        </tr>`;
+                }
+            });
+            tbody.innerHTML = html;
+        }
+
+        function switchExchangeTab(tab) {
+            activeExchangeTab = tab;
+            document.getElementById("tabExReq").className = "btn btn-gray";
+            document.getElementById("tabExDisp").className = "btn btn-gray";
+            document.getElementById("tabExComp").className = "btn btn-gray";
+
+            if (tab === "REQUESTED") document.getElementById("tabExReq").className = "btn btn-blue";
+            else if (tab === "DISPATCH_PENDING") document.getElementById("tabExDisp").className = "btn btn-blue";
+            else document.getElementById("tabExComp").className = "btn btn-green";
+
+            renderExchangeTable();
+        }
+
+        async function trackExchangeAwb(awb) {
+            if (!awb || awb === "N/A") return;
+            showLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+                hideLoader();
+
+                const card = document.getElementById("exLiveTrackCard");
+                card.style.display = "block";
+                if (data.success) {
+                    card.innerHTML = `
+                        <div style="font-weight:700; color:#007aff; border-bottom:1px solid #e5e5ea; padding-bottom:4px; margin-bottom:4px;">🚚 Live Tracking (${awb})</div>
+                        <div><b>Status:</b> ${data.status}</div>
+                        <div><b>Courier:</b> ${data.courier}</div>
+                    `;
+                } else {
+                    card.innerHTML = `<div style="color:#ff3b30; font-weight:600;">Tracking Not Found for ${awb}</div>`;
+                }
+            } catch (e) { hideLoader(); toast("Tracking Error"); }
+        }
+
+        function openAddExchangeModal() { document.getElementById("modalAddEx").style.display = "flex"; }
+        function openPickupExModal(rowId) { document.getElementById("pickupExRowId").value = rowId; document.getElementById("modalPickupEx").style.display = "flex"; }
+        function openDispatchExModal(rowId) { document.getElementById("dispatchExRowId").value = rowId; document.getElementById("modalDispatchEx").style.display = "flex"; }
+        function closeExModals() {
+            document.getElementById("modalAddEx").style.display = "none";
+            document.getElementById("modalPickupEx").style.display = "none";
+            document.getElementById("modalDispatchEx").style.display = "none";
+        }
+
+        async function submitAddExchange() {
+            const orderId = document.getElementById("addExOrderId").value.trim();
+            const mobile = document.getElementById("addExMobile").value.trim();
+            const originalAwb = document.getElementById("addExAwb").value.trim();
+            const description = document.getElementById("addExDesc").value.trim();
+
+            if (!orderId || !mobile || !originalAwb) { toast("Fill all fields"); return; }
+            closeExModals();
+            showLoader();
+
+            await sendPost({ action: "addExchangeRequest", payload: { orderId, mobile, originalAwb, description } });
+            fetchExchangeData();
+        }
+
+        async function submitPickupExchange() {
+            const rowId = document.getElementById("pickupExRowId").value;
+            const returnOrderId = document.getElementById("pickupExOrderId").value.trim();
+            const returnAwb = document.getElementById("pickupExAwb").value.trim();
+
+            if (!returnOrderId || !returnAwb) { toast("Fill all fields"); return; }
+            closeExModals();
+            showLoader();
+
+            await sendPost({ action: "markReturnPickup", payload: { rowId, returnOrderId, returnAwb } });
+            fetchExchangeData();
+        }
+
+        async function submitDispatchExchange() {
+            const rowId = document.getElementById("dispatchExRowId").value;
+            const dispatchOrderId = document.getElementById("dispatchExOrderId").value.trim();
+            const dispatchAwb = document.getElementById("dispatchExAwb").value.trim();
+
+            if (!dispatchOrderId || !dispatchAwb) { toast("Fill all fields"); return; }
+            closeExModals();
+            showLoader();
+
+            await sendPost({ action: "completeExchangeDispatch", payload: { rowId, dispatchOrderId, dispatchAwb } });
+            fetchExchangeData();
+        }
+
+        /* ===================================
+        4. LIVE BULK TRACKER
         =================================== */
         function resetBulkTracker() {
             isBulkLoaded = false;
@@ -525,7 +760,6 @@
             document.getElementById("btnFetchBulk").className = "btn btn-blue";
             document.getElementById("bulkStatsGrid").style.display = "none";
             document.getElementById("bulkTablePanel").style.display = "none";
-            document.getElementById("progressWrapper").style.display = "none";
         }
 
         function handleBulkButtonClick() {
@@ -574,16 +808,14 @@
                     });
                     document.getElementById("bulkTablePanel").style.display = "block";
                 } else {
-                    toast("No records found for date/type");
+                    toast("No records found");
                 }
             } catch (err) { hideLoader(); toast("Fetch Error"); }
         }
 
         async function runLiveBulkSync() {
             if (bulkRowsCache.length === 0) return;
-
             document.getElementById("btnFetchBulk").disabled = true;
-            document.getElementById("progressWrapper").style.display = "block";
 
             let successCount = 0, failCount = 0;
             const total = bulkRowsCache.length;
@@ -610,9 +842,6 @@
                     failCount++;
                     document.getElementById("statFail").innerText = failCount;
                 }
-
-                const pct = Math.round(((i + 1) / total) * 100);
-                document.getElementById("progressBar").style.width = `${pct}%`;
                 await new Promise(r => setTimeout(r, 200));
             }
 
@@ -622,7 +851,7 @@
         }
 
         /* ===================================
-        4. FIND & SYNC ORDER
+        5. FIND & SYNC ORDER
         =================================== */
         function resetFindSync() {
             document.getElementById("searchInput").value = "";
@@ -679,7 +908,7 @@
         }
 
         /* ===================================
-        5. BOXD RETURN RECONCILIATION
+        6. BOXD RETURN RECONCILIATION
         =================================== */
         function processBoxdCsv(input) {
             const file = input.files[0];
@@ -719,14 +948,9 @@
 
         async function uploadBoxdParsedRows(parsedRows) {
             try {
-                const res = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({ action: "uploadBoxdCsv", payload: { rows: parsedRows } })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    toast(`Uploaded ${data.uploaded} records!`);
+                const res = await sendPost({ action: "uploadBoxdCsv", payload: { rows: parsedRows } });
+                if (res.success) {
+                    toast(`Uploaded ${res.uploaded} records!`);
                     fetchBoxdReport();
                 } else { hideLoader(); toast("Upload Rejected"); }
             } catch (e) { hideLoader(); toast("Network Error"); }
@@ -777,8 +1001,17 @@
         }
 
         /* ===================================
-        COMMON HELPERS
+        COMMON POST & UI HELPERS
         =================================== */
+        async function sendPost(postBody) {
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(postBody)
+            });
+            return await res.json();
+        }
+
         function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
         function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
         function playSuccessSound() { try { beep.currentTime = 0; beep.play(); } catch (e) {} }
