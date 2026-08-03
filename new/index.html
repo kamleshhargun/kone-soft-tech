@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Harsidhi Ventures - iOS Scan System</title>
-    <!-- Apple SF Pro Font inspired styling -->
+    <title>Harsidhi Ventures - iOS All-in-One Operations System</title>
     <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -13,73 +12,85 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: #f2f2f7; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 15px; color: #1c1c1e; }
         
-        /* Fixed iOS Container 500x1000 px Dimension */
-        .ios-wrapper { width: 100%; max-width: 500px; min-height: 900px; height: 1000px; max-height: 90vh; background: #ffffff; border-radius: 38px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05); border: 1px solid rgba(225, 225, 230, 0.8); display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        .ios-wrapper { width: 100%; max-width: 500px; min-height: 850px; height: 950px; max-height: 92vh; background: #ffffff; border-radius: 36px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); border: 1px solid rgba(225, 225, 230, 0.8); display: flex; flex-direction: column; overflow: hidden; position: relative; }
         
-        /* View Views Switcher */
-        .page-view { display: flex; flex-direction: column; width: 100%; height: 100%; position: absolute; inset: 0; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; background: #ffffff; }
+        .page-view { display: flex; flex-direction: column; width: 100%; height: 100%; position: absolute; inset: 0; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; background: #ffffff; overflow-y: auto; }
         .page-hidden-right { transform: translateX(100%); opacity: 0; pointer-events: none; }
         .page-hidden-left { transform: translateX(-30%); opacity: 0; pointer-events: none; }
 
-        /* iOS Header Bar */
-        .ios-header { height: 60px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid rgba(60, 60, 67, 0.12); background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10; }
-        .ios-title { font-size: 17px; font-weight: 700; color: #000000; letter-spacing: -0.4px; }
+        .ios-header { height: 60px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 0.5px solid rgba(60, 60, 67, 0.12); background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; flex-shrink: 0; }
+        .ios-title { font-size: 16px; font-weight: 700; color: #000000; letter-spacing: -0.4px; }
         
-        .ios-btn-icon { background: #f2f2f7; border: none; color: #007aff; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 20px; cursor: pointer; transition: background 0.2s, transform 0.1s; display: inline-flex; align-items: center; gap: 4px; }
+        .ios-btn-icon { background: #f2f2f7; border: none; color: #007aff; font-weight: 600; font-size: 13px; padding: 6px 14px; border-radius: 20px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
         .ios-btn-icon:active { background: #e5e5ea; transform: scale(0.96); }
 
-        /* Index View Style */
-        .index-content { padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; height: 100%; overflow-y: auto; }
-        .ios-section-label { font-size: 13px; font-weight: 600; text-transform: uppercase; color: #8e8e93; letter-spacing: -0.1px; margin-left: 4px; }
+        .index-content { padding: 20px 18px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+        .ios-section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; color: #8e8e93; margin-left: 4px; letter-spacing: 0.2px; }
 
-        /* Interactive iOS Clickable Card (500x1000 constrained bounds) */
-        .ios-dashboard-card { background: linear-gradient(135deg, #ffffff 0%, #f9f9fb 100%); border: 1px solid #e5e5ea; border-radius: 24px; padding: 22px; cursor: pointer; transition: all 0.25s ease; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 18px; position: relative; }
-        .ios-dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06); border-color: #007aff; }
+        .ios-dashboard-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 18px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03); display: flex; flex-direction: column; gap: 14px; }
+        .ios-dashboard-card:hover { border-color: #007aff; transform: translateY(-1px); }
         .ios-dashboard-card:active { transform: scale(0.98); }
 
         .card-top-row { display: flex; align-items: center; justify-content: space-between; }
-        .card-title { font-size: 18px; font-weight: 700; color: #1c1c1e; }
+        .card-title { font-size: 16px; font-weight: 700; color: #1c1c1e; }
         .card-badge-open { font-size: 12px; font-weight: 600; color: #007aff; background: #e5f1ff; padding: 4px 10px; border-radius: 12px; }
 
-        /* Metric Grid */
-        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .metric-box { background: #ffffff; border: 1px solid #f0f0f5; padding: 14px; border-radius: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .metric-box { background: #f9f9fb; border: 1px solid #f0f0f5; padding: 12px; border-radius: 14px; }
         .metric-box.pickup { border-left: 4px solid #007aff; }
         .metric-box.return { border-left: 4px solid #34c759; }
         .metric-box.yesterday-pickup { border-left: 4px solid #5856d6; }
         .metric-box.yesterday-return { border-left: 4px solid #ff9500; }
 
-        .metric-label { font-size: 11px; font-weight: 600; text-transform: uppercase; color: #8e8e93; margin-bottom: 4px; }
-        .metric-value { font-size: 26px; font-weight: 700; color: #1c1c1e; }
+        .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #8e8e93; margin-bottom: 2px; }
+        .metric-value { font-size: 22px; font-weight: 700; color: #1c1c1e; }
 
-        /* Daily Scan View Styles */
-        .daily-content { padding: 20px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
-        .mode-row, .action-row { display: flex; gap: 10px; }
-        .mode-btn { flex: 1; height: 48px; border-radius: 14px; border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; transition: .2s; font-size: 15px; }
+        /* Feature Views Common Styles */
+        .feature-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+        .input { height: 44px; padding: 0 14px; border: 1px solid #d1d1d6; border-radius: 12px; outline: none; background: #fff; font-size: 14px; width: 100%; }
+        .input:focus { border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12); }
+        .btn { border: none; border-radius: 12px; padding: 11px 16px; font-size: 14px; font-weight: 600; cursor: pointer; text-align: center; width: 100%; }
+        .btn-blue { background: #007aff; color: #fff; }
+        .btn-green { background: #34c759; color: #fff; }
+        .btn-gray { background: #8e8e93; color: #fff; }
+        .btn-red { background: #ff3b30; color: #fff; }
+
+        /* Scanning Sub-Panel */
+        .mode-row { display: flex; gap: 10px; }
+        .mode-btn { flex: 1; height: 46px; border-radius: 12px; border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; }
         .pickup { border-color: #007aff; color: #007aff; }
         .return { border-color: #34c759; color: #34c759; }
         .active-pickup { background: #007aff; color: #fff; }
         .active-return { background: #34c759; color: #fff; }
+        .scan-panel { display: none; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid #e5e5ea; border-radius: 16px; background: #f9f9fb; }
+        #reader { display: none; width: 100%; border-radius: 12px; overflow: hidden; border: 1px dashed #8e8e93; }
 
-        .scan-panel { display: none; flex-direction: column; gap: 12px; padding: 16px; border: 1px solid #e5e5ea; border-radius: 18px; background: #f9f9fb; }
-        .input { height: 46px; padding: 0 14px; border: 1px solid #d1d1d6; border-radius: 12px; outline: none; background: #fff; font-size: 14px; width: 100%; }
-        .input:focus { border-color: #007aff; box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15); }
-        #reader { display: none; width: 100%; overflow: hidden; border-radius: 14px; border: 1px dashed #8e8e93; }
-
-        .result-card { padding: 14px; border: 1px solid #e5e5ea; border-radius: 14px; background: #fff; display: none; font-size: 13px; line-height: 1.6; }
+        .result-card { padding: 14px; border: 1px solid #e5e5ea; border-radius: 14px; background: #fff; display: none; font-size: 13px; line-height: 1.5; }
         .data-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-        .data-table td { padding: 4px 0; border-bottom: 1px solid #f2f2f7; }
-        .data-table td.label { color: #8e8e93; font-weight: 500; width: 35%; }
+        .data-table td { padding: 5px 0; border-bottom: 1px solid #f2f2f7; }
+        .data-table td.label { color: #8e8e93; font-weight: 500; width: 40%; }
         .data-table td.val { color: #1c1c1e; font-weight: 600; }
 
-        .btn { border: none; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: .2s; text-align: center; }
-        .btn-camera { background: #007aff; color: #fff; }
-        .btn-manual { background: #636366; color: #fff; }
-        .btn-save { background: #34c759; color: #fff; }
-        .btn-stop { background: #ff3b30; color: #fff; }
-        
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.85); color: #fff; padding: 10px 18px; border-radius: 20px; z-index: 9999; font-size: 13px; font-weight: 500; backdrop-filter: blur(10px); }
-        #loadingOverlay { display: none; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: #007aff; }
+        /* Stats & Table Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .stat-card-mini { background: #f9f9fb; border: 1px solid #e5e5ea; padding: 10px; border-radius: 12px; text-align: center; }
+        .stat-card-mini span { font-size: 10px; font-weight: 600; color: #8e8e93; display: block; text-transform: uppercase; }
+        .stat-card-mini strong { font-size: 18px; color: #1c1c1e; }
+
+        .table-panel { border: 1px solid #e5e5ea; border-radius: 14px; overflow: hidden; max-height: 400px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        th { background: #f2f2f7; color: #636366; font-weight: 600; padding: 10px 12px; position: sticky; top: 0; }
+        td { padding: 10px 12px; border-bottom: 1px solid #f2f2f7; color: #1c1c1e; }
+
+        .badge { display: inline-block; padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .badge-pickup { background: #e5f1ff; color: #007aff; }
+        .badge-return { background: #e1f9e6; color: #34c759; }
+
+        .progress-bar-wrap { height: 6px; background: #e5e5ea; border-radius: 10px; overflow: hidden; display: none; }
+        .progress-bar-fill { height: 100%; background: #34c759; width: 0%; transition: width 0.2s; }
+
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.85); color: #fff; padding: 10px 18px; border-radius: 20px; z-index: 9999; font-size: 12px; font-weight: 500; backdrop-filter: blur(10px); }
+        #loadingOverlay { display: none; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(8px); z-index: 999; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; color: #007aff; }
     </style>
 </head>
 
@@ -91,19 +102,18 @@
         <div id="indexPage" class="page-view">
             <div class="ios-header">
                 <div class="ios-title">HARSIDHI VENTURES</div>
-                <button class="ios-btn-icon" onclick="fetchCounts()">🔄 Refresh</button>
+                <button class="ios-btn-icon" onclick="fetchDashboardCounts()">🔄 Refresh</button>
             </div>
             
             <div class="index-content">
-                <div class="ios-section-label">Operations Overview</div>
+                <div class="ios-section-label">Operations Dashboard</div>
                 
-                <!-- CLICKABLE RECTANGLE TAB (Opens Daily Scan) -->
-                <div class="ios-dashboard-card" onclick="openDailyScan()">
+                <!-- CARD 1: DAILY SCAN OPERATIONS -->
+                <div class="ios-dashboard-card" onclick="navigateTo('dailyPage')">
                     <div class="card-top-row">
                         <div class="card-title">📦 Scan Operations</div>
-                        <div class="card-badge-open">Tap to Scan ➔</div>
+                        <div class="card-badge-open">Open Scanner ➔</div>
                     </div>
-
                     <div class="metrics-grid">
                         <div class="metric-box pickup">
                             <div class="metric-label">Today Pickup</div>
@@ -123,79 +133,206 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- CARD 2: LIVE BULK TRACKER -->
+                <div class="ios-dashboard-card" onclick="navigateTo('bulkTrackerPage')">
+                    <div class="card-top-row">
+                        <div class="card-title">⚡ Live Bulk Packet Tracker</div>
+                        <div class="card-badge-open">Open Tracker ➔</div>
+                    </div>
+                    <div style="font-size: 12px; color: #8e8e93;">Realtime API status updater for Boxd & Delhivery packets.</div>
+                </div>
+
+                <!-- CARD 3: FIND & SYNC ORDER -->
+                <div class="ios-dashboard-card" onclick="navigateTo('findSyncPage')">
+                    <div class="card-top-row">
+                        <div class="card-title">🔍 Find & Sync Order Status</div>
+                        <div class="card-badge-open">Open Search ➔</div>
+                    </div>
+                    <div style="font-size: 12px; color: #8e8e93;">Search any scanned AWB / Order ID and update live status.</div>
+                </div>
+
+                <!-- CARD 4: BOXD RETURN RECONCILIATION -->
+                <div class="ios-dashboard-card" onclick="navigateTo('reconcilePage')">
+                    <div class="card-top-row">
+                        <div class="card-title">🔄 Boxd Return Reconciliation</div>
+                        <div class="card-badge-open">Open Reconciliation ➔</div>
+                    </div>
+                    <div style="font-size: 12px; color: #8e8e93;">Cross-verify Boxd CSV return reports with physical scans.</div>
+                </div>
+
             </div>
         </div>
 
-        <!-- PAGE 2: DAILY.HTML SCAN PANEL -->
+        <!-- PAGE 2: DAILY SCAN OPERATOR -->
         <div id="dailyPage" class="page-view page-hidden-right">
             <div class="ios-header">
-                <button class="ios-btn-icon" onclick="openIndex()">⬅ Back</button>
+                <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
                 <div class="ios-title">DAILY SCAN</div>
-                <button class="ios-btn-icon" onclick="refreshDaily()">🔄 Refresh</button>
+                <button class="ios-btn-icon" onclick="resetDailyScan()">🔄 Refresh</button>
             </div>
-
-            <div class="daily-content">
+            <div class="feature-body">
                 <div class="mode-row">
-                    <button id="pickupBtn" class="mode-btn pickup" onclick="selectType('Pickup')">Pickup</button>
-                    <button id="returnBtn" class="mode-btn return" onclick="selectType('Return')">Return</button>
+                    <button id="pickupBtn" class="mode-btn pickup" onclick="selectScanType('Pickup')">Pickup</button>
+                    <button id="returnBtn" class="mode-btn return" onclick="selectScanType('Return')">Return</button>
                 </div>
-
                 <div id="scanPanel" class="scan-panel">
-                    <div class="action-row">
-                        <button class="btn btn-camera" style="flex: 1;" onclick="startCamera()">📷 Camera Scan</button>
-                        <button class="btn btn-manual" style="flex: 1;" onclick="focusAWB()">⌨ Manual Input</button>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-blue" onclick="startScanCamera()">📷 Camera</button>
+                        <button class="btn btn-gray" onclick="focusScanInput()">⌨ Manual</button>
                     </div>
                     <div id="reader"></div>
-                    <input id="awbInput" class="input" placeholder="Scan AWB or Type & Press Enter" autocomplete="off">
-                    <input id="orderInput" class="input" placeholder="Order ID (Manual Fallback)" style="display: none;" autocomplete="off">
-                    
+                    <input id="awbInput" class="input" placeholder="Scan AWB or Press Enter" autocomplete="off">
+                    <input id="orderInput" class="input" placeholder="Order ID (Manual Fallback)" style="display:none;" autocomplete="off">
                     <div id="resultCard" class="result-card"></div>
-                    
-                    <div class="action-row" style="margin-top: 5px;">
-                        <button class="btn btn-save" style="flex: 1;" onclick="saveEntry()">Next (Save)</button>
-                        <button class="btn btn-stop" style="flex: 1;" onclick="stopWork()">Stop</button>
+                    <div style="display:flex; gap:8px; margin-top:4px;">
+                        <button class="btn btn-green" onclick="saveScanEntry()">Next (Save)</button>
+                        <button class="btn btn-red" onclick="stopScanWork()">Stop</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Loader Overlay -->
+        <!-- PAGE 3: LIVE BULK PACKET TRACKER -->
+        <div id="bulkTrackerPage" class="page-view page-hidden-right">
+            <div class="ios-header">
+                <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
+                <div class="ios-title">BULK TRACKER</div>
+                <button class="ios-btn-icon" onclick="resetBulkTracker()">🔄 Refresh</button>
+            </div>
+            <div class="feature-body">
+                <div style="display:flex; gap:8px;">
+                    <input type="date" id="filterDate" class="input" style="flex:1;">
+                    <select id="packetType" class="input" style="flex:1;">
+                        <option value="pickup">Pickup</option>
+                        <option value="return">Return</option>
+                    </select>
+                </div>
+                <button id="btnFetchBulk" class="btn btn-blue" onclick="handleBulkButtonClick()">Fetch Data</button>
+                
+                <div id="bulkStatsGrid" class="stats-grid" style="display:none;">
+                    <div class="stat-card-mini"><span>Total</span><strong id="statTotal">0</strong></div>
+                    <div class="stat-card-mini"><span>Updated</span><strong id="statSuccess" style="color:#34c759;">0</strong></div>
+                    <div class="stat-card-mini"><span>Failed</span><strong id="statFail" style="color:#ff3b30;">0</strong></div>
+                </div>
+
+                <div id="progressWrapper" class="progress-bar-wrap">
+                    <div id="progressBar" class="progress-bar-fill"></div>
+                </div>
+
+                <div class="table-panel" id="bulkTablePanel" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#Row</th>
+                                <th>AWB</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bulkTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: FIND & SYNC ORDER -->
+        <div id="findSyncPage" class="page-view page-hidden-right">
+            <div class="ios-header">
+                <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
+                <div class="ios-title">FIND & SYNC</div>
+                <button class="ios-btn-icon" onclick="resetFindSync()">🔄 Refresh</button>
+            </div>
+            <div class="feature-body">
+                <div style="display:flex; gap:8px;">
+                    <input id="searchInput" class="input" placeholder="Enter AWB or Order ID" autocomplete="off">
+                    <button class="btn btn-blue" style="width:100px;" onclick="executeSearchOrder()">Search</button>
+                </div>
+                <div id="searchResultBox"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: BOXD RETURN RECONCILIATION -->
+        <div id="reconcilePage" class="page-view page-hidden-right">
+            <div class="ios-header">
+                <button class="ios-btn-icon" onclick="navigateTo('indexPage')">⬅ Back</button>
+                <div class="ios-title">BOXD RECONCILIATION</div>
+                <button class="ios-btn-icon" onclick="fetchBoxdReport()">🔄 Refresh</button>
+            </div>
+            <div class="feature-body">
+                <input type="file" id="csvFileInput" accept=".csv" class="input" onchange="processBoxdCsv(this)">
+                <div style="display:flex; gap:8px;">
+                    <button id="tabPendingBtn" class="btn btn-red" style="flex:1;" onclick="switchReconcileTab('Pending')">Pending (<span id="cntPending">0</span>)</button>
+                    <button id="tabReceivedBtn" class="btn btn-green" style="flex:1;" onclick="switchReconcileTab('Received')">Received (<span id="cntReceived">0</span>)</button>
+                </div>
+                <div class="table-panel">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>AWB</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reconcileTableBody">
+                            <tr><td colspan="3" style="text-align:center; color:#8e8e93; padding:20px;">Upload Boxd CSV to analyze.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Loader Overlay -->
         <div id="loadingOverlay">Processing...</div>
 
     </div>
 
     <script>
         /* ===================================
-        CONFIG
+        GLOBAL CONFIG & STATE
         =================================== */
-        const API_URL = "https://script.google.com/macros/s/AKfycbzxbpxru4kVp6G6FDRh_4Pja_MDHeNSQN_NiBCtbleIlQ6HvQfHCYyfx3O6HZqDCjR-/exec"; // Apni Apps Script URL yahan dalein
+        const API_URL = "https://script.google.com/macros/s/AKfycbwuHIbAWkfpoBRRg0mpbF6g4BZSkcmBw1KFTb7W1-fgLQsQ6Q5qRcJz_fkFIrSbUp-J/exec"; // Apps Script URL
 
-        let currentType = "";
+        let currentScanType = "";
         let currentTracking = null;
         let html5QrCode = null;
         let scannerBuffer = "";
         
+        let bulkRowsCache = [];
+        let isBulkLoaded = false;
+        
+        let foundRecordCache = null;
+        let reconcileCache = { pending: [], received: [] };
+        let activeReconcileTab = "Pending";
+
         const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
 
         /* ===================================
-        NAVIGATION LOGIC
+        NAVIGATION ENGINE
         =================================== */
-        function openDailyScan() {
-            document.getElementById("indexPage").className = "page-view page-hidden-left";
-            document.getElementById("dailyPage").className = "page-view";
-        }
+        function navigateTo(targetPageId) {
+            const pages = ["indexPage", "dailyPage", "bulkTrackerPage", "findSyncPage", "reconcilePage"];
+            pages.forEach(pid => {
+                const el = document.getElementById(pid);
+                if (pid === targetPageId) {
+                    el.className = "page-view";
+                } else {
+                    el.className = "page-view page-hidden-right";
+                }
+            });
 
-        function openIndex() {
-            stopCamera();
-            fetchCounts();
-            document.getElementById("dailyPage").className = "page-view page-hidden-right";
-            document.getElementById("indexPage").className = "page-view";
+            if (targetPageId === "indexPage") {
+                stopScanCamera();
+                fetchDashboardCounts();
+            } else if (targetPageId === "reconcilePage") {
+                fetchBoxdReport();
+            }
         }
 
         /* ===================================
-        FETCH DASHBOARD COUNTS
+        1. DASHBOARD COUNTS
         =================================== */
-        async function fetchCounts() {
+        async function fetchDashboardCounts() {
             try {
                 const res = await fetch(`${API_URL}?action=getDashboardCounts`);
                 const data = await res.json();
@@ -205,41 +342,36 @@
                     document.getElementById("cntYesterdayPickup").innerText = data.yesterdayPickup || 0;
                     document.getElementById("cntYesterdayReturn").innerText = data.yesterdayReturn || 0;
                 }
-            } catch (err) {
-                console.error(err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         /* ===================================
-        DAILY SCAN OPERATIONS
+        2. DAILY SCAN FUNCTIONS
         =================================== */
-        async function refreshDaily() {
-            await stopCamera();
-            currentType = "";
-            clearForm();
+        function resetDailyScan() {
+            stopScanCamera();
+            currentScanType = "";
+            clearScanForm();
             document.getElementById("scanPanel").style.display = "none";
             document.getElementById("pickupBtn").classList.remove("active-pickup");
             document.getElementById("returnBtn").classList.remove("active-return");
-            toast("Form Refreshed");
+            toast("Scanner Reset");
         }
 
-        function selectType(type) {
-            currentType = type;
+        function selectScanType(type) {
+            currentScanType = type;
             document.getElementById("scanPanel").style.display = "flex";
             document.getElementById("pickupBtn").classList.remove("active-pickup");
             document.getElementById("returnBtn").classList.remove("active-return");
 
-            if (type === "Pickup") {
-                document.getElementById("pickupBtn").classList.add("active-pickup");
-            } else {
-                document.getElementById("returnBtn").classList.add("active-return");
-            }
+            if (type === "Pickup") document.getElementById("pickupBtn").classList.add("active-pickup");
+            else document.getElementById("returnBtn").classList.add("active-return");
 
-            clearForm();
-            focusAWB();
+            clearScanForm();
+            focusScanInput();
         }
 
-        function clearForm() {
+        function clearScanForm() {
             currentTracking = null;
             document.getElementById("awbInput").value = "";
             document.getElementById("orderInput").value = "";
@@ -248,32 +380,27 @@
             document.getElementById("resultCard").innerHTML = "";
         }
 
-        function focusAWB() {
-            document.getElementById("awbInput").focus();
-        }
+        function focusScanInput() { document.getElementById("awbInput").focus(); }
 
-        async function startCamera() {
+        async function startScanCamera() {
             try {
-                if (html5QrCode) await stopCamera();
+                if (html5QrCode) await stopScanCamera();
                 document.getElementById("reader").style.display = "block";
                 html5QrCode = new Html5Qrcode("reader");
-                
                 await html5QrCode.start(
                     { facingMode: "environment" },
-                    { fps: 20, qrbox: { width: 280, height: 140 } },
+                    { fps: 20, qrbox: { width: 260, height: 130 } },
                     function(decodedText) {
                         document.getElementById("awbInput").value = decodedText;
                         playSuccessSound();
-                        stopCamera();
-                        trackShipment();
+                        stopScanCamera();
+                        executeTrackShipment();
                     }
                 );
-            } catch (err) {
-                toast("Camera Permission Error");
-            }
+            } catch (err) { toast("Camera Error"); }
         }
 
-        async function stopCamera() {
+        async function stopScanCamera() {
             try {
                 if (html5QrCode) {
                     await html5QrCode.stop();
@@ -285,37 +412,12 @@
         }
 
         document.getElementById("awbInput").addEventListener("keydown", function(e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                trackShipment();
-            }
+            if (e.key === "Enter") { e.preventDefault(); executeTrackShipment(); }
         });
 
-        document.addEventListener("keydown", function(e) {
-            if (document.activeElement.id !== "awbInput") return;
-            
-            if (e.key === "Enter") {
-                e.preventDefault();
-                const awb = scannerBuffer.trim();
-                if (awb.length > 5) {
-                    document.getElementById("awbInput").value = awb;
-                    trackShipment();
-                }
-                scannerBuffer = "";
-                return;
-            }
-
-            if (e.key.length === 1) {
-                scannerBuffer += e.key;
-            }
-        });
-
-        async function trackShipment() {
+        async function executeTrackShipment() {
             const awb = document.getElementById("awbInput").value.trim();
-            if (!awb) {
-                toast("Please Scan/Enter AWB");
-                return;
-            }
+            if (!awb) { toast("Enter AWB"); return; }
 
             showLoader();
             try {
@@ -325,29 +427,22 @@
 
                 if (result && result.success) {
                     currentTracking = result;
-                    renderTrackingCard(result);
+                    renderScanResultCard(result);
                 } else {
-                    openManualFallback();
+                    renderManualFallback();
                 }
-            } catch (err) {
-                hideLoader();
-                openManualFallback();
-            }
+            } catch (err) { hideLoader(); renderManualFallback(); }
         }
 
-        function openManualFallback() {
+        function renderManualFallback() {
             currentTracking = null;
-            const todayStr = new Date().toLocaleDateString('en-GB');
-            
             const card = document.getElementById("resultCard");
             card.style.display = "block";
             card.innerHTML = `
-                <div style="color:#ff3b30; font-weight:600; border-bottom: 1px solid #e5e5ea; padding-bottom:4px; margin-bottom:6px;">⚠️ Tracking Not Found</div>
+                <div style="color:#ff3b30; font-weight:600;">⚠️ Tracking Not Found</div>
                 <table class="data-table">
-                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
-                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentScanType}</td></tr>
                     <tr><td class="label">AWB:</td><td class="val">${document.getElementById("awbInput").value.trim()}</td></tr>
-                    <tr><td class="label">Order ID:</td><td class="val" style="color:#ff3b30;">Manual Input Required</td></tr>
                     <tr><td class="label">Courier:</td><td class="val">MANUAL</td></tr>
                 </table>
             `;
@@ -355,16 +450,13 @@
             document.getElementById("orderInput").focus();
         }
 
-        function renderTrackingCard(data) {
+        function renderScanResultCard(data) {
             const card = document.getElementById("resultCard");
             card.style.display = "block";
-            const todayStr = new Date().toLocaleDateString('en-GB');
-
             card.innerHTML = `
-                <div style="color:#34c759; font-weight:600; border-bottom: 1px solid #e5e5ea; padding-bottom:4px; margin-bottom:6px;">✅ Tracking Fetched</div>
+                <div style="color:#34c759; font-weight:600;">✅ Tracking Fetched</div>
                 <table class="data-table">
-                    <tr><td class="label">Date:</td><td class="val">${todayStr}</td></tr>
-                    <tr><td class="label">Type:</td><td class="val">${currentType}</td></tr>
+                    <tr><td class="label">Type:</td><td class="val">${currentScanType}</td></tr>
                     <tr><td class="label">AWB:</td><td class="val">${data.awb || ""}</td></tr>
                     <tr><td class="label">Order ID:</td><td class="val">${data.orderId || ""}</td></tr>
                     <tr><td class="label">Courier:</td><td class="val">${data.courier || ""}</td></tr>
@@ -374,24 +466,15 @@
             document.getElementById("orderInput").style.display = "block";
         }
 
-        async function saveEntry() {
-            if (!currentType) {
-                toast("Select Pickup / Return Mode First");
-                return;
-            }
-
+        async function saveScanEntry() {
+            if (!currentScanType) { toast("Select Pickup / Return Mode"); return; }
             const awb = document.getElementById("awbInput").value.trim();
-            if (!awb) {
-                toast("AWB Missing");
-                return;
-            }
-
-            const orderId = document.getElementById("orderInput").value.trim();
+            if (!awb) { toast("AWB Missing"); return; }
 
             const payload = {
-                type: currentType,
+                type: currentScanType,
                 awb: awb,
-                orderId: orderId,
+                orderId: document.getElementById("orderInput").value.trim(),
                 courier: currentTracking?.courier || "MANUAL",
                 status: currentTracking?.status || "Pending"
             };
@@ -401,10 +484,7 @@
                 const response = await fetch(API_URL, {
                     method: "POST",
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({
-                        action: "saveEntry",
-                        payload: payload
-                    })
+                    body: JSON.stringify({ action: "saveEntry", payload: payload })
                 });
 
                 const result = await response.json();
@@ -416,43 +496,299 @@
                     return;
                 }
 
-                if (!result.success) {
-                    toast(result.message || "Save Failed");
-                    return;
-                }
+                if (!result.success) { toast(result.message || "Save Failed"); return; }
 
                 playSuccessSound();
                 toast("🎉 Row Saved!");
-                clearForm();
-                focusAWB();
-            } catch (err) {
-                hideLoader();
-                toast("Save Error");
-            }
+                clearScanForm();
+                focusScanInput();
+            } catch (err) { hideLoader(); toast("Save Error"); }
         }
 
-        function stopWork() {
-            stopCamera();
-            currentType = "";
-            clearForm();
+        function stopScanWork() {
+            stopScanCamera();
+            currentScanType = "";
+            clearScanForm();
             document.getElementById("scanPanel").style.display = "none";
             document.getElementById("pickupBtn").classList.remove("active-pickup");
             document.getElementById("returnBtn").classList.remove("active-return");
             toast("Process Reset");
         }
 
+        /* ===================================
+        3. LIVE BULK TRACKER
+        =================================== */
+        function resetBulkTracker() {
+            isBulkLoaded = false;
+            bulkRowsCache = [];
+            document.getElementById("btnFetchBulk").innerText = "Fetch Data";
+            document.getElementById("btnFetchBulk").className = "btn btn-blue";
+            document.getElementById("bulkStatsGrid").style.display = "none";
+            document.getElementById("bulkTablePanel").style.display = "none";
+            document.getElementById("progressWrapper").style.display = "none";
+        }
+
+        function handleBulkButtonClick() {
+            if (!isBulkLoaded) fetchBulkRowsData();
+            else runLiveBulkSync();
+        }
+
+        async function fetchBulkRowsData() {
+            const rawDate = document.getElementById("filterDate").value;
+            const type = document.getElementById("packetType").value;
+            if (!rawDate) { toast("Select Date"); return; }
+
+            const parts = rawDate.split("-");
+            const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+            showLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getBulkRows&date=${encodeURIComponent(formattedDate)}&type=${encodeURIComponent(type)}`);
+                const data = await res.json();
+                hideLoader();
+
+                if (data.success && data.rows && data.rows.length > 0) {
+                    bulkRowsCache = data.rows;
+                    isBulkLoaded = true;
+
+                    const btn = document.getElementById("btnFetchBulk");
+                    btn.innerText = "Get Live Data";
+                    btn.className = "btn btn-green";
+
+                    document.getElementById("bulkStatsGrid").style.display = "grid";
+                    document.getElementById("statTotal").innerText = bulkRowsCache.length;
+                    document.getElementById("statSuccess").innerText = "0";
+                    document.getElementById("statFail").innerText = "0";
+
+                    const tbody = document.getElementById("bulkTableBody");
+                    tbody.innerHTML = "";
+                    bulkRowsCache.forEach(r => {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td>#${r.row}</td>
+                            <td>${r.awb}</td>
+                            <td><span class="badge badge-${type}">${type}</span></td>
+                            <td id="bulk-status-${r.awb}" style="color:#8e8e93;">Pending Sync</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                    document.getElementById("bulkTablePanel").style.display = "block";
+                } else {
+                    toast("No records found for date/type");
+                }
+            } catch (err) { hideLoader(); toast("Fetch Error"); }
+        }
+
+        async function runLiveBulkSync() {
+            if (bulkRowsCache.length === 0) return;
+
+            document.getElementById("btnFetchBulk").disabled = true;
+            document.getElementById("progressWrapper").style.display = "block";
+
+            let successCount = 0, failCount = 0;
+            const total = bulkRowsCache.length;
+
+            for (let i = 0; i < total; i++) {
+                const item = bulkRowsCache[i];
+                const cell = document.getElementById(`bulk-status-${item.awb}`);
+                if (cell) { cell.innerText = "Tracking..."; cell.style.color = "#007aff"; }
+
+                try {
+                    const res = await fetch(`${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(item.awb)}`);
+                    const result = await res.json();
+
+                    if (result.success) {
+                        successCount++;
+                        document.getElementById("statSuccess").innerText = successCount;
+                        if (cell) { cell.innerText = result.status || "Updated"; cell.style.color = "#34c759"; }
+                    } else {
+                        failCount++;
+                        document.getElementById("statFail").innerText = failCount;
+                        if (cell) { cell.innerText = "Failed"; cell.style.color = "#ff3b30"; }
+                    }
+                } catch (e) {
+                    failCount++;
+                    document.getElementById("statFail").innerText = failCount;
+                }
+
+                const pct = Math.round(((i + 1) / total) * 100);
+                document.getElementById("progressBar").style.width = `${pct}%`;
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            document.getElementById("btnFetchBulk").disabled = false;
+            toast("Bulk sync completed!");
+            resetBulkTracker();
+        }
+
+        /* ===================================
+        4. FIND & SYNC ORDER
+        =================================== */
+        function resetFindSync() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("searchResultBox").innerHTML = "";
+            foundRecordCache = null;
+        }
+
+        async function executeSearchOrder() {
+            const keyword = document.getElementById("searchInput").value.trim();
+            if (!keyword) { toast("Enter AWB or Order ID"); return; }
+
+            showLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(keyword)}`);
+                const data = await res.json();
+                hideLoader();
+
+                const box = document.getElementById("searchResultBox");
+                if (data.success) {
+                    foundRecordCache = data;
+                    box.innerHTML = `
+                        <div class="result-card" style="display:block;">
+                            <div style="font-weight:700; border-bottom:1px solid #e5e5ea; padding-bottom:6px; margin-bottom:6px;">📋 Record Found</div>
+                            <table class="data-table">
+                                <tr><td class="label">Date:</td><td class="val">${data.date}</td></tr>
+                                <tr><td class="label">Type:</td><td class="val"><span class="badge badge-${data.type.toLowerCase()}">${data.type}</span></td></tr>
+                                <tr><td class="label">AWB:</td><td class="val">${data.awb}</td></tr>
+                                <tr><td class="label">Order ID:</td><td class="val">${data.orderId || "N/A"}</td></tr>
+                                <tr><td class="label">Courier:</td><td class="val">${data.courier || "N/A"}</td></tr>
+                                <tr><td class="label">Status:</td><td class="val" style="color:#007aff;">${data.status || "Pending"}</td></tr>
+                            </table>
+                            <button class="btn btn-green" style="margin-top:10px;" onclick="syncSingleOrderRecord('${data.awb}')">🌐 Sync Live Status</button>
+                        </div>
+                    `;
+                } else {
+                    box.innerHTML = `<div style="text-align:center; color:#ff3b30; padding:20px; font-weight:600;">No Record Found</div>`;
+                }
+            } catch (err) { hideLoader(); toast("Search Error"); }
+        }
+
+        async function syncSingleOrderRecord(awb) {
+            showLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+                hideLoader();
+                if (data.success) {
+                    toast("🎉 Synced Successfully!");
+                    executeSearchOrder();
+                } else {
+                    toast(data.message || "Sync Failed");
+                }
+            } catch (err) { hideLoader(); toast("Sync Error"); }
+        }
+
+        /* ===================================
+        5. BOXD RETURN RECONCILIATION
+        =================================== */
+        function processBoxdCsv(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            showLoader();
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const rows = parseCsvText(text);
+                if (rows.length <= 1) { hideLoader(); toast("CSV is Empty"); return; }
+                await uploadBoxdParsedRows(rows);
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function parseCsvText(text) {
+            const lines = [];
+            let row = [], inQuotes = false, cell = '';
+            for (let i = 0; i < text.length; i++) {
+                const c = text[i], next = text[i+1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') { cell += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (c === ',' && !inQuotes) {
+                    row.push(cell.trim()); cell = '';
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') i++;
+                    row.push(cell.trim());
+                    if (row.length > 1 || row[0] !== '') lines.push(row);
+                    row = []; cell = '';
+                } else { cell += c; }
+            }
+            if (row.length > 0 || cell !== '') { row.push(cell.trim()); lines.push(row); }
+            return lines;
+        }
+
+        async function uploadBoxdParsedRows(parsedRows) {
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "uploadBoxdCsv", payload: { rows: parsedRows } })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    toast(`Uploaded ${data.uploaded} records!`);
+                    fetchBoxdReport();
+                } else { hideLoader(); toast("Upload Rejected"); }
+            } catch (e) { hideLoader(); toast("Network Error"); }
+        }
+
+        async function fetchBoxdReport() {
+            showLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getBoxdReturnReport`);
+                const data = await res.json();
+                hideLoader();
+                if (data.success) {
+                    reconcileCache.pending = data.pending || [];
+                    reconcileCache.received = data.received || [];
+                    document.getElementById("cntPending").innerText = reconcileCache.pending.length;
+                    document.getElementById("cntReceived").innerText = reconcileCache.received.length;
+                    renderReconcileRows();
+                }
+            } catch (e) { hideLoader(); toast("Report Fetch Error"); }
+        }
+
+        function switchReconcileTab(tab) {
+            activeReconcileTab = tab;
+            renderReconcileRows();
+        }
+
+        function renderReconcileRows() {
+            const tbody = document.getElementById("reconcileTableBody");
+            const dataset = activeReconcileTab === "Pending" ? reconcileCache.pending : reconcileCache.received;
+            const badgeStyle = activeReconcileTab === "Pending" ? "background:#fee2e2; color:#991b1b;" : "background:#dcfce7; color:#166534;";
+
+            if (dataset.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#8e8e93; padding:20px;">No records under ${activeReconcileTab}</td></tr>`;
+                return;
+            }
+
+            let html = "";
+            dataset.forEach(r => {
+                html += `
+                    <tr>
+                        <td><b>${r.customerOrderNumber}</b></td>
+                        <td>${r.awb || "N/A"}</td>
+                        <td><span class="badge" style="${badgeStyle}">${r.status}</span></td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        /* ===================================
+        COMMON HELPERS
+        =================================== */
         function showLoader() { document.getElementById("loadingOverlay").style.display = "flex"; }
         function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
-        function playSuccessSound() { try { beep.currentTime = 0; beep.play(); } catch (err) {} }
+        function playSuccessSound() { try { beep.currentTime = 0; beep.play(); } catch (e) {} }
         function toast(msg) {
-            const t = document.createElement("div");
-            t.className = "toast"; t.innerText = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2500);
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
         }
 
         window.onload = function() {
-            fetchCounts();
+            fetchDashboardCounts();
         };
     </script>
 </body>
