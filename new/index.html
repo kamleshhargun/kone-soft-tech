@@ -4,437 +4,314 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harsidhi Logistics - ERP & Scan Operations</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Harsidhi Ventures - Enterprise Logistics Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --panel-bg: #ffffff;
-            --primary: #2563eb;
-            --primary-light: #eff6ff;
-            --secondary: #0d9488;
-            --border-color: #e2e8f0;
-            --text-dark: #0f172a;
-            --text-muted: #64748b;
-            --radius-md: 12px;
-            --radius-lg: 16px;
+            --bg-body: #0f172a;
+            --panel-bg: #1e293b;
+            --panel-border: #334155;
+            --accent-primary: #38bdf8;
+            --accent-success: #34d399;
+            --accent-warning: #fbbf24;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --radius-xl: 20px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-color); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 30px; }
 
-        .navbar { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-        .brand-logo { font-size: 16px; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
+        /* Top Header Navigation */
+        .top-nav { background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .nav-brand { font-size: 18px; font-weight: 800; color: var(--accent-primary); letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px; }
+        .nav-badge { background: #0284c7; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 
-        .app-layout { max-width: 1240px; width: 100%; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .container { max-width: 1280px; margin: 0 auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; }
 
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
-        .metric-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
-        .metric-val { font-size: 22px; font-weight: 700; color: var(--text-dark); }
-        .metric-label { font-size: 12px; font-weight: 500; color: var(--text-muted); }
+        /* Analytics Grid Section */
+        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .stat-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .stat-val { font-size: 24px; font-weight: 800; color: #fff; }
+        .stat-title { font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
 
-        .workspace-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
-        .panel-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-        .panel-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
-        .panel-title { font-size: 14px; font-weight: 700; color: #334155; text-transform: uppercase; }
+        /* Scanning Workspace Layout */
+        .grid-split { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+        .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-xl); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
 
-        .mode-row { display: flex; gap: 12px; }
-        .mode-btn { flex: 1; height: 48px; border-radius: var(--radius-md); border: 2px solid; font-weight: 700; background: #fff; cursor: pointer; transition: 0.2s; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .pickup { border-color: var(--primary); color: var(--primary); }
-        .return { border-color: var(--secondary); color: var(--secondary); }
-        .active-pickup { background: var(--primary); color: #fff; }
-        .active-return { background: var(--secondary); color: #fff; }
+        .mode-selector { display: flex; gap: 10px; }
+        .btn-mode { flex: 1; height: 50px; border-radius: 14px; border: 2px solid; background: transparent; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .btn-pickup { border-color: var(--accent-primary); color: var(--accent-primary); }
+        .btn-return { border-color: var(--accent-success); color: var(--accent-success); }
+        .btn-pickup.active { background: var(--accent-primary); color: #0f172a; }
+        .btn-return.active { background: var(--accent-success); color: #0f172a; }
 
-        .scan-panel { display: none; flex-direction: column; gap: 14px; padding: 16px; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: #fafbfc; }
-        .input-field { height: 44px; padding: 0 14px; border: 1px solid #cbd5e1; border-radius: 10px; outline: none; background: #fff; font-size: 14px; width: 100%; margin-bottom: 8px; }
-        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        /* Scanner Box & Mobile Adjustments */
+        .scan-box { display: none; flex-direction: column; gap: 12px; background: #0f172a; border-radius: 16px; padding: 16px; border: 1px solid var(--panel-border); }
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px dashed var(--accent-primary); display: none; }
+        .input-dark { width: 100%; height: 48px; background: #1e293b; border: 1px solid var(--panel-border); border-radius: 12px; padding: 0 16px; color: #fff; font-size: 14px; outline: none; }
+        .input-dark:focus { border-color: var(--accent-primary); }
 
-        .action-row { display: flex; gap: 10px; }
-        .btn { border: none; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
-        .btn-camera { background: var(--primary); color: #fff; }
-        .btn-manual { background: #475569; color: #fff; }
-        .btn-save { background: #10b981; color: #fff; }
-        .btn-stop { background: #ef4444; color: #fff; }
-        .btn-act { background: #2563eb; color: #fff; padding: 6px 12px; font-size: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; }
+        .btn-action { height: 44px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-save { background: var(--accent-success); color: #0f172a; }
+        .btn-reset { background: #ef4444; color: #fff; }
 
-        .tab-buttons { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
-        .tab-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid var(--border-color); background: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
-        .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        /* Statement Box & Exchange Table */
+        .statement-card { background: #0f172a; border-left: 4px solid var(--accent-primary); padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #cbd5e1; margin-top: 4px; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; }
+        .badge-req { background: #f59e0b; color: #0f172a; }
+        .badge-disp { background: #38bdf8; color: #0f172a; }
+        .badge-comp { background: #34d399; color: #0f172a; }
 
-        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .data-table th, .data-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        .data-table th { background: #f8fafc; color: var(--text-muted); font-weight: 600; }
-        
-        .statement-box { background: #f1f5f9; border-left: 3px solid var(--primary); padding: 6px 10px; border-radius: 4px; font-size: 12px; color: #334155; margin-top: 4px; }
-        
-        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-block; }
-        .badge-req { background: #fef3c7; color: #b45309; }
-        .badge-disp { background: #e0f2fe; color: #0369a1; }
-        .badge-comp { background: #dcfce7; color: #15803d; }
+        /* Non-Blur Circular Percentage Loader Modal */
+        #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 99999; align-items: center; justify-content: center; }
+        .circle-loader-box { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .circle-svg { width: 90px; height: 90px; transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: var(--panel-border); stroke-width: 8; }
+        .circle-progress { fill: none; stroke: var(--accent-primary); stroke-width: 8; stroke-dasharray: 251; stroke-dashoffset: 251; transition: stroke-dashoffset 0.1s ease; stroke-linecap: round; }
+        .percent-text { font-size: 18px; font-weight: 800; color: #fff; }
 
-        /* Modal Overlay */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 9999; align-items: center; justify-content: center; }
-        .modal-content { background: #fff; padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 12px; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #0f172a; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 13px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
 
-        .recent-list { display: flex; flex-direction: column; gap: 8px; max-height: 380px; overflow-y: auto; }
-        .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: #f8fafc; border-radius: 10px; font-size: 12px; border-left: 4px solid #cbd5e1; }
-
-        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 12px 20px; border-radius: 30px; font-size: 13px; z-index: 99999; }
-        #loadingOverlay { display: none; position: fixed; inset: 0; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(4px); z-index: 99999; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: var(--primary); }
+        @media (max-width: 900px) {
+            .grid-split { grid-template-columns: 1fr; }
+            .container { padding: 12px; }
+            .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+        }
     </style>
 </head>
 
 <body>
 
-    <div class="navbar">
-        <div class="brand-logo">📦 HARSIDHI ERP & SCANNER</div>
-        <div><b>Harsidhi Ventures</b></div>
+    <div class="top-nav">
+        <div class="nav-brand">⚡ HARSIDHI ERP SCANNER</div>
+        <div class="nav-badge">V2.0 SaaS Edition</div>
     </div>
 
-    <div class="app-layout">
-        
-        <!-- Top Metrics Cards -->
-        <div class="metrics-grid">
-            <div class="metric-card"><div class="metric-val" id="metricTodayPickup">0</div><div class="metric-label">Today Pickups</div></div>
-            <div class="metric-card"><div class="metric-val" id="metricTodayReturn">0</div><div class="metric-label">Today Returns</div></div>
-            <div class="metric-card"><div class="metric-val" id="cntReq" style="color:#d97706;">0</div><div class="metric-label">Exchange Requested</div></div>
-            <div class="metric-card"><div class="metric-val" id="cntDisp" style="color:#0284c7;">0</div><div class="metric-label">Dispatch Pending</div></div>
-            <div class="metric-card"><div class="metric-val" id="cntComp" style="color:#059669;">0</div><div class="metric-label">Exchange Completed</div></div>
+    <div class="container">
+
+        <!-- Analytics Metric Cards Row -->
+        <div class="analytics-grid">
+            <div class="stat-card"><div class="stat-val" id="cntTodayPickup">0</div><div class="stat-title">Today Pickup</div></div>
+            <div class="stat-card"><div class="stat-val" id="cntTodayReturn">0</div><div class="stat-title">Today Return</div></div>
+            <div class="stat-card"><div class="stat-val" id="cntYestPickup">0</div><div class="stat-title">Yesterday Pickup</div></div>
+            <div class="stat-card"><div class="stat-val" id="cntYestReturn">0</div><div class="stat-title">Yesterday Return</div></div>
+            <div class="stat-card"><div class="stat-val" id="cntMonthTotal" style="color:var(--accent-primary)">0</div><div class="stat-title">This Month Total</div></div>
+            <div class="stat-card"><div class="stat-val" id="cntTotalLifetime" style="color:var(--accent-success)">0</div><div class="stat-title">Lifetime Total</div></div>
         </div>
 
-        <!-- Scan Section -->
-        <div class="workspace-grid">
-            <div class="panel-card">
-                <div class="panel-header"><div class="panel-title">Operations Scan Console</div></div>
-                <div class="mode-row">
-                    <button id="pickupBtn" class="mode-btn pickup" onclick="selectType('Pickup')">📦 Pickup Mode</button>
-                    <button id="returnBtn" class="mode-btn return" onclick="selectType('Return')">↩️ Return Mode</button>
+        <!-- Scanning Operations Grid -->
+        <div class="grid-split">
+            <div class="panel">
+                <div class="panel-header">
+                    <div style="font-weight: 800; font-size: 16px;">LOGISTICS OPERATIONAL CONSOLE</div>
                 </div>
 
-                <div id="scanPanel" class="scan-panel">
-                    <div class="action-row">
-                        <button class="btn btn-camera" style="flex:1;" onclick="startCamera()">📷 Camera Scan</button>
-                        <button class="btn btn-manual" style="flex:1;" onclick="focusAWB()">⌨ Manual Input</button>
+                <div class="mode-selector">
+                    <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
+                    <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
+                </div>
+
+                <div id="scanBox" class="scan-box">
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action" style="flex:1; background:#0284c7; color:#fff;" onclick="startCamera()">📷 Toggle Camera</button>
+                        <button class="btn-action" style="flex:1; background:#334155; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
                     </div>
-                    <div id="reader" style="display:none;"></div>
-                    <input id="awbInput" class="input-field" placeholder="Scan AWB Barcode / Type & Press Enter">
-                    <input id="orderInput" class="input-field" placeholder="Shopify Order ID (e.g. GS#6373)" style="display: none;">
-                    
-                    <div id="resultCard" style="display:none; padding:10px; background:#fff; border-radius:8px; border:1px solid #e2e8f0; font-size:12px;"></div>
-                    
-                    <div class="action-row">
-                        <button class="btn btn-save" style="flex:1;" onclick="saveEntry()">Save Entry</button>
-                        <button class="btn btn-stop" style="flex:1;" onclick="stopWork()">Reset Panel</button>
+
+                    <div id="reader"></div>
+
+                    <input id="awbInput" class="input-dark" placeholder="Scan AWB / Enter Code">
+                    <input id="orderInput" class="input-dark" placeholder="Shopify Order ID" style="display:none;">
+
+                    <div id="resultPreview" style="display:none; padding:12px; background:#1e293b; border-radius:12px; font-size:13px; line-height:1.6;"></div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-action btn-save" style="flex:1;" onclick="saveEntry()">Save Entry</button>
+                        <button class="btn-action btn-reset" style="flex:1;" onclick="resetConsole()">Reset</button>
                     </div>
                 </div>
             </div>
 
-            <div class="panel-card">
-                <div class="panel-header"><div class="panel-title">Recent Scans</div></div>
-                <div id="recentList" class="recent-list"><div style="text-align:center; color:gray; font-size:12px;">No scans recorded</div></div>
+            <!-- Recent Scans Stream -->
+            <div class="panel">
+                <div class="panel-header"><div style="font-weight:800; font-size:14px;">RECENT LOGS</div></div>
+                <div id="recentLogs" style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="text-align:center; color:var(--text-sub); font-size:12px; padding:20px 0;">No active logs</div>
+                </div>
             </div>
-        </div>
-
-        <!-- Exchange Management Portal -->
-        <div class="panel-card">
-            <div class="panel-header">
-                <div class="panel-title">🔄 Exchange Lifecycle Requests</div>
-                <button class="btn btn-save" onclick="openAddRequestModal()">+ New Exchange Request</button>
-            </div>
-
-            <div class="tab-buttons">
-                <button id="tabReqBtn" class="tab-btn active" onclick="switchExchangeTab('REQUESTED')">1. Requests</button>
-                <button id="tabDispBtn" class="tab-btn" onclick="switchExchangeTab('DISPATCH_PENDING')">2. Dispatch Pending</button>
-                <button id="tabCompBtn" class="tab-btn" onclick="switchExchangeTab('COMPLETED')">3. Completed</button>
-            </div>
-
-            <table class="data-table">
-                <thead>
-                    <tr id="tableHeaderRow"></tr>
-                </thead>
-                <tbody id="exchangeTableBody">
-                    <tr><td colspan="7" style="text-align:center; padding:20px; color:gray;">Loading Exchange Requests...</td></tr>
-                </tbody>
-            </table>
         </div>
 
     </div>
 
-    <!-- MODAL 1: ADD EXCHANGE REQUEST -->
-    <div id="addModal" class="modal">
-        <div class="modal-content">
-            <h3>New Exchange Request</h3>
-            <input id="addOrderId" class="input-field" placeholder="Original Order ID (e.g. GS#6373)">
-            <input id="addMobile" class="input-field" placeholder="Customer Mobile Number">
-            <input id="addOriginalAwb" class="input-field" placeholder="Original AWB Number">
-            <textarea id="addDescription" class="input-field" style="height:70px; padding:10px;" placeholder="Customer Statement / Reason for Exchange..."></textarea>
-            <div class="action-row">
-                <button class="btn btn-save" style="flex:1;" onclick="submitAddRequest()">Save Request</button>
-                <button class="btn btn-stop" style="flex:1;" onclick="closeModals()">Cancel</button>
-            </div>
+    <!-- Circular Percentage Loader Overlay (No Screen Blur) -->
+    <div id="loaderContainer">
+        <div class="circle-loader-box">
+            <svg class="circle-svg">
+                <circle class="circle-bg" cx="45" cy="45" r="40"></circle>
+                <circle id="circleProgress" class="circle-progress" cx="45" cy="45" r="40"></circle>
+            </svg>
+            <div class="percent-text" id="percentText">0%</div>
         </div>
     </div>
-
-    <!-- MODAL 2: MARK RETURN PICKUP -->
-    <div id="pickupModal" class="modal">
-        <div class="modal-content">
-            <h3>Mark Return Pickup</h3>
-            <p style="font-size:13px; color:gray;">Target Order: <b id="pickupTargetOrder"></b></p>
-            <input type="hidden" id="pickupTargetRow">
-            <input id="pickupReturnOrderId" class="input-field" placeholder="Return Order ID">
-            <input id="pickupReturnAwb" class="input-field" placeholder="Return AWB Number">
-            <div class="action-row">
-                <button class="btn btn-save" style="flex:1;" onclick="submitReturnPickup()">Save Return</button>
-                <button class="btn btn-stop" style="flex:1;" onclick="closeModals()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 3: COMPLETE DISPATCH -->
-    <div id="dispatchModal" class="modal">
-        <div class="modal-content">
-            <h3>Complete Exchange Dispatch</h3>
-            <p style="font-size:13px; color:gray;">Return AWB: <b id="dispatchTargetAwb"></b></p>
-            <input type="hidden" id="dispatchTargetRow">
-            <input id="dispatchNewOrderId" class="input-field" placeholder="New Dispatch Order ID">
-            <input id="dispatchNewAwb" class="input-field" placeholder="New Dispatch AWB Number">
-            <div class="action-row">
-                <button class="btn btn-save" style="flex:1;" onclick="submitCompleteDispatch()">Complete Cycle</button>
-                <button class="btn btn-stop" style="flex:1;" onclick="closeModals()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="loadingOverlay">Processing...</div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyOEh0pnCUwzpYiQCv7ig5AWmSODowvWAeR5mwPVcnkRSl1AXxvtmVP2eyp1IHntIXT/exec"; 
+        const API_URL = "https://script.google.com/macros/s/AKfycbz0TleERAG7sZmMTgtokHF2ZO7W66rP03PcELfWHuh8j91nJCNNCz_r6acj3F_ktPeo/exec";
 
-        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
-        let activeExchangeTab = "REQUESTED";
-        let currentType = "";
+        let currentMode = "";
         let currentTracking = null;
         let html5QrCode = null;
 
-        async function fetchExchangeData() {
-            showLoader("Loading Exchange Data...");
-            try {
-                const response = await fetch(`${API_URL}?action=getExchangeReport`);
-                const res = await response.json();
-                hideLoader();
+        function showCircularLoader() {
+            document.getElementById("loaderContainer").style.display = "flex";
+            let progress = 0;
+            const circle = document.getElementById("circleProgress");
+            const percentText = document.getElementById("percentText");
 
-                if (res.success) {
-                    exchangeCache.requested = res.requested || [];
-                    exchangeCache.dispatchPending = res.dispatchPending || [];
-                    exchangeCache.completed = res.completed || [];
+            const interval = setInterval(() => {
+                progress += 10;
+                const offset = 251 - (251 * progress) / 100;
+                circle.style.strokeDashoffset = offset;
+                percentText.innerText = progress + "%";
 
-                    document.getElementById("cntReq").innerText = res.counts.requested || 0;
-                    document.getElementById("cntDisp").innerText = res.counts.dispatchPending || 0;
-                    document.getElementById("cntComp").innerText = res.counts.completed || 0;
-
-                    renderExchangeTable();
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => { document.getElementById("loaderContainer").style.display = "none"; }, 150);
                 }
-            } catch (e) { hideLoader(); }
+            }, 30);
         }
 
-        function renderExchangeTable() {
-            const tbody = document.getElementById("exchangeTableBody");
-            const thead = document.getElementById("tableHeaderRow");
-            let data = [];
-
-            if (activeExchangeTab === "REQUESTED") {
-                data = exchangeCache.requested;
-                thead.innerHTML = `<th>Date</th><th>Order ID</th><th>Mobile</th><th>Original AWB</th><th>Customer Statement</th><th>Status</th><th>Action</th>`;
-            } else if (activeExchangeTab === "DISPATCH_PENDING") {
-                data = exchangeCache.dispatchPending;
-                thead.innerHTML = `<th>Request Date</th><th>Original Order ID</th><th>Return Details</th><th>Customer Statement</th><th>Status</th><th>Action</th>`;
-            } else {
-                data = exchangeCache.completed;
-                thead.innerHTML = `<th>Original Order ID</th><th>Return Details</th><th>Dispatch Details</th><th>Customer Statement</th><th>Status</th>`;
-            }
-
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:gray;">No exchange records in this queue.</td></tr>`;
-                return;
-            }
-
-            let html = "";
-            data.forEach(row => {
-                const trackingUrl = `https://track.delhivery.com/p/${row.originalAwb}`;
-                const statementHtml = `<div class="statement-box">💬 ${row.description}</div>`;
-
-                if (activeExchangeTab === "REQUESTED") {
-                    html += `
-                        <tr>
-                            <td>${row.date}</td>
-                            <td><b>${row.orderId}</b></td>
-                            <td>${row.mobile}</td>
-                            <td>
-                                <code>${row.originalAwb}</code><br>
-                                <a href="${trackingUrl}" target="_blank" style="font-size:11px; color:#2563eb;">Track AWB 🔗</a>
-                            </td>
-                            <td>${statementHtml}</td>
-                            <td><span class="badge badge-req">REQUESTED</span></td>
-                            <td>
-                                <button class="btn-act" onclick="openPickupModal(${row.rowId}, '${row.orderId}')">📦 Mark Return</button>
-                            </td>
-                        </tr>`;
-                } else if (activeExchangeTab === "DISPATCH_PENDING") {
-                    html += `
-                        <tr>
-                            <td>${row.date}</td>
-                            <td><b>${row.orderId}</b></td>
-                            <td>
-                                <b>${row.returnOrderId || "-"}</b><br>
-                                <code>${row.returnAwb}</code>
-                            </td>
-                            <td>${statementHtml}</td>
-                            <td><span class="badge badge-disp">DISPATCH PENDING</span></td>
-                            <td>
-                                <button class="btn-act" style="background:#0d9488;" onclick="openDispatchModal(${row.rowId}, '${row.returnAwb}')">🚀 Complete Dispatch</button>
-                            </td>
-                        </tr>`;
-                } else {
-                    html += `
-                        <tr>
-                            <td><b>${row.orderId}</b></td>
-                            <td><b>${row.returnOrderId}</b><br><code>${row.returnAwb}</code></td>
-                            <td><b style="color:#059669;">${row.dispatchOrderId}</b><br><code>${row.dispatchAwb}</code></td>
-                            <td>${statementHtml}</td>
-                            <td><span class="badge badge-comp">COMPLETED</span></td>
-                        </tr>`;
-                }
-            });
-            tbody.innerHTML = html;
-        }
-
-        function switchExchangeTab(tabName) {
-            activeExchangeTab = tabName;
-            document.getElementById("tabReqBtn").classList.remove("active");
-            document.getElementById("tabDispBtn").classList.remove("active");
-            document.getElementById("tabCompBtn").classList.remove("active");
-
-            if (tabName === "REQUESTED") document.getElementById("tabReqBtn").classList.add("active");
-            else if (tabName === "DISPATCH_PENDING") document.getElementById("tabDispBtn").classList.add("active");
-            else document.getElementById("tabCompBtn").classList.add("active");
-
-            renderExchangeTable();
-        }
-
-        /* Modal Handlers */
-        function openAddRequestModal() { document.getElementById("addModal").style.display = "flex"; }
-        function openPickupModal(rowId, orderId) {
-            document.getElementById("pickupTargetRow").value = rowId;
-            document.getElementById("pickupTargetOrder").innerText = orderId;
-            document.getElementById("pickupModal").style.display = "flex";
-        }
-        function openDispatchModal(rowId, returnAwb) {
-            document.getElementById("dispatchTargetRow").value = rowId;
-            document.getElementById("dispatchTargetAwb").innerText = returnAwb;
-            document.getElementById("dispatchModal").style.display = "flex";
-        }
-        function closeModals() {
-            document.getElementById("addModal").style.display = "none";
-            document.getElementById("pickupModal").style.display = "none";
-            document.getElementById("dispatchModal").style.display = "none";
-        }
-
-        async function submitAddRequest() {
-            const orderId = document.getElementById("addOrderId").value.trim();
-            const mobile = document.getElementById("addMobile").value.trim();
-            const originalAwb = document.getElementById("addOriginalAwb").value.trim();
-            const description = document.getElementById("addDescription").value.trim();
-
-            if (!orderId || !mobile || !originalAwb) return toast("Fill required fields!");
-
-            closeModals();
-            await postData({ action: "addExchangeRequest", payload: { orderId, mobile, originalAwb, description } });
-        }
-
-        async function submitReturnPickup() {
-            const rowId = document.getElementById("pickupTargetRow").value;
-            const returnOrderId = document.getElementById("pickupReturnOrderId").value.trim();
-            const returnAwb = document.getElementById("pickupReturnAwb").value.trim();
-
-            if (!returnOrderId || !returnAwb) return toast("Fill Return Details!");
-
-            closeModals();
-            await postData({ action: "markReturnPickup", payload: { rowId, returnOrderId, returnAwb } });
-        }
-
-        async function submitCompleteDispatch() {
-            const rowId = document.getElementById("dispatchTargetRow").value;
-            const dispatchOrderId = document.getElementById("dispatchNewOrderId").value.trim();
-            const dispatchAwb = document.getElementById("dispatchNewAwb").value.trim();
-
-            if (!dispatchOrderId || !dispatchAwb) return toast("Fill Dispatch Details!");
-
-            closeModals();
-            await postData({ action: "completeExchangeDispatch", payload: { rowId, dispatchOrderId, dispatchAwb } });
-        }
-
-        async function postData(bodyData) {
-            showLoader("Processing...");
-            try {
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify(bodyData)
-                });
-                const res = await response.json();
-                hideLoader();
-                if (res.success) {
-                    toast(res.message);
-                    fetchExchangeData();
-                } else { toast(res.message || "Failed"); }
-            } catch (e) { hideLoader(); toast("Network Error"); }
-        }
-
-        /* Standard Scan / Dashboard Live Fetching */
-        function fetchTodayCountsLive() {
+        function fetchDashboardCounts() {
+            showCircularLoader();
             fetch(`${API_URL}?action=getDashboardCounts`)
                 .then(res => res.json())
-                .then(data => {
-                    if (data && data.success) {
-                        document.getElementById("metricTodayPickup").innerText = data.todayPickup || 0;
-                        document.getElementById("metricTodayReturn").innerText = data.todayReturn || 0;
-                        renderRecentList(data.recentScans || []);
+                .then(d => {
+                    if (d.success) {
+                        document.getElementById("cntTodayPickup").innerText = d.todayPickup || 0;
+                        document.getElementById("cntTodayReturn").innerText = d.todayReturn || 0;
+                        document.getElementById("cntYestPickup").innerText = d.yesterdayPickup || 0;
+                        document.getElementById("cntYestReturn").innerText = d.yesterdayReturn || 0;
+                        document.getElementById("cntMonthTotal").innerText = d.monthTotal || 0;
+                        document.getElementById("cntTotalLifetime").innerText = d.totalLifetime || 0;
+                        renderRecentLogs(d.recentScans || []);
                     }
                 });
         }
 
-        function renderRecentList(scans) {
-            const listEl = document.getElementById("recentList");
-            if (!scans || scans.length === 0) { listEl.innerHTML = `<div style="text-align:center; color:gray; font-size:12px;">No scans recorded</div>`; return; }
-            listEl.innerHTML = scans.map(item => `
-                <div class="recent-item">
-                    <div><b>${item.awb}</b><br><small style="color:gray;">${item.orderId || 'Manual'}</small></div>
-                    <div style="text-align:right;"><b>${item.type}</b><br><small style="color:gray;">${item.time}</small></div>
+        function renderRecentLogs(logs) {
+            const container = document.getElementById("recentLogs");
+            if (!logs || logs.length === 0) return;
+            container.innerHTML = logs.map(l => `
+                <div style="background:#0f172a; padding:10px 12px; border-radius:10px; border-left:4px solid ${l.type.toLowerCase() === 'pickup' ? 'var(--accent-primary)' : 'var(--accent-success)'}; display:flex; justify-between; align-items:center;">
+                    <div><b>${l.awb}</b><br><span style="font-size:11px; color:var(--text-sub);">${l.orderId || 'Manual'}</span></div>
+                    <div style="text-align:right;"><b style="font-size:12px;">${l.type}</b><br><span style="font-size:10px; color:var(--text-sub);">${l.time}</span></div>
                 </div>
             `).join('');
         }
 
-        function selectType(type) {
-            currentType = type;
-            document.getElementById("scanPanel").style.display = "flex";
-            document.getElementById("pickupBtn").classList.remove("active-pickup");
-            document.getElementById("returnBtn").classList.remove("active-return");
-            if (type === "Pickup") document.getElementById("pickupBtn").classList.add("active-pickup");
-            else document.getElementById("returnBtn").classList.add("active-return");
-            focusAWB();
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById("scanBox").style.display = "flex";
+            document.getElementById("btnPickup").classList.remove("active");
+            document.getElementById("btnReturn").classList.remove("active");
+
+            if (mode === "Pickup") document.getElementById("btnPickup").classList.add("active");
+            else document.getElementById("btnReturn").classList.add("active");
+
+            focusInput();
         }
 
-        function focusAWB() { document.getElementById("awbInput").focus(); }
-        function showLoader(txt) { const el = document.getElementById("loadingOverlay"); el.innerText = txt || "Processing..."; el.style.display = "flex"; }
-        function hideLoader() { document.getElementById("loadingOverlay").style.display = "none"; }
-        function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.innerText = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+        function focusInput() { document.getElementById("awbInput").focus(); }
 
-        window.onload = function() {
-            fetchTodayCountsLive();
-            fetchExchangeData();
-        };
+        async function startCamera() {
+            try {
+                if (html5QrCode) { await stopCamera(); return; }
+                document.getElementById("reader").style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 20, qrbox: { width: 250, height: 130 } },
+                    (text) => {
+                        document.getElementById("awbInput").value = text;
+                        stopCamera();
+                        trackShipment();
+                    }
+                );
+            } catch (e) { toast("Camera Access Error"); }
+        }
+
+        async function stopCamera() {
+            if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; }
+            document.getElementById("reader").style.display = "none";
+        }
+
+        document.getElementById("awbInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); trackShipment(); }
+        });
+
+        async function trackShipment() {
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("Enter AWB");
+
+            showCircularLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+
+                if (data && data.success) {
+                    currentTracking = data;
+                    document.getElementById("resultPreview").style.display = "block";
+                    document.getElementById("resultPreview").innerHTML = `✅ <b>Verified:</b> ${data.courier} | Order: ${data.orderId || 'N/A'}`;
+                    document.getElementById("orderInput").value = data.orderId || "";
+                } else {
+                    document.getElementById("resultPreview").style.display = "block";
+                    document.getElementById("resultPreview").innerHTML = `⚠️ <b>Manual Mode Needed</b>`;
+                }
+                document.getElementById("orderInput").style.display = "block";
+            } catch (e) {}
+        }
+
+        async function saveEntry() {
+            if (!currentMode) return toast("Select Mode First");
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("AWB Missing");
+
+            showCircularLoader();
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "saveEntry",
+                        payload: {
+                            type: currentMode, awb, orderId: document.getElementById("orderInput").value.trim(),
+                            courier: currentTracking?.courier || "MANUAL", status: currentTracking?.status || "Pending"
+                        }
+                    })
+                });
+                const data = await res.json();
+                if (data.duplicate) { toast(data.message); return; }
+                toast("Saved!"); resetConsole(); fetchDashboardCounts();
+            } catch (e) {}
+        }
+
+        function resetConsole() {
+            stopCamera();
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("resultPreview").style.display = "none";
+        }
+
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+        }
+
+        window.onload = fetchDashboardCounts;
     </script>
 </body>
 
