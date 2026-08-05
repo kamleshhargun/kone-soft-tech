@@ -24,39 +24,39 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Mobile Page Freeze */
-        html, body { height: 100%; width: 100vw; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
+        /* Default Layout Rules */
+        html, body { height: 100%; width: 100vw; background: var(--bg-body); color: var(--text-main); }
 
-        .app-shell { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 1200px; margin: 0 auto; }
+        .app-shell { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 1280px; margin: 0 auto; }
 
-        .header-bar { background: #fff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .brand-text { font-weight: 800; font-size: 15px; color: var(--primary); letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
-        .user-pill { background: #f8fafc; border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #334155; }
+        .header-bar { background: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .brand-text { font-weight: 800; font-size: 16px; color: var(--primary); letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .user-pill { background: #f8fafc; border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #334155; }
 
-        /* Airtel Top Pill Tabs */
+        /* Metrics Strip Bar */
+        .metrics-strip { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
+        .metrics-strip::-webkit-scrollbar { display: none; }
+        .m-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; min-width: 100px; flex: 1; display: flex; flex-direction: column; }
+        .m-val { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .m-lbl { font-size: 10px; font-weight: 600; color: var(--text-sub); }
+
+        /* VIEWPORT NAVIGATION FOR MOBILE */
         .nav-tabs-wrapper { background: #fff; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
-
-        .tab-item { flex: 1; min-width: 80px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 6px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; }
+        .tab-item { flex: 1; min-width: 75px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 6px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; }
         .tab-item .icon { font-size: 16px; }
         .tab-item .title { font-size: 10px; font-weight: 700; color: var(--text-sub); }
         .tab-item.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1); }
         .tab-item.active .title { color: var(--primary); }
 
-        .metrics-strip { display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
-        .metrics-strip::-webkit-scrollbar { display: none; }
-        .m-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 6px 10px; min-width: 85px; flex-shrink: 0; display: flex; flex-direction: column; }
-        .m-val { font-size: 14px; font-weight: 800; color: var(--text-main); }
-        .m-lbl { font-size: 9px; font-weight: 600; color: var(--text-sub); }
-
         .view-viewport { flex: 1; position: relative; overflow: hidden; width: 100%; }
-        .view-page { position: absolute; inset: 0; padding: 8px 12px; display: none; flex-direction: column; gap: 8px; height: 100%; width: 100%; }
+        .view-page { position: absolute; inset: 0; padding: 8px 12px; display: none; flex-direction: column; gap: 10px; height: 100%; width: 100%; }
         .view-page.active { display: flex; }
 
-        /* SCANNER SCREEN */
-        .scan-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
+        /* SCANNER SCREEN COMPONENTS */
+        .scan-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
         .mode-row { display: flex; gap: 8px; width: 100%; }
-        .btn-mode { flex: 1; height: 40px; border-radius: 10px; border: 2px solid; font-weight: 800; font-size: 13px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .btn-mode { flex: 1; height: 42px; border-radius: 10px; border: 2px solid; font-weight: 800; font-size: 13px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .btn-pickup { border-color: var(--primary); color: var(--primary); }
         .btn-return { border-color: var(--success); color: var(--success); }
         .btn-pickup.active { background: var(--primary); color: #fff; }
@@ -73,24 +73,24 @@
         .btn-save { background: var(--success); color: #fff; }
         .btn-reset { background: var(--danger); color: #fff; }
 
-        .recent-box-top { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; max-height: 85px; overflow-y: auto; width: 100%; }
+        .recent-box-top { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; max-height: 90px; overflow-y: auto; width: 100%; }
         .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: #f8fafc; border-radius: 6px; font-size: 11px; margin-bottom: 4px; border-left: 3px solid var(--primary); }
 
-        /* SEARCH LOOKUP SPECIFICS */
-        .search-results-list { max-height: 150px; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; margin-top: 4px; display: none; }
-        .search-suggest-item { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; cursor: pointer; }
-        .search-suggest-item:hover { background: var(--primary-soft); }
-
-        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; }
+        /* CARDS & TABLES */
+        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; }
         .data-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        .data-table th, .data-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); }
-        .data-table th { color: var(--text-sub); font-weight: 700; background: #f8fafc; }
+        .data-table th, .data-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+        .data-table th { color: var(--text-sub); font-weight: 700; background: #f8fafc; sticky: top; }
 
         .statement-quote { background: #f1f5f9; border-left: 3px solid var(--primary); padding: 4px; border-radius: 4px; font-size: 10px; margin-top: 2px; }
-        .badge { padding: 2px 6px; border-radius: 10px; font-size: 10px; font-weight: 800; display: inline-block; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; display: inline-block; }
         .badge-req { background: #fef3c7; color: #b45309; }
         .badge-disp { background: #e0f2fe; color: #0369a1; }
         .badge-comp { background: #dcfce7; color: #15803d; }
+
+        .search-results-list { max-height: 140px; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; margin-top: 4px; display: none; }
+        .search-suggest-item { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; cursor: pointer; }
+        .search-suggest-item:hover { background: var(--primary-soft); }
 
         /* PERCENTAGE LOADER MODAL (NO BLUR) */
         #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.3); z-index: 99999; align-items: center; justify-content: center; }
@@ -102,14 +102,22 @@
 
         .toast { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 11px; z-index: 9999; }
 
+        /* =====================================================
+           DESKTOP SAAS ENTERPRISE LAYOUT STYLING (Min-width: 901px)
+        ===================================================== */
         @media (min-width: 901px) {
-            html, body { overflow: auto; }
-            .app-shell { padding: 20px; gap: 16px; }
-            .view-viewport { position: relative; overflow: visible; height: auto; }
-            .view-page { position: relative; display: flex !important; margin-bottom: 20px; height: auto; }
-            .nav-tabs-wrapper { display: none; }
-            .scanner-desktop-split { display: grid; grid-template-columns: 1fr 340px; gap: 16px; width: 100%; }
-            .recent-box-top { max-height: 400px; }
+            html, body { overflow: auto; height: auto; }
+            .app-shell { padding: 16px; gap: 16px; }
+            .nav-tabs-wrapper { display: none; } /* Desktop displays all modules seamlessly */
+            .view-viewport { position: relative; overflow: visible; height: auto; display: flex; flex-direction: column; gap: 20px; }
+            .view-page { position: relative; display: flex !important; inset: auto; height: auto; padding: 0; }
+            
+            .desktop-grid-split { display: grid; grid-template-columns: 1fr 360px; gap: 16px; width: 100%; }
+            .recent-box-top { max-height: 420px; }
+        }
+
+        @media (max-width: 900px) {
+            html, body { overflow: hidden; }
         }
     </style>
 </head>
@@ -118,11 +126,13 @@
 
     <div class="app-shell">
 
+        <!-- Top Header Bar -->
         <div class="header-bar">
-            <div class="brand-text"><span>📦</span> HARSIDHI LOGISTICS</div>
+            <div class="brand-text"><span>📦</span> HARSIDHI LOGISTICS ERP</div>
             <div class="user-profile"><span class="user-pill">Harsidhi Ventures</span></div>
         </div>
 
+        <!-- Mobile Top Nav Tabs -->
         <div class="nav-tabs-wrapper">
             <div id="tabNav1" class="tab-item active" onclick="switchViewPage('scanView')"><span class="icon">📲</span><span class="title">Scan</span></div>
             <div id="tabNav2" class="tab-item" onclick="switchViewPage('searchView')"><span class="icon">🔍</span><span class="title">Lookup</span></div>
@@ -130,6 +140,7 @@
             <div id="tabNav4" class="tab-item" onclick="switchViewPage('boxdView')"><span class="icon">📊</span><span class="title">BoxD Sync</span></div>
         </div>
 
+        <!-- Metrics Strip Bar -->
         <div class="metrics-strip">
             <div class="m-card"><span class="m-val" id="cntTodayPickup">0</span><span class="m-lbl">Today Pickup</span></div>
             <div class="m-card"><span class="m-val" id="cntTodayReturn">0</span><span class="m-lbl">Today Return</span></div>
@@ -139,43 +150,47 @@
             <div class="m-card"><span class="m-val" id="cntTotalLifetime" style="color:var(--success);">0</span><span class="m-lbl">Lifetime Total</span></div>
         </div>
 
+        <!-- Main Viewport -->
         <div class="view-viewport">
 
-            <!-- PAGE 1: SCANNER CONSOLE -->
+            <!-- MODULE 1: SCAN CONSOLE -->
             <div id="scanView" class="view-page active">
-                <div class="recent-box-top">
-                    <div style="font-weight:700; font-size:10px; margin-bottom:4px; color:var(--text-sub);">LAST SCANNED ITEMS</div>
-                    <div id="recentList"><div style="text-align:center; color:gray; font-size:10px; padding:4px;">No scans yet</div></div>
-                </div>
+                <div class="desktop-grid-split">
+                    <div class="scan-card">
+                        <div style="font-weight:800; font-size:13px; color:var(--primary);">📲 OPERATIONAL SCAN CONSOLE</div>
+                        <div class="mode-row">
+                            <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
+                            <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
+                        </div>
 
-                <div class="scan-card">
-                    <div class="mode-row">
-                        <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup</button>
-                        <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return</button>
+                        <div id="scanPanelBox" style="display:none; flex-direction:column; gap:8px;">
+                            <div class="action-row">
+                                <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Toggle Camera</button>
+                                <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
+                            </div>
+
+                            <div id="reader"></div>
+
+                            <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Enter Number">
+                            <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+
+                            <div id="resultPreview" style="display:none; padding:8px; background:#f8fafc; border-radius:6px; font-size:11px; border:1px solid var(--border);"></div>
+
+                            <div class="action-row">
+                                <button class="btn-act btn-save" onclick="saveEntry()">Next (Save Entry)</button>
+                                <button class="btn-act btn-reset" onclick="resetConsole()">Stop / Reset</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="scanPanelBox" style="display:none; flex-direction:column; gap:8px;">
-                        <div class="action-row">
-                            <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Camera</button>
-                            <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Keyboard</button>
-                        </div>
-
-                        <div id="reader"></div>
-
-                        <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Enter Number">
-                        <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
-
-                        <div id="resultPreview" style="display:none; padding:8px; background:#f8fafc; border-radius:6px; font-size:11px; border:1px solid var(--border);"></div>
-
-                        <div class="action-row">
-                            <button class="btn-act btn-save" onclick="saveEntry()">Next (Save)</button>
-                            <button class="btn-act btn-reset" onclick="resetConsole()">Stop / Reset</button>
-                        </div>
+                    <div class="recent-box-top">
+                        <div style="font-weight:700; font-size:11px; margin-bottom:6px; color:var(--text-sub);">📜 LAST SCANNED ITEMS</div>
+                        <div id="recentList"><div style="text-align:center; color:gray; font-size:10px; padding:4px;">No scans yet</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- PAGE 2: SEARCH LOOKUP MODULE -->
+            <!-- MODULE 2: SEARCH LOOKUP -->
             <div id="searchView" class="view-page">
                 <div class="card-panel">
                     <span style="font-weight:800; font-size:13px;">🔍 ORDER & AWB LOOKUP ENGINE</span>
@@ -183,18 +198,18 @@
                     
                     <div id="searchSuggestions" class="search-results-list"></div>
 
-                    <div id="searchResultDisplay" style="margin-top:10px;">
-                        <div style="text-align:center; color:gray; font-size:11px; padding:20px;">Type 4 digits or AWB above to look up Google Sheet records.</div>
+                    <div id="searchResultDisplay" style="margin-top:6px;">
+                        <div style="text-align:center; color:gray; font-size:11px; padding:15px;">Type 4 digits or AWB above to look up Google Sheet records.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- PAGE 3: EXCHANGE ERP -->
+            <!-- MODULE 3: EXCHANGE LIFECYCLE -->
             <div id="exchangeView" class="view-page">
                 <div class="card-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:800; font-size:13px;">🔄 EXCHANGE LIFECYCLE</span>
-                        <button class="btn-act btn-save" style="padding:0 10px; height:32px;" onclick="openAddRequestModal()">+ New</button>
+                        <span style="font-weight:800; font-size:13px;">🔄 EXCHANGE LIFECYCLE MANAGEMENT</span>
+                        <button class="btn-act btn-save" style="padding:0 12px; height:32px;" onclick="openAddRequestModal()">+ New Exchange</button>
                     </div>
 
                     <div style="display:flex; gap:6px; overflow-x:auto;">
@@ -212,7 +227,7 @@
                 </div>
             </div>
 
-            <!-- PAGE 4: BOXD CSV SYNC -->
+            <!-- MODULE 4: BOXD CSV RECONCILIATION -->
             <div id="boxdView" class="view-page">
                 <div class="card-panel">
                     <span style="font-weight:800; font-size:13px;">📊 BOXD RETURN RECONCILIATION</span>
@@ -231,7 +246,7 @@
                             <thead>
                                 <tr><th>Order ID</th><th>BoxD Ref</th><th>Name</th><th>AWB</th><th>Status</th></tr>
                             </thead>
-                            <tbody id="boxdTableBody"><tr><td colspan="5" style="text-align:center; padding:15px;">No Data compiled yet</td></tr></tbody>
+                            <tbody id="boxdTableBody"><tr><td colspan="5" style="text-align:center; padding:15px;">No Data Compiled</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -267,7 +282,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbyw0F_KF85w1z8vRkoypDjEKnrp8Jy9H4SHDbtzKPzao8Aey3LzGn59ST0icV9zayJs/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycbxeN3o19JEp5umksIjcE0CZNQkQ1HggSrQUyyKeraUQCkHnzE4s6PupQJLzARRwTw8o/exec"; // Apni Web App URL yahan daalein
 
         let currentMode = "";
         let currentTracking = null;
@@ -319,7 +334,6 @@
             } catch(e) {}
         }
 
-        /* VIEW NAVIGATION */
         function switchViewPage(pageId) {
             document.querySelectorAll('.view-page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -478,7 +492,7 @@
             document.getElementById("resultPreview").style.display = "none";
         }
 
-        /* SEARCH LOOKUP ENGINE */
+        /* SEARCH ENGINE */
         async function onSearchTyping(val) {
             val = val.trim();
             const suggBox = document.getElementById("searchSuggestions");
