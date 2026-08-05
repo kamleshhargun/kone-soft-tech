@@ -1,157 +1,373 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harsidhi Ventures - Enterprise Logistics Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Harsidhi Logistics Enterprise</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <style>
         :root {
-            --bg-body: #0f172a;
-            --panel-bg: #1e293b;
-            --panel-border: #334155;
-            --accent-primary: #38bdf8;
-            --accent-success: #34d399;
-            --accent-warning: #fbbf24;
-            --text-main: #f8fafc;
-            --text-sub: #94a3b8;
-            --radius-xl: 20px;
+            --bg-body: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: #2563eb;
+            --primary-soft: #eff6ff;
+            --success: #10b981;
+            --border: #e2e8f0;
+            --radius: 18px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-        body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; padding-bottom: 30px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Mobile-First Page Freeze Layout */
+        html, body {
+            height: 100%;
+            width: 100vw;
+            background: var(--bg-body);
+            color: var(--text-main);
+            overflow: hidden; /* Mobile page freeze to prevent scroll annoyance */
+        }
 
-        /* Top Header Navigation */
-        .top-nav { background: var(--panel-bg); border-bottom: 1px solid var(--panel-border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .nav-brand { font-size: 18px; font-weight: 800; color: var(--accent-primary); letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px; }
-        .nav-badge { background: #0284c7; color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        /* App Container Wrapper */
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-        .container { max-width: 1280px; margin: 0 auto; padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; }
+        /* Airtel Style Header */
+        .header-bar {
+            background: #fff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .brand-text { font-weight: 800; font-size: 16px; color: var(--primary); letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .user-pill { background: #f8fafc; border: 1px solid var(--border); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #334155; }
 
-        /* Analytics Grid Section */
-        .analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
-        .stat-card { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 6px; }
-        .stat-val { font-size: 24px; font-weight: 800; color: #fff; }
-        .stat-title { font-size: 12px; color: var(--text-sub); font-weight: 600; text-transform: uppercase; }
+        /* Airtel Top Category Pill Tabs Navigation */
+        .nav-tabs-wrapper {
+            background: #fff;
+            padding: 10px 16px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
 
-        /* Scanning Workspace Layout */
-        .grid-split { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
-        .panel { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: var(--radius-xl); padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-        .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
+        .tab-item {
+            flex: 1;
+            min-width: 95px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-item .icon { font-size: 18px; }
+        .tab-item .title { font-size: 11px; font-weight: 700; color: var(--text-sub); }
+        .tab-item.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+        .tab-item.active .title { color: var(--primary); }
 
-        .mode-selector { display: flex; gap: 10px; }
-        .btn-mode { flex: 1; height: 50px; border-radius: 14px; border: 2px solid; background: transparent; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; }
-        .btn-pickup { border-color: var(--accent-primary); color: var(--accent-primary); }
-        .btn-return { border-color: var(--accent-success); color: var(--accent-success); }
-        .btn-pickup.active { background: var(--accent-primary); color: #0f172a; }
-        .btn-return.active { background: var(--accent-success); color: #0f172a; }
+        /* Analytics Quick Summary Bar */
+        .metrics-strip {
+            display: flex;
+            gap: 8px;
+            padding: 10px 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            flex-shrink: 0;
+        }
+        .metrics-strip::-webkit-scrollbar { display: none; }
+        .m-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 8px 12px;
+            min-width: 100px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .m-val { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .m-lbl { font-size: 10px; font-weight: 600; color: var(--text-sub); }
 
-        /* Scanner Box & Mobile Adjustments */
-        .scan-box { display: none; flex-direction: column; gap: 12px; background: #0f172a; border-radius: 16px; padding: 16px; border: 1px solid var(--panel-border); }
-        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px dashed var(--accent-primary); display: none; }
-        .input-dark { width: 100%; height: 48px; background: #1e293b; border: 1px solid var(--panel-border); border-radius: 12px; padding: 0 16px; color: #fff; font-size: 14px; outline: none; }
-        .input-dark:focus { border-color: var(--accent-primary); }
+        /* Main Screen Views Slide Container */
+        .view-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
 
-        .btn-action { height: 44px; border-radius: 12px; border: none; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .btn-save { background: var(--accent-success); color: #0f172a; }
+        .view-page {
+            position: absolute;
+            inset: 0;
+            padding: 12px 16px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto; /* Inside scroll if content exceeds */
+        }
+        .view-page.active { display: flex; }
+
+        /* SCANNER SCREEN MODULE (Page 1) */
+        .scan-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        }
+
+        .mode-row { display: flex; gap: 10px; }
+        .btn-mode {
+            flex: 1; height: 46px; border-radius: 12px; border: 2px solid; font-weight: 800; font-size: 14px;
+            background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-pickup { border-color: var(--primary); color: var(--primary); }
+        .btn-return { border-color: var(--success); color: var(--success); }
+        .btn-pickup.active { background: var(--primary); color: #fff; }
+        .btn-return.active { background: var(--success); color: #fff; }
+
+        .input-box {
+            width: 100%; height: 46px; border: 1px solid #cbd5e1; border-radius: 12px; padding: 0 14px;
+            font-size: 14px; outline: none; background: #fff; font-weight: 600;
+        }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+
+        #reader { width: 100%; border-radius: 12px; overflow: hidden; border: 2px dashed var(--primary); display: none; margin-bottom: 5px; }
+
+        .action-row { display: flex; gap: 10px; }
+        .btn-act { flex: 1; height: 44px; border-radius: 12px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; }
+        .btn-save { background: var(--success); color: #fff; }
         .btn-reset { background: #ef4444; color: #fff; }
 
-        /* Statement Box & Exchange Table */
-        .statement-card { background: #0f172a; border-left: 4px solid var(--accent-primary); padding: 8px 12px; border-radius: 6px; font-size: 12px; color: #cbd5e1; margin-top: 4px; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; }
-        .badge-req { background: #f59e0b; color: #0f172a; }
-        .badge-disp { background: #38bdf8; color: #0f172a; }
-        .badge-comp { background: #34d399; color: #0f172a; }
+        /* RECENT LIST IN SCANNER */
+        .recent-box {
+            background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; flex: 1; overflow-y: auto;
+        }
+        .recent-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 8px 10px;
+            background: #f8fafc; border-radius: 10px; font-size: 12px; margin-bottom: 6px; border-left: 4px solid var(--primary);
+        }
 
-        /* Non-Blur Circular Percentage Loader Modal */
-        #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 99999; align-items: center; justify-content: center; }
-        .circle-loader-box { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 24px; padding: 30px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        .circle-svg { width: 90px; height: 90px; transform: rotate(-90deg); }
-        .circle-bg { fill: none; stroke: var(--panel-border); stroke-width: 8; }
-        .circle-progress { fill: none; stroke: var(--accent-primary); stroke-width: 8; stroke-dasharray: 251; stroke-dashoffset: 251; transition: stroke-dashoffset 0.1s ease; stroke-linecap: round; }
-        .percent-text { font-size: 18px; font-weight: 800; color: #fff; }
+        /* TABLES & CARDS FOR EXCHANGE / BOXD */
+        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+        .data-table th, .data-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
+        .data-table th { color: var(--text-sub); font-weight: 700; background: #f8fafc; }
 
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #fff; color: #0f172a; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 13px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .statement-quote { background: #f1f5f9; border-left: 3px solid var(--primary); padding: 6px; border-radius: 4px; font-size: 11px; margin-top: 4px; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 10px; font-weight: 800; display: inline-block; }
+        .badge-req { background: #fef3c7; color: #b45309; }
+        .badge-disp { background: #e0f2fe; color: #0369a1; }
+        .badge-comp { background: #dcfce7; color: #15803d; }
 
-        @media (max-width: 900px) {
-            .grid-split { grid-template-columns: 1fr; }
-            .container { padding: 12px; }
-            .analytics-grid { grid-template-columns: repeat(2, 1fr); }
+        /* PERCENTAGE LOADER MODAL (NO BLUR) */
+        #loaderContainer {
+            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4);
+            z-index: 99999; align-items: center; justify-content: center;
+        }
+        .circle-loader-box {
+            background: #fff; border-radius: 20px; padding: 24px; display: flex;
+            flex-direction: column; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .circle-svg { width: 75px; height: 75px; transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 7; }
+        .circle-progress { fill: none; stroke: var(--primary); stroke-width: 7; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset 0.1s ease; stroke-linecap: round; }
+        .percent-text { font-size: 16px; font-weight: 800; color: var(--text-main); }
+
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 30px; font-weight: 700; font-size: 12px; z-index: 9999; }
+
+        /* Desktop Optimization Rules */
+        @media (min-width: 901px) {
+            html, body { overflow: auto; }
+            .app-shell { padding: 20px; gap: 16px; }
+            .view-viewport { position: relative; overflow: visible; height: auto; }
+            .view-page { position: relative; display: flex !important; margin-bottom: 20px; height: auto; }
+            .nav-tabs-wrapper { display: none; } /* Show all on desktop */
+            .scanner-desktop-split { display: grid; grid-template-columns: 1fr 340px; gap: 16px; width: 100%; }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="top-nav">
-        <div class="nav-brand">⚡ HARSIDHI ERP SCANNER</div>
-        <div class="nav-badge">V2.0 SaaS Edition</div>
-    </div>
+    <div class="app-shell">
 
-    <div class="container">
-
-        <!-- Analytics Metric Cards Row -->
-        <div class="analytics-grid">
-            <div class="stat-card"><div class="stat-val" id="cntTodayPickup">0</div><div class="stat-title">Today Pickup</div></div>
-            <div class="stat-card"><div class="stat-val" id="cntTodayReturn">0</div><div class="stat-title">Today Return</div></div>
-            <div class="stat-card"><div class="stat-val" id="cntYestPickup">0</div><div class="stat-title">Yesterday Pickup</div></div>
-            <div class="stat-card"><div class="stat-val" id="cntYestReturn">0</div><div class="stat-title">Yesterday Return</div></div>
-            <div class="stat-card"><div class="stat-val" id="cntMonthTotal" style="color:var(--accent-primary)">0</div><div class="stat-title">This Month Total</div></div>
-            <div class="stat-card"><div class="stat-val" id="cntTotalLifetime" style="color:var(--accent-success)">0</div><div class="stat-title">Lifetime Total</div></div>
+        <!-- Header -->
+        <div class="header-bar">
+            <div class="brand-text"><span>📦</span> HARSIDHI ERP</div>
+            <div class="user-profile">
+                <span class="user-pill">Harsidhi Ventures</span>
+            </div>
         </div>
 
-        <!-- Scanning Operations Grid -->
-        <div class="grid-split">
-            <div class="panel">
-                <div class="panel-header">
-                    <div style="font-weight: 800; font-size: 16px;">LOGISTICS OPERATIONAL CONSOLE</div>
-                </div>
+        <!-- Airtel Inspired Top Pill Tabs (Mobile Navigation) -->
+        <div class="nav-tabs-wrapper">
+            <div id="tabNav1" class="tab-item active" onclick="switchViewPage('scanView')">
+                <span class="icon">📲</span>
+                <span class="title">Scan Console</span>
+            </div>
+            <div id="tabNav2" class="tab-item" onclick="switchViewPage('exchangeView')">
+                <span class="icon">🔄</span>
+                <span class="title">Exchange ERP</span>
+            </div>
+            <div id="tabNav3" class="tab-item" onclick="switchViewPage('boxdView')">
+                <span class="icon">📊</span>
+                <span class="title">BoxD Sync</span>
+            </div>
+        </div>
 
-                <div class="mode-selector">
-                    <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
-                    <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
-                </div>
+        <!-- Metrics Strip Bar -->
+        <div class="metrics-strip">
+            <div class="m-card"><span class="m-val" id="cntTodayPickup">0</span><span class="m-lbl">Today Pickup</span></div>
+            <div class="m-card"><span class="m-val" id="cntTodayReturn">0</span><span class="m-lbl">Today Return</span></div>
+            <div class="m-card"><span class="m-val" id="cntYestPickup">0</span><span class="m-lbl">Yest. Pickup</span></div>
+            <div class="m-card"><span class="m-val" id="cntYestReturn">0</span><span class="m-lbl">Yest. Return</span></div>
+            <div class="m-card"><span class="m-val" id="cntMonthTotal" style="color:var(--primary);">0</span><span class="m-lbl">This Month</span></div>
+            <div class="m-card"><span class="m-val" id="cntTotalLifetime" style="color:var(--success);">0</span><span class="m-lbl">Lifetime Total</span></div>
+        </div>
 
-                <div id="scanBox" class="scan-box">
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-action" style="flex:1; background:#0284c7; color:#fff;" onclick="startCamera()">📷 Toggle Camera</button>
-                        <button class="btn-action" style="flex:1; background:#334155; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
+        <!-- Main Views Viewport -->
+        <div class="view-viewport">
+
+            <!-- PAGE 1: SCANNER CONSOLE -->
+            <div id="scanView" class="view-page active">
+                <div class="scanner-desktop-split">
+                    <div class="scan-card">
+                        <div class="mode-row">
+                            <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup</button>
+                            <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return</button>
+                        </div>
+
+                        <div id="scanPanelBox" style="display:none; flex-direction:column; gap:10px;">
+                            <div class="action-row">
+                                <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Camera</button>
+                                <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
+                            </div>
+
+                            <div id="reader"></div>
+
+                            <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Type & Press Enter">
+                            <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+
+                            <div id="resultPreview" style="display:none; padding:10px; background:#f8fafc; border-radius:8px; font-size:12px; border:1px solid var(--border);"></div>
+
+                            <div class="action-row">
+                                <button class="btn-act btn-save" onclick="saveEntry()">Save Entry</button>
+                                <button class="btn-act btn-reset" onclick="resetConsole()">Reset</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="reader"></div>
-
-                    <input id="awbInput" class="input-dark" placeholder="Scan AWB / Enter Code">
-                    <input id="orderInput" class="input-dark" placeholder="Shopify Order ID" style="display:none;">
-
-                    <div id="resultPreview" style="display:none; padding:12px; background:#1e293b; border-radius:12px; font-size:13px; line-height:1.6;"></div>
-
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-action btn-save" style="flex:1;" onclick="saveEntry()">Save Entry</button>
-                        <button class="btn-action btn-reset" style="flex:1;" onclick="resetConsole()">Reset</button>
+                    <div class="recent-box">
+                        <div style="font-weight:700; font-size:12px; margin-bottom:8px; color:var(--text-sub);">RECENT ACTIVITY</div>
+                        <div id="recentList"><div style="text-align:center; color:gray; font-size:11px; padding:15px;">No scans yet</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Scans Stream -->
-            <div class="panel">
-                <div class="panel-header"><div style="font-weight:800; font-size:14px;">RECENT LOGS</div></div>
-                <div id="recentLogs" style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="text-align:center; color:var(--text-sub); font-size:12px; padding:20px 0;">No active logs</div>
+            <!-- PAGE 2: EXCHANGE ERP -->
+            <div id="exchangeView" class="view-page">
+                <div class="card-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:800; font-size:14px;">🔄 EXCHANGE LIFECYCLE</span>
+                        <button class="btn-act btn-save" style="padding:0 12px; height:36px;" onclick="openAddRequestModal()">+ New</button>
+                    </div>
+
+                    <div style="display:flex; gap:6px; overflow-x:auto;">
+                        <button id="exTabReq" class="btn-act" style="background:var(--primary); color:#fff; font-size:11px;" onclick="switchExTab('REQUESTED')">1. Requested</button>
+                        <button id="exTabDisp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px;" onclick="switchExTab('DISPATCH_PENDING')">2. Pending</button>
+                        <button id="exTabComp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px;" onclick="switchExTab('COMPLETED')">3. Completed</button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr id="exTableHeader"></tr></thead>
+                            <tbody id="exTableBody"><tr><td colspan="6" style="text-align:center; padding:15px;">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+            <!-- PAGE 3: BOXD CSV SYNC -->
+            <div id="boxdView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">📊 BOXD RETURN RECONCILIATION</span>
+                    <div style="border:2px dashed var(--primary); padding:16px; border-radius:12px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="document.getElementById('csvInput').click()">
+                        <span id="csvLabel" style="font-weight:700; font-size:12px; color:var(--primary);">📄 Upload BoxD CSV File</span>
+                        <input type="file" id="csvInput" accept=".csv" style="display:none;" onchange="uploadCsvFile(this)">
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button id="boxdTabPend" class="btn-act" style="background:var(--primary); color:#fff; font-size:11px;" onclick="switchBoxdTab('Pending')">Pending Returns</button>
+                        <button id="boxdTabRec" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px;" onclick="switchBoxdTab('Received')">Received Returns</button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Customer Order</th><th>Order</th><th>Name</th><th>AWB</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="boxdTableBody"><tr><td colspan="5" style="text-align:center; padding:15px;">No Data</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 
-    <!-- Circular Percentage Loader Overlay (No Screen Blur) -->
+    <!-- Modals -->
+    <div id="addModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:400px; display:flex; flex-direction:column; gap:10px;">
+            <h4 style="font-size:15px; font-weight:800;">New Exchange Request</h4>
+            <input id="addOrderId" class="input-box" placeholder="Original Order ID">
+            <input id="addMobile" class="input-box" placeholder="Customer Mobile">
+            <input id="addOriginalAwb" class="input-box" placeholder="Original AWB">
+            <textarea id="addDescription" class="input-box" style="height:60px; padding:8px;" placeholder="Customer Statement / Text..."></textarea>
+            <div class="action-row">
+                <button class="btn-act btn-save" onclick="submitAddRequest()">Save</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Percentage Loader Modal (No Blur) -->
     <div id="loaderContainer">
         <div class="circle-loader-box">
             <svg class="circle-svg">
-                <circle class="circle-bg" cx="45" cy="45" r="40"></circle>
-                <circle id="circleProgress" class="circle-progress" cx="45" cy="45" r="40"></circle>
+                <circle class="circle-bg" cx="37.5" cy="37.5" r="32"></circle>
+                <circle id="circleProgress" class="circle-progress" cx="37.5" cy="37.5" r="32"></circle>
             </svg>
             <div class="percent-text" id="percentText">0%</div>
         </div>
@@ -163,30 +379,47 @@
         let currentMode = "";
         let currentTracking = null;
         let html5QrCode = null;
+        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let boxdCache = { pending: [], received: [] };
+        let activeExTab = "REQUESTED";
+        let activeBoxdTab = "Pending";
 
-        function showCircularLoader() {
+        /* View Switching (Mobile Slide/Page Freeze) */
+        function switchViewPage(pageId) {
+            document.querySelectorAll('.view-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+
+            if (pageId === 'scanView') document.getElementById('tabNav1').classList.add('active');
+            if (pageId === 'exchangeView') { document.getElementById('tabNav2').classList.add('active'); fetchExchangeData(); }
+            if (pageId === 'boxdView') { document.getElementById('tabNav3').classList.add('active'); fetchBoxdReport(); }
+        }
+
+        function showProgressLoader() {
             document.getElementById("loaderContainer").style.display = "flex";
-            let progress = 0;
+            let p = 0;
             const circle = document.getElementById("circleProgress");
-            const percentText = document.getElementById("percentText");
+            const txt = document.getElementById("percentText");
 
             const interval = setInterval(() => {
-                progress += 10;
-                const offset = 251 - (251 * progress) / 100;
+                p += 10;
+                const offset = 220 - (220 * p) / 100;
                 circle.style.strokeDashoffset = offset;
-                percentText.innerText = progress + "%";
+                txt.innerText = p + "%";
 
-                if (progress >= 100) {
+                if (p >= 100) {
                     clearInterval(interval);
                     setTimeout(() => { document.getElementById("loaderContainer").style.display = "none"; }, 150);
                 }
-            }, 30);
+            }, 25);
         }
 
-        function fetchDashboardCounts() {
-            showCircularLoader();
+        /* Dashboard Counts */
+        function fetchDashboardData() {
+            showProgressLoader();
             fetch(`${API_URL}?action=getDashboardCounts`)
-                .then(res => res.json())
+                .then(r => r.json())
                 .then(d => {
                     if (d.success) {
                         document.getElementById("cntTodayPickup").innerText = d.todayPickup || 0;
@@ -195,52 +428,51 @@
                         document.getElementById("cntYestReturn").innerText = d.yesterdayReturn || 0;
                         document.getElementById("cntMonthTotal").innerText = d.monthTotal || 0;
                         document.getElementById("cntTotalLifetime").innerText = d.totalLifetime || 0;
-                        renderRecentLogs(d.recentScans || []);
+                        renderRecentList(d.recentScans || []);
                     }
                 });
         }
 
-        function renderRecentLogs(logs) {
-            const container = document.getElementById("recentLogs");
-            if (!logs || logs.length === 0) return;
-            container.innerHTML = logs.map(l => `
-                <div style="background:#0f172a; padding:10px 12px; border-radius:10px; border-left:4px solid ${l.type.toLowerCase() === 'pickup' ? 'var(--accent-primary)' : 'var(--accent-success)'}; display:flex; justify-between; align-items:center;">
-                    <div><b>${l.awb}</b><br><span style="font-size:11px; color:var(--text-sub);">${l.orderId || 'Manual'}</span></div>
-                    <div style="text-align:right;"><b style="font-size:12px;">${l.type}</b><br><span style="font-size:10px; color:var(--text-sub);">${l.time}</span></div>
+        function renderRecentList(scans) {
+            const list = document.getElementById("recentList");
+            if (!scans || scans.length === 0) return;
+            list.innerHTML = scans.map(s => `
+                <div class="recent-item">
+                    <div><b>${s.awb}</b><br><span style="color:var(--text-sub);">${s.orderId || 'Manual'}</span></div>
+                    <div style="text-align:right;"><b>${s.type}</b><br><span style="color:var(--text-sub); font-size:10px;">${s.time}</span></div>
                 </div>
             `).join('');
         }
 
+        /* Scan Console */
         function setMode(mode) {
             currentMode = mode;
-            document.getElementById("scanBox").style.display = "flex";
+            document.getElementById("scanPanelBox").style.display = "flex";
             document.getElementById("btnPickup").classList.remove("active");
             document.getElementById("btnReturn").classList.remove("active");
 
-            if (mode === "Pickup") document.getElementById("btnPickup").classList.add("active");
+            if (mode === 'Pickup') document.getElementById("btnPickup").classList.add("active");
             else document.getElementById("btnReturn").classList.add("active");
-
             focusInput();
         }
 
         function focusInput() { document.getElementById("awbInput").focus(); }
 
-        async function startCamera() {
+        async function toggleCamera() {
             try {
                 if (html5QrCode) { await stopCamera(); return; }
                 document.getElementById("reader").style.display = "block";
                 html5QrCode = new Html5Qrcode("reader");
-
                 await html5QrCode.start(
                     { facingMode: "environment" },
-                    { fps: 20, qrbox: { width: 250, height: 130 } },
-                    (text) => {
-                        document.getElementById("awbInput").value = text;
+                    { fps: 20, qrbox: { width: 240, height: 120 } },
+                    (decodedText) => {
+                        document.getElementById("awbInput").value = decodedText;
                         stopCamera();
                         trackShipment();
                     }
                 );
-            } catch (e) { toast("Camera Access Error"); }
+            } catch (e) { toast("Camera Access Failed"); }
         }
 
         async function stopCamera() {
@@ -256,30 +488,29 @@
             const awb = document.getElementById("awbInput").value.trim();
             if (!awb) return toast("Enter AWB");
 
-            showCircularLoader();
+            showProgressLoader();
             try {
                 const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
                 const data = await res.json();
-
                 if (data && data.success) {
                     currentTracking = data;
                     document.getElementById("resultPreview").style.display = "block";
-                    document.getElementById("resultPreview").innerHTML = `✅ <b>Verified:</b> ${data.courier} | Order: ${data.orderId || 'N/A'}`;
+                    document.getElementById("resultPreview").innerHTML = `✅ Verified: ${data.courier} | Order: ${data.orderId || 'N/A'}`;
                     document.getElementById("orderInput").value = data.orderId || "";
                 } else {
                     document.getElementById("resultPreview").style.display = "block";
-                    document.getElementById("resultPreview").innerHTML = `⚠️ <b>Manual Mode Needed</b>`;
+                    document.getElementById("resultPreview").innerHTML = `⚠️ Manual Entry Required`;
                 }
                 document.getElementById("orderInput").style.display = "block";
             } catch (e) {}
         }
 
         async function saveEntry() {
-            if (!currentMode) return toast("Select Mode First");
+            if (!currentMode) return toast("Select Pickup or Return Mode!");
             const awb = document.getElementById("awbInput").value.trim();
-            if (!awb) return toast("AWB Missing");
+            if (!awb) return toast("AWB Missing!");
 
-            showCircularLoader();
+            showProgressLoader();
             try {
                 const res = await fetch(API_URL, {
                     method: "POST",
@@ -293,8 +524,8 @@
                     })
                 });
                 const data = await res.json();
-                if (data.duplicate) { toast(data.message); return; }
-                toast("Saved!"); resetConsole(); fetchDashboardCounts();
+                if (data.duplicate) return toast(data.message);
+                toast("Saved Successfully!"); resetConsole(); fetchDashboardData();
             } catch (e) {}
         }
 
@@ -306,12 +537,101 @@
             document.getElementById("resultPreview").style.display = "none";
         }
 
+        /* Exchange Module Functions */
+        async function fetchExchangeData() {
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getExchangeReport`).then(r => r.json());
+                if (res.success) {
+                    exchangeCache = res;
+                    renderExTable();
+                }
+            } catch (e) {}
+        }
+
+        function renderExTable() {
+            const tbody = document.getElementById("exTableBody");
+            const thead = document.getElementById("exTableHeader");
+            let data = exchangeCache[activeExTab.toLowerCase()] || exchangeCache.requested || [];
+
+            thead.innerHTML = `<th>Order ID</th><th>Original AWB</th><th>Statement</th><th>Status</th>`;
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:15px;">No Records</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(r => `
+                <tr>
+                    <td><b>${r.orderId}</b><br><small>${r.date}</small></td>
+                    <td><code>${r.originalAwb}</code></td>
+                    <td><div class="statement-quote">💬 ${r.description}</div></td>
+                    <td><span class="badge badge-req">${r.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function switchExTab(tab) {
+            activeExTab = tab;
+            renderExTable();
+        }
+
+        function openAddRequestModal() { document.getElementById("addModal").style.display = "flex"; }
+        function closeModals() { document.getElementById("addModal").style.display = "none"; }
+
+        async function submitAddRequest() {
+            const orderId = document.getElementById("addOrderId").value.trim();
+            const mobile = document.getElementById("addMobile").value.trim();
+            const originalAwb = document.getElementById("addOriginalAwb").value.trim();
+            const description = document.getElementById("addDescription").value.trim();
+
+            if (!orderId || !mobile || !originalAwb) return toast("Fill all fields!");
+            closeModals();
+            showProgressLoader();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "addExchangeRequest", payload: { orderId, mobile, originalAwb, description } })
+            });
+            toast("Request Saved!"); fetchExchangeData();
+        }
+
+        /* BoxD Sync Functions */
+        async function fetchBoxdReport() {
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getBoxdReturnReport`).then(r => r.json());
+                if (res.success) { boxdCache = res; renderBoxdTable(); }
+            } catch (e) {}
+        }
+
+        function renderBoxdTable() {
+            const tbody = document.getElementById("boxdTableBody");
+            let data = activeBoxdTab === 'Pending' ? boxdCache.pending : boxdCache.received;
+            if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:15px;">No Data</td></tr>`; return; }
+
+            tbody.innerHTML = data.map(r => `
+                <tr>
+                    <td><b>${r.customerOrderNumber}</b></td>
+                    <td>${r.orderNumber}</td>
+                    <td>${r.customerName}</td>
+                    <td><code>${r.awb}</code></td>
+                    <td><span class="badge badge-comp">${r.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function switchBoxdTab(tab) { activeBoxdTab = tab; renderBoxdTable(); }
+
         function toast(msg) {
             const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
             document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
         }
 
-        window.onload = fetchDashboardCounts;
+        window.onload = function() {
+            fetchDashboardData();
+        };
     </script>
 </body>
 
