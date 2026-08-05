@@ -24,14 +24,25 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Default Layout Rules */
-        html, body { height: 100%; width: 100vw; background: var(--bg-body); color: var(--text-main); }
+        /* Unified App Shell Layout */
+        html, body { height: 100%; width: 100vw; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
 
-        .app-shell { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 1280px; margin: 0 auto; }
+        .app-shell { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 1200px; margin: 0 auto; }
 
+        /* Header Bar */
         .header-bar { background: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
         .brand-text { font-weight: 800; font-size: 16px; color: var(--primary); letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
         .user-pill { background: #f8fafc; border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #334155; }
+
+        /* UNIFIED TOP TAB NAVIGATION (DESKTOP + MOBILE BOTH) */
+        .nav-tabs-wrapper { background: #fff; padding: 10px 16px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); flex-shrink: 0; justify-content: space-between; }
+        .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
+
+        .tab-item { flex: 1; max-width: 260px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .tab-item .icon { font-size: 18px; }
+        .tab-item .title { font-size: 12px; font-weight: 700; color: var(--text-sub); }
+        .tab-item.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12); }
+        .tab-item.active .title { color: var(--primary); }
 
         /* Metrics Strip Bar */
         .metrics-strip { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; }
@@ -40,59 +51,51 @@
         .m-val { font-size: 16px; font-weight: 800; color: var(--text-main); }
         .m-lbl { font-size: 10px; font-weight: 600; color: var(--text-sub); }
 
-        /* VIEWPORT NAVIGATION FOR MOBILE */
-        .nav-tabs-wrapper { background: #fff; padding: 8px 12px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-        .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
-        .tab-item { flex: 1; min-width: 75px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 6px 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; }
-        .tab-item .icon { font-size: 16px; }
-        .tab-item .title { font-size: 10px; font-weight: 700; color: var(--text-sub); }
-        .tab-item.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1); }
-        .tab-item.active .title { color: var(--primary); }
-
-        .view-viewport { flex: 1; position: relative; overflow: hidden; width: 100%; }
-        .view-page { position: absolute; inset: 0; padding: 8px 12px; display: none; flex-direction: column; gap: 10px; height: 100%; width: 100%; }
+        /* MAIN VIEWPORT SWITCHER */
+        .view-viewport { flex: 1; position: relative; overflow: hidden; width: 100%; padding: 12px; }
+        .view-page { position: absolute; inset: 12px; display: none; flex-direction: column; gap: 12px; height: calc(100% - 24px); width: calc(100% - 24px); }
         .view-page.active { display: flex; }
 
-        /* SCANNER SCREEN COMPONENTS */
-        .scan-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .mode-row { display: flex; gap: 8px; width: 100%; }
-        .btn-mode { flex: 1; height: 42px; border-radius: 10px; border: 2px solid; font-weight: 800; font-size: 13px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        /* MODULE 1: SCANNER STACK */
+        .scan-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .mode-row { display: flex; gap: 10px; width: 100%; }
+        .btn-mode { flex: 1; height: 44px; border-radius: 10px; border: 2px solid; font-weight: 800; font-size: 14px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-pickup { border-color: var(--primary); color: var(--primary); }
         .btn-return { border-color: var(--success); color: var(--success); }
         .btn-pickup.active { background: var(--primary); color: #fff; }
         .btn-return.active { background: var(--success); color: #fff; }
 
-        .input-box { width: 100%; height: 42px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 12px; font-size: 13px; outline: none; background: #fff; font-weight: 600; }
+        .input-box { width: 100%; height: 44px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 14px; font-size: 14px; outline: none; background: #fff; font-weight: 600; }
         .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1); }
 
         #reader { width: 100%; height: 140px !important; border-radius: 10px; overflow: hidden; border: 2px solid var(--primary); display: none; background: #000; }
         #reader video { object-fit: cover !important; height: 140px !important; width: 100% !important; }
 
-        .action-row { display: flex; gap: 8px; width: 100%; }
-        .btn-act { flex: 1; height: 40px; border-radius: 10px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
+        .action-row { display: flex; gap: 10px; width: 100%; }
+        .btn-act { flex: 1; height: 42px; border-radius: 10px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; }
         .btn-save { background: var(--success); color: #fff; }
         .btn-reset { background: var(--danger); color: #fff; }
 
-        .recent-box-top { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; max-height: 90px; overflow-y: auto; width: 100%; }
-        .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; background: #f8fafc; border-radius: 6px; font-size: 11px; margin-bottom: 4px; border-left: 3px solid var(--primary); }
+        .recent-box-top { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; max-height: 100px; overflow-y: auto; width: 100%; }
+        .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8fafc; border-radius: 6px; font-size: 12px; margin-bottom: 4px; border-left: 3px solid var(--primary); }
 
-        /* CARDS & TABLES */
-        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; height: 100%; overflow-y: auto; }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
-        .data-table th, .data-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); }
-        .data-table th { color: var(--text-sub); font-weight: 700; background: #f8fafc; sticky: top; }
+        /* SEARCH LOOKUP SPECIFICS */
+        .search-results-list { max-height: 160px; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; margin-top: 4px; display: none; }
+        .search-suggest-item { padding: 10px 14px; border-bottom: 1px solid #f1f5f9; font-size: 13px; cursor: pointer; }
+        .search-suggest-item:hover { background: var(--primary-soft); }
 
-        .statement-quote { background: #f1f5f9; border-left: 3px solid var(--primary); padding: 4px; border-radius: 4px; font-size: 10px; margin-top: 2px; }
-        .badge { padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 800; display: inline-block; }
+        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; height: 100%; overflow-y: auto; }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        .data-table th, .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        .data-table th { color: var(--text-sub); font-weight: 700; background: #f8fafc; position: sticky; top: 0; }
+
+        .statement-quote { background: #f1f5f9; border-left: 3px solid var(--primary); padding: 6px; border-radius: 4px; font-size: 11px; margin-top: 2px; }
+        .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 800; display: inline-block; }
         .badge-req { background: #fef3c7; color: #b45309; }
         .badge-disp { background: #e0f2fe; color: #0369a1; }
         .badge-comp { background: #dcfce7; color: #15803d; }
 
-        .search-results-list { max-height: 140px; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 10px; margin-top: 4px; display: none; }
-        .search-suggest-item { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; font-size: 12px; cursor: pointer; }
-        .search-suggest-item:hover { background: var(--primary-soft); }
-
-        /* PERCENTAGE LOADER MODAL (NO BLUR) */
+        /* CIRCULAR PERCENTAGE LOADER MODAL */
         #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.3); z-index: 99999; align-items: center; justify-content: center; }
         .circle-loader-box { background: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .circle-svg { width: 65px; height: 65px; transform: rotate(-90deg); }
@@ -100,25 +103,7 @@
         .circle-progress { fill: none; stroke: var(--primary); stroke-width: 6; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 0.1s ease; stroke-linecap: round; }
         .percent-text { font-size: 14px; font-weight: 800; color: var(--text-main); }
 
-        .toast { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 11px; z-index: 9999; }
-
-        /* =====================================================
-           DESKTOP SAAS ENTERPRISE LAYOUT STYLING (Min-width: 901px)
-        ===================================================== */
-        @media (min-width: 901px) {
-            html, body { overflow: auto; height: auto; }
-            .app-shell { padding: 16px; gap: 16px; }
-            .nav-tabs-wrapper { display: none; } /* Desktop displays all modules seamlessly */
-            .view-viewport { position: relative; overflow: visible; height: auto; display: flex; flex-direction: column; gap: 20px; }
-            .view-page { position: relative; display: flex !important; inset: auto; height: auto; padding: 0; }
-            
-            .desktop-grid-split { display: grid; grid-template-columns: 1fr 360px; gap: 16px; width: 100%; }
-            .recent-box-top { max-height: 420px; }
-        }
-
-        @media (max-width: 900px) {
-            html, body { overflow: hidden; }
-        }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; z-index: 9999; }
     </style>
 </head>
 
@@ -132,11 +117,11 @@
             <div class="user-profile"><span class="user-pill">Harsidhi Ventures</span></div>
         </div>
 
-        <!-- Mobile Top Nav Tabs -->
+        <!-- Unified Navigation Pill Tabs -->
         <div class="nav-tabs-wrapper">
-            <div id="tabNav1" class="tab-item active" onclick="switchViewPage('scanView')"><span class="icon">📲</span><span class="title">Scan</span></div>
-            <div id="tabNav2" class="tab-item" onclick="switchViewPage('searchView')"><span class="icon">🔍</span><span class="title">Lookup</span></div>
-            <div id="tabNav3" class="tab-item" onclick="switchViewPage('exchangeView')"><span class="icon">🔄</span><span class="title">Exchange</span></div>
+            <div id="tabNav1" class="tab-item active" onclick="switchViewPage('scanView')"><span class="icon">📲</span><span class="title">Scan Console</span></div>
+            <div id="tabNav2" class="tab-item" onclick="switchViewPage('searchView')"><span class="icon">🔍</span><span class="title">Order Lookup</span></div>
+            <div id="tabNav3" class="tab-item" onclick="switchViewPage('exchangeView')"><span class="icon">🔄</span><span class="title">Exchange ERP</span></div>
             <div id="tabNav4" class="tab-item" onclick="switchViewPage('boxdView')"><span class="icon">📊</span><span class="title">BoxD Sync</span></div>
         </div>
 
@@ -150,95 +135,93 @@
             <div class="m-card"><span class="m-val" id="cntTotalLifetime" style="color:var(--success);">0</span><span class="m-lbl">Lifetime Total</span></div>
         </div>
 
-        <!-- Main Viewport -->
+        <!-- Main Viewport Area -->
         <div class="view-viewport">
 
-            <!-- MODULE 1: SCAN CONSOLE -->
+            <!-- TAB 1: SCAN CONSOLE -->
             <div id="scanView" class="view-page active">
-                <div class="desktop-grid-split">
-                    <div class="scan-card">
-                        <div style="font-weight:800; font-size:13px; color:var(--primary);">📲 OPERATIONAL SCAN CONSOLE</div>
-                        <div class="mode-row">
-                            <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
-                            <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
-                        </div>
+                <div class="recent-box-top">
+                    <div style="font-weight:700; font-size:11px; margin-bottom:4px; color:var(--text-sub);">📜 LAST SCANNED ITEMS</div>
+                    <div id="recentList"><div style="text-align:center; color:gray; font-size:11px; padding:4px;">No scans yet</div></div>
+                </div>
 
-                        <div id="scanPanelBox" style="display:none; flex-direction:column; gap:8px;">
-                            <div class="action-row">
-                                <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Toggle Camera</button>
-                                <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
-                            </div>
-
-                            <div id="reader"></div>
-
-                            <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Enter Number">
-                            <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
-
-                            <div id="resultPreview" style="display:none; padding:8px; background:#f8fafc; border-radius:6px; font-size:11px; border:1px solid var(--border);"></div>
-
-                            <div class="action-row">
-                                <button class="btn-act btn-save" onclick="saveEntry()">Next (Save Entry)</button>
-                                <button class="btn-act btn-reset" onclick="resetConsole()">Stop / Reset</button>
-                            </div>
-                        </div>
+                <div class="scan-card">
+                    <div style="font-weight:800; font-size:13px; color:var(--primary);">📲 OPERATIONAL SCAN CONSOLE</div>
+                    <div class="mode-row">
+                        <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
+                        <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
                     </div>
 
-                    <div class="recent-box-top">
-                        <div style="font-weight:700; font-size:11px; margin-bottom:6px; color:var(--text-sub);">📜 LAST SCANNED ITEMS</div>
-                        <div id="recentList"><div style="text-align:center; color:gray; font-size:10px; padding:4px;">No scans yet</div></div>
+                    <div id="scanPanelBox" style="display:none; flex-direction:column; gap:10px;">
+                        <div class="action-row">
+                            <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Toggle Camera</button>
+                            <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
+                        </div>
+
+                        <div id="reader"></div>
+
+                        <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Enter Number">
+                        <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+
+                        <div id="resultPreview" style="display:none; padding:10px; background:#f8fafc; border-radius:8px; font-size:12px; border:1px solid var(--border);"></div>
+
+                        <div class="action-row">
+                            <button class="btn-act btn-save" onclick="saveEntry()">Next (Save Entry)</button>
+                            <button class="btn-act btn-reset" onclick="resetConsole()">Stop / Reset</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- MODULE 2: SEARCH LOOKUP -->
+            <!-- TAB 2: SEARCH LOOKUP -->
             <div id="searchView" class="view-page">
                 <div class="card-panel">
-                    <span style="font-weight:800; font-size:13px;">🔍 ORDER & AWB LOOKUP ENGINE</span>
+                    <span style="font-weight:800; font-size:14px;">🔍 ORDER & AWB LOOKUP ENGINE</span>
                     <input id="searchInput" class="input-box" placeholder="Type Order ID (e.g. 6373) or AWB Number..." oninput="onSearchTyping(this.value)">
                     
                     <div id="searchSuggestions" class="search-results-list"></div>
 
-                    <div id="searchResultDisplay" style="margin-top:6px;">
-                        <div style="text-align:center; color:gray; font-size:11px; padding:15px;">Type 4 digits or AWB above to look up Google Sheet records.</div>
+                    <div id="searchResultDisplay" style="margin-top:8px;">
+                        <div style="text-align:center; color:gray; font-size:12px; padding:20px;">Type 4 digits or AWB above to look up Google Sheet records.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- MODULE 3: EXCHANGE LIFECYCLE -->
+            <!-- TAB 3: EXCHANGE LIFECYCLE -->
             <div id="exchangeView" class="view-page">
                 <div class="card-panel">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-weight:800; font-size:13px;">🔄 EXCHANGE LIFECYCLE MANAGEMENT</span>
-                        <button class="btn-act btn-save" style="padding:0 12px; height:32px;" onclick="openAddRequestModal()">+ New Exchange</button>
+                        <span style="font-weight:800; font-size:14px;">🔄 EXCHANGE LIFECYCLE MANAGEMENT</span>
+                        <button class="btn-act btn-save" style="padding:0 14px; height:36px;" onclick="openAddRequestModal()">+ New Exchange</button>
                     </div>
 
-                    <div style="display:flex; gap:6px; overflow-x:auto;">
-                        <button id="exTabReq" class="btn-act" style="background:var(--primary); color:#fff; font-size:10px;" onclick="switchExTab('REQUESTED')">1. Requested</button>
-                        <button id="exTabDisp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:10px;" onclick="switchExTab('DISPATCH_PENDING')">2. Pending</button>
-                        <button id="exTabComp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:10px;" onclick="switchExTab('COMPLETED')">3. Completed</button>
+                    <div style="display:flex; gap:8px; overflow-x:auto;">
+                        <button id="exTabReq" class="btn-act" style="background:var(--primary); color:#fff; font-size:11px;" onclick="switchExTab('REQUESTED')">1. Requested</button>
+                        <button id="exTabDisp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px;" onclick="switchExTab('DISPATCH_PENDING')">2. Pending</button>
+                        <button id="exTabComp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px;" onclick="switchExTab('COMPLETED')">3. Completed</button>
                     </div>
 
                     <div style="overflow-x:auto;">
                         <table class="data-table">
                             <thead><tr id="exTableHeader"></tr></thead>
-                            <tbody id="exTableBody"><tr><td colspan="4" style="text-align:center; padding:15px;">Loading...</td></tr></tbody>
+                            <tbody id="exTableBody"><tr><td colspan="4" style="text-align:center; padding:20px;">Loading...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- MODULE 4: BOXD CSV RECONCILIATION -->
+            <!-- TAB 4: BOXD CSV RECONCILIATION -->
             <div id="boxdView" class="view-page">
                 <div class="card-panel">
-                    <span style="font-weight:800; font-size:13px;">📊 BOXD RETURN RECONCILIATION</span>
-                    <div style="border:2px dashed var(--primary); padding:12px; border-radius:10px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="document.getElementById('csvInput').click()">
-                        <span id="csvLabel" style="font-weight:700; font-size:11px; color:var(--primary);">📄 Upload BoxD CSV File</span>
+                    <span style="font-weight:800; font-size:14px;">📊 BOXD RETURN RECONCILIATION</span>
+                    <div style="border:2px dashed var(--primary); padding:16px; border-radius:12px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="document.getElementById('csvInput').click()">
+                        <span id="csvLabel" style="font-weight:700; font-size:12px; color:var(--primary);">📄 Upload BoxD CSV File</span>
                         <input type="file" id="csvInput" accept=".csv" style="display:none;" onchange="uploadCsvFile(this)">
                     </div>
 
-                    <div style="display:flex; gap:8px;">
-                        <button id="boxdTabPend" class="btn-act" style="background:var(--danger); color:#fff; font-size:10px;" onclick="switchBoxdTab('Pending')">❌ Pending Scan (<span id="boxdCountPending">0</span>)</button>
-                        <button id="boxdTabRec" class="btn-act" style="background:var(--success); color:#fff; font-size:10px;" onclick="switchBoxdTab('Received')">✅ Received (<span id="boxdCountReceived">0</span>)</button>
+                    <div style="display:flex; gap:10px;">
+                        <button id="boxdTabPend" class="btn-act" style="background:var(--danger); color:#fff; font-size:11px;" onclick="switchBoxdTab('Pending')">❌ Pending Scan (<span id="boxdCountPending">0</span>)</button>
+                        <button id="boxdTabRec" class="btn-act" style="background:var(--success); color:#fff; font-size:11px;" onclick="switchBoxdTab('Received')">✅ Received (<span id="boxdCountReceived">0</span>)</button>
                     </div>
 
                     <div style="overflow-x:auto;">
@@ -246,7 +229,7 @@
                             <thead>
                                 <tr><th>Order ID</th><th>BoxD Ref</th><th>Name</th><th>AWB</th><th>Status</th></tr>
                             </thead>
-                            <tbody id="boxdTableBody"><tr><td colspan="5" style="text-align:center; padding:15px;">No Data Compiled</td></tr></tbody>
+                            <tbody id="boxdTableBody"><tr><td colspan="5" style="text-align:center; padding:20px;">No Data Compiled</td></tr></tbody>
                         </table>
                     </div>
                 </div>
@@ -258,14 +241,14 @@
 
     <!-- Modals -->
     <div id="addModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; align-items:center; justify-content:center; padding:16px;">
-        <div style="background:#fff; border-radius:14px; padding:16px; width:100%; max-width:380px; display:flex; flex-direction:column; gap:8px;">
-            <h4 style="font-size:14px; font-weight:800;">New Exchange Request</h4>
+        <div style="background:#fff; border-radius:14px; padding:18px; width:100%; max-width:400px; display:flex; flex-direction:column; gap:10px;">
+            <h4 style="font-size:15px; font-weight:800;">New Exchange Request</h4>
             <input id="addOrderId" class="input-box" placeholder="Original Order ID">
             <input id="addMobile" class="input-box" placeholder="Customer Mobile">
             <input id="addOriginalAwb" class="input-box" placeholder="Original AWB">
-            <textarea id="addDescription" class="input-box" style="height:50px; padding:6px;" placeholder="Customer Statement / Text..."></textarea>
+            <textarea id="addDescription" class="input-box" style="height:60px; padding:8px;" placeholder="Customer Statement / Text..."></textarea>
             <div class="action-row">
-                <button class="btn-act btn-save" onclick="submitAddRequest()">Save</button>
+                <button class="btn-act btn-save" onclick="submitAddRequest()">Save Request</button>
                 <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
             </div>
         </div>
@@ -282,7 +265,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxeN3o19JEp5umksIjcE0CZNQkQ1HggSrQUyyKeraUQCkHnzE4s6PupQJLzARRwTw8o/exec"; // Apni Web App URL yahan daalein
+        const API_URL = "https://script.google.com/macros/s/AKfycbxeN3o19JEp5umksIjcE0CZNQkQ1HggSrQUyyKeraUQCkHnzE4s6PupQJLzARRwTw8o/exec"; // Apni Web App URL yahan replace karein
 
         let currentMode = "";
         let currentTracking = null;
@@ -305,8 +288,8 @@
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = "sine";
-                osc.frequency.setValueAtTime(587.33, now); // Note D5
-                osc.frequency.exponentialRampToValueAtTime(880, now + 0.15); // Note A5
+                osc.frequency.setValueAtTime(587.33, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
                 gain.gain.setValueAtTime(0.15, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                 osc.connect(gain);
@@ -334,6 +317,7 @@
             } catch(e) {}
         }
 
+        /* TAB NAVIGATION SWITCHER */
         function switchViewPage(pageId) {
             document.querySelectorAll('.view-page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
@@ -492,7 +476,7 @@
             document.getElementById("resultPreview").style.display = "none";
         }
 
-        /* SEARCH ENGINE */
+        /* SEARCH LOOKUP LOGIC */
         async function onSearchTyping(val) {
             val = val.trim();
             const suggBox = document.getElementById("searchSuggestions");
@@ -527,12 +511,12 @@
         function renderSearchRecordCard(d) {
             const display = document.getElementById("searchResultDisplay");
             display.innerHTML = `
-                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:12px; font-size:12px; display:flex; flex-direction:column; gap:6px;">
-                    <div style="font-weight:800; color:var(--primary); font-size:13px; border-bottom:1px solid var(--border); padding-bottom:4px;">📋 Sheet Record Details</div>
-                    <div><b>Date:</b> ${d.date} | <b>Type:</b> ${d.type}</div>
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; font-size:13px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-weight:800; color:var(--primary); font-size:14px; border-bottom:1px solid var(--border); padding-bottom:6px;">📋 Sheet Record Details</div>
+                    <div><b>Scan Date:</b> ${d.date} | <b>Type:</b> ${d.type}</div>
                     <div><b>Order ID:</b> ${d.orderId || 'N/A'}</div>
-                    <div><b>AWB:</b> <code>${d.awb}</code></div>
-                    <div><b>Courier:</b> ${d.courier || 'N/A'} | <b>Status:</b> ${d.status}</div>
+                    <div><b>AWB Number:</b> <code>${d.awb}</code></div>
+                    <div><b>Courier Partner:</b> ${d.courier || 'N/A'} | <b>Status:</b> ${d.status}</div>
                     <div><b>Customer:</b> ${d.customer || 'N/A'} (${d.city || 'N/A'})</div>
                     <button class="btn-act" style="background:var(--primary); color:#fff; margin-top:6px;" onclick="fetchLiveCourierTracking('${d.awb}')">🌐 Fetch Live Status</button>
                     <div id="liveTrackingArea"></div>
@@ -542,21 +526,21 @@
 
         async function fetchLiveCourierTracking(awb) {
             const area = document.getElementById("liveTrackingArea");
-            area.innerHTML = "<div style='color:gray; margin-top:6px;'>Fetching live status from 3PL gateway...</div>";
+            area.innerHTML = "<div style='color:gray; margin-top:8px;'>Hitting 3PL Gateway...</div>";
             showProgressLoader();
 
             try {
                 const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
                 if (res.success) {
                     area.innerHTML = `
-                        <div style="margin-top:8px; padding:8px; background:#fff; border:1px dashed var(--primary); border-radius:8px;">
-                            <div style="color:var(--success); font-weight:700;">🚚 Live Status: ${res.status}</div>
-                            <div>Courier: ${res.courierName || res.courier} | City: ${res.city || 'N/A'}</div>
-                            <button class="btn-act btn-save" style="margin-top:6px; width:100%;" onclick="syncLiveStatusToSheet('${res.awb}')">💾 Sync Status To Sheet</button>
+                        <div style="margin-top:10px; padding:10px; background:#fff; border:1px dashed var(--primary); border-radius:10px;">
+                            <div style="color:var(--success); font-weight:800;">🚚 Live Status: ${res.status}</div>
+                            <div style="margin-top:4px;">Courier: ${res.courierName || res.courier} | City: ${res.city || 'N/A'}</div>
+                            <button class="btn-act btn-save" style="margin-top:8px; width:100%;" onclick="syncLiveStatusToSheet('${res.awb}')">💾 Sync Status To Sheet</button>
                         </div>
                     `;
                 } else {
-                    area.innerHTML = "<div style='color:var(--danger); margin-top:6px;'>Live tracking details not found.</div>";
+                    area.innerHTML = "<div style='color:var(--danger); margin-top:8px;'>Live tracking details not found on active channels.</div>";
                 }
             } catch(e) {}
         }
@@ -572,7 +556,7 @@
             } catch(e) {}
         }
 
-        /* BOXD CSV UPLOAD */
+        /* BOXD CSV SYNC */
         function uploadCsvFile(input) {
             const file = input.files[0];
             if (!file) return;
@@ -634,7 +618,7 @@
         function renderBoxdTable() {
             const tbody = document.getElementById("boxdTableBody");
             let data = activeBoxdTab === 'Pending' ? boxdCache.pending : boxdCache.received;
-            if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:15px;">No Data Compiled</td></tr>`; return; }
+            if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">No Data Compiled</td></tr>`; return; }
 
             tbody.innerHTML = data.map(r => `
                 <tr>
@@ -665,7 +649,7 @@
 
             thead.innerHTML = `<th>Order ID</th><th>Original AWB</th><th>Statement</th><th>Status</th>`;
 
-            if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:15px;">No Records</td></tr>`; return; }
+            if (data.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px;">No Records</td></tr>`; return; }
 
             tbody.innerHTML = data.map(r => `
                 <tr>
