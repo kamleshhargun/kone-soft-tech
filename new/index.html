@@ -36,9 +36,9 @@
         .nav-tabs-wrapper { background: #fff; padding: 10px 16px; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); flex-shrink: 0; justify-content: space-between; }
         .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
 
-        .tab-item { flex: 1; max-width: 260px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .tab-item { flex: 1; min-width: 140px; max-width: 220px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
         .tab-item .icon { font-size: 18px; }
-        .tab-item .title { font-size: 12px; font-weight: 700; color: var(--text-sub); }
+        .tab-item .title { font-size: 12px; font-weight: 700; color: var(--text-sub); white-space: nowrap; }
         .tab-item.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12); }
         .tab-item.active .title { color: var(--primary); }
 
@@ -85,6 +85,16 @@
         .badge-disp { background: #e0f2fe; color: #0369a1; }
         .badge-comp { background: #dcfce7; color: #15803d; }
 
+        /* BULK TRACKER SPECIFIC STYLES */
+        .filter-section-bulk { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: #f8fafc; padding: 14px; border: 1px solid var(--border); border-radius: 10px; align-items: flex-end; }
+        .stats-grid-bulk { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .stat-card-bulk { background: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-card-bulk h4 { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .stat-card-bulk p { font-size: 20px; font-weight: 800; margin-top: 4px; }
+
+        .progress-bar-container { width: 100%; background: #e2e8f0; border-radius: 8px; height: 8px; overflow: hidden; display: none; }
+        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+
         /* CIRCULAR LOADER */
         #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.3); z-index: 99999; align-items: center; justify-content: center; }
         .circle-loader-box { background: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
@@ -113,6 +123,7 @@
             <div id="tabNav2" class="tab-item" onclick="switchViewPage('searchView')"><span class="icon">🔍</span><span class="title">Order Lookup</span></div>
             <div id="tabNav3" class="tab-item" onclick="switchViewPage('exchangeView')"><span class="icon">🔄</span><span class="title">Exchange ERP</span></div>
             <div id="tabNav4" class="tab-item" onclick="switchViewPage('boxdView')"><span class="icon">📊</span><span class="title">BoxD Sync</span></div>
+            <div id="tabNav5" class="tab-item" onclick="switchViewPage('bulkView')"><span class="icon">🚀</span><span class="title">Bulk Tracker</span></div>
         </div>
 
         <!-- Metrics Strip Bar -->
@@ -232,6 +243,61 @@
                 </div>
             </div>
 
+            <!-- TAB 5: LIVE BULK TRACKER -->
+            <div id="bulkView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">🚀 LIVE BULK PACKET DATA TRACKER</span>
+                    
+                    <div class="filter-section-bulk">
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-sub);">Select Date</label>
+                            <input type="date" id="bulkFilterDate" class="input-box" style="height:38px; margin-top:4px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-sub);">Packet Type</label>
+                            <select id="bulkPacketType" class="input-box" style="height:38px; margin-top:4px;">
+                                <option value="pickup">Pickup</option>
+                                <option value="return">Return</option>
+                            </select>
+                        </div>
+                        <button class="btn-act" id="bulkActionBtn" style="background:var(--primary); color:#fff; height:38px;" onclick="handleBulkButtonClick()">Fetch Data</button>
+                    </div>
+
+                    <!-- Bulk Stats Bar -->
+                    <div class="stats-grid-bulk" id="bulkStatsContainer" style="display:none;">
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--primary);">
+                            <h4>Total Packets</h4>
+                            <p id="bulkStatTotal">0</p>
+                        </div>
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--success);">
+                            <h4>Live Updated</h4>
+                            <p id="bulkStatSuccess" style="color:var(--success);">0</p>
+                        </div>
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--danger);">
+                            <h4>Failed / Skipped</h4>
+                            <p id="bulkStatFail" style="color:var(--danger);">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-bar-container" id="bulkProgressWrapper">
+                        <div class="progress-bar-fill" id="bulkProgressBar"></div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Row</th><th>AWB Number</th><th>Order ID</th><th>Type</th><th>Old Status</th><th>Realtime Live Status</th></tr>
+                            </thead>
+                            <tbody id="bulkTableBody">
+                                <tr><td colspan="6" style="text-align:center; padding:20px; color:gray;">Select date & packet type to fetch bulk records.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -293,7 +359,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxe3kibaNq_imwhrT-OS5_pn0kUzW4AQ-bFbIMidU0G27bywcVe7LokKK45hJ0Ce57Z/exec"; // Apni Web App URL yahan paste karein
+        const API_URL = "https://script.google.com/macros/s/AKfycbwC92GwFkcmpoIJB6wXZk-euJRs9eVfsBHH4y-vYxGU3BPY-HpNWJzaVoyCWojYV_xo/exec"; // Apni Web App URL yahan paste karein
 
         let currentMode = "";
         let currentTracking = null;
@@ -303,6 +369,10 @@
         let activeExTab = "REQUESTED";
         let activeBoxdTab = "Pending";
         let audioCtx = null;
+
+        /* BULK TRACKER VARIABLES */
+        let bulkRowsData = [];
+        let isBulkDataLoaded = false;
 
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -354,6 +424,7 @@
             if (pageId === 'searchView') document.getElementById('tabNav2').classList.add('active');
             if (pageId === 'exchangeView') { document.getElementById('tabNav3').classList.add('active'); fetchExchangeData(); }
             if (pageId === 'boxdView') { document.getElementById('tabNav4').classList.add('active'); fetchBoxdReport(); }
+            if (pageId === 'bulkView') document.getElementById('tabNav5').classList.add('active');
         }
 
         function showProgressLoader() {
@@ -513,7 +584,7 @@
                 if (res.success && res.matches) {
                     suggBox.style.display = "block";
                     suggBox.innerHTML = res.matches.map(m => `
-                        <div class="search-suggest-item" onclick="selectSearchResult('${m.awb}')">
+                        <div style="padding:8px 12px; cursor:pointer; border-bottom:1px solid #f1f5f9;" onclick="selectSearchResult('${m.awb}')">
                             <b>Order: ${m.orderId || 'N/A'}</b> | AWB: ${m.awb} (${m.type})
                         </div>
                     `).join('');
@@ -666,6 +737,140 @@
             else document.getElementById("boxdTabRec").classList.add("active");
 
             renderBoxdTable();
+        }
+
+        /* BULK LIVE TRACKER MODULE */
+        function convertDateFormat(dateString) {
+            if (!dateString) return "";
+            const parts = dateString.split("-");
+            if (parts.length !== 3) return "";
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function handleBulkButtonClick() {
+            if (!isBulkDataLoaded) {
+                fetchBulkData();
+            } else {
+                getLiveRealtimeBulkData();
+            }
+        }
+
+        async function fetchBulkData() {
+            const rawDate = document.getElementById("bulkFilterDate").value;
+            const packetType = document.getElementById("bulkPacketType").value;
+
+            if (!rawDate) return toast("Select a valid Date!");
+            const formattedDate = convertDateFormat(rawDate);
+
+            showProgressLoader();
+            document.getElementById("bulkActionBtn").disabled = true;
+
+            try {
+                const reqUrl = `${API_URL}?action=getBulkRows&date=${encodeURIComponent(formattedDate)}&type=${encodeURIComponent(packetType)}`;
+                const res = await fetch(reqUrl).then(r => r.json());
+
+                document.getElementById("bulkActionBtn").disabled = false;
+
+                if (res.success && res.rows && res.rows.length > 0) {
+                    bulkRowsData = res.rows;
+                    isBulkDataLoaded = true;
+
+                    const actionBtn = document.getElementById("bulkActionBtn");
+                    actionBtn.innerText = "Get Live Realtime Data";
+                    actionBtn.style.background = "var(--success)";
+
+                    document.getElementById("bulkStatsContainer").style.display = "grid";
+                    document.getElementById("bulkStatTotal").innerText = bulkRowsData.length;
+                    document.getElementById("bulkStatSuccess").innerText = "0";
+                    document.getElementById("bulkStatFail").innerText = "0";
+
+                    const tableBody = document.getElementById("bulkTableBody");
+                    tableBody.innerHTML = "";
+
+                    bulkRowsData.forEach(item => {
+                        const tr = document.createElement("tr");
+                        tr.id = `bulk-row-${item.awb}`;
+                        tr.innerHTML = `
+                            <td><b>#${item.row}</b></td>
+                            <td><code>${item.awb || 'N/A'}</code></td>
+                            <td>${item.orderId || 'N/A'}</td>
+                            <td><span class="badge badge-req">${packetType}</span></td>
+                            <td>${item.status || 'N/A'}</td>
+                            <td id="bulk-live-${item.awb}" style="font-weight:700; color:var(--text-sub);">Pending Realtime Sync</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    toast("No records found for selected filters.");
+                    document.getElementById("bulkTableBody").innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:gray;">No records found for this date.</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById("bulkActionBtn").disabled = false;
+                toast("Failed to fetch bulk data.");
+            }
+        }
+
+        async function getLiveRealtimeBulkData() {
+            if (bulkRowsData.length === 0) return;
+
+            document.getElementById("bulkActionBtn").disabled = true;
+            document.getElementById("bulkProgressWrapper").style.display = "block";
+            document.getElementById("bulkProgressBar").style.width = "0%";
+
+            let successCount = 0;
+            let failCount = 0;
+            const totalPackets = bulkRowsData.length;
+
+            for (let i = 0; i < totalPackets; i++) {
+                const item = bulkRowsData[i];
+                const awbCell = document.getElementById(`bulk-live-${item.awb}`);
+
+                if (awbCell) {
+                    awbCell.innerText = "Tracking Live...";
+                    awbCell.style.color = "var(--primary)";
+                }
+
+                try {
+                    const liveUrl = `${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(item.awb)}`;
+                    const res = await fetch(liveUrl).then(r => r.json());
+
+                    if (res.success && (res.updated || res.skipped)) {
+                        successCount++;
+                        document.getElementById("bulkStatSuccess").innerText = successCount;
+                        if (awbCell) {
+                            awbCell.innerText = res.skipped ? `Skipped (${res.reason})` : "Successfully Updated!";
+                            awbCell.style.color = "var(--success)";
+                        }
+                    } else {
+                        failCount++;
+                        document.getElementById("bulkStatFail").innerText = failCount;
+                        if (awbCell) {
+                            awbCell.innerText = res.message || "Not Found / Error";
+                            awbCell.style.color = "var(--danger)";
+                        }
+                    }
+                } catch (err) {
+                    failCount++;
+                    document.getElementById("bulkStatFail").innerText = failCount;
+                    if (awbCell) {
+                        awbCell.innerText = "Network Error";
+                        awbCell.style.color = "var(--danger)";
+                    }
+                }
+
+                const progressPercent = Math.round(((i + 1) / totalPackets) * 100);
+                document.getElementById("bulkProgressBar").style.width = `${progressPercent}%`;
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            document.getElementById("bulkActionBtn").disabled = false;
+            toast("🎉 Bulk Realtime Tracking Completed!");
+
+            isBulkDataLoaded = false;
+            const actionBtn = document.getElementById("bulkActionBtn");
+            actionBtn.innerText = "Fetch Data";
+            actionBtn.style.background = "var(--primary)";
         }
 
         /* EXCHANGE FUNCTIONS & MODALS */
