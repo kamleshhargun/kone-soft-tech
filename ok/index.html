@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Harsidhi Logistics Enterprise ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: #2563eb;
+            --primary-soft: #eff6ff;
+            --success: #10b981;
+            --success-soft: #dcfce7;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        html, body { height: 100%; width: 100vw; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
+
+        .app-shell { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 1280px; margin: 0 auto; background: #fff; }
+
+        .header-bar { background: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .brand-text { font-weight: 800; font-size: 16px; color: var(--primary); letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .user-pill { background: var(--primary-soft); border: 1px solid #bfdbfe; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
+
+        /* UNIFIED TOP TAB NAVIGATION */
+        .nav-tabs-wrapper { background: #fff; padding: 8px 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); flex-shrink: 0; justify-content: space-between; }
+        .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
+
+        .tab-item { flex: 1; min-width: 130px; max-width: 220px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .tab-item .icon { font-size: 16px; }
+        .tab-item .title { font-size: 12px; font-weight: 700; color: var(--text-sub); white-space: nowrap; }
+        .tab-item.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12); }
+        .tab-item.active .title { color: var(--primary); }
+
+        .metrics-strip { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .metrics-strip::-webkit-scrollbar { display: none; }
+        .m-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; min-width: 105px; flex: 1; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+        .m-val { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .m-lbl { font-size: 10px; font-weight: 600; color: var(--text-sub); margin-top: 2px; text-transform: uppercase; }
+
+        .view-viewport { flex: 1; position: relative; overflow: hidden; width: 100%; padding: 12px; background: #f8fafc; }
+        .view-page { position: absolute; inset: 12px; display: none; flex-direction: column; gap: 12px; height: calc(100% - 24px); width: calc(100% - 24px); }
+        .view-page.active { display: flex; }
+
+        /* SCANNER SCREEN */
+        .scan-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-shadow: var(--shadow); }
+        .mode-row { display: flex; gap: 10px; width: 100%; }
+        .btn-mode { flex: 1; height: 44px; border-radius: 10px; border: 2px solid; font-weight: 800; font-size: 13px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-pickup { border-color: var(--primary); color: var(--primary); }
+        .btn-return { border-color: var(--success); color: var(--success); }
+        .btn-pickup.active { background: var(--primary); color: #fff; }
+        .btn-return.active { background: var(--success); color: #fff; }
+
+        .input-box { width: 100%; height: 42px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; font-size: 13px; outline: none; background: #fff; font-weight: 600; color: var(--text-main); }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+
+        #reader { width: 100%; height: 140px !important; border-radius: 10px; overflow: hidden; border: 2px solid var(--primary); display: none; background: #000; }
+        #reader video { object-fit: cover !important; height: 140px !important; width: 100% !important; }
+
+        .action-row { display: flex; gap: 10px; width: 100%; }
+        .btn-act { flex: 1; height: 40px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.15s; }
+        .btn-act:hover { opacity: 0.92; }
+        .btn-save { background: var(--success); color: #fff; }
+        .btn-reset { background: #94a3b8; color: #fff; }
+
+        .btn-chip { background: #eff6ff; color: #0284c7; border: 1px solid #bae6fd; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; transition: all 0.2s ease; vertical-align: middle; margin-left: 4px; }
+        .btn-chip:hover { background: #0284c7; color: #fff; }
+
+        .recent-box-top { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; max-height: 100px; overflow-y: auto; width: 100%; box-shadow: var(--shadow); }
+        .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8fafc; border-radius: 6px; font-size: 12px; margin-bottom: 4px; border-left: 3px solid var(--primary); }
+
+        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; height: 100%; overflow-y: auto; box-shadow: var(--shadow); }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        .data-table th, .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .data-table th { color: var(--text-sub); font-weight: 700; font-size: 11px; text-transform: uppercase; background: #f8fafc; position: sticky; top: 0; z-index: 10; letter-spacing: 0.3px; }
+
+        .badge { padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-block; letter-spacing: 0.3px; }
+        .badge-req { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-disp { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-comp { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+        /* BULK TRACKER SPECIFIC STYLES */
+        .filter-section-bulk { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 10px; align-items: flex-end; }
+        .stats-grid-bulk { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .stat-card-bulk { background: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-card-bulk h4 { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .stat-card-bulk p { font-size: 20px; font-weight: 800; margin-top: 4px; }
+
+        .progress-bar-container { width: 100%; background: #e2e8f0; border-radius: 8px; height: 8px; overflow: hidden; display: none; }
+        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+
+        /* CIRCULAR LOADER */
+        #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .circle-loader-box { background: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .circle-svg { width: 60px; height: 60px; transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 6; }
+        .circle-progress { fill: none; stroke: var(--primary); stroke-width: 6; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 0.1s ease; stroke-linecap: round; }
+        .percent-text { font-size: 13px; font-weight: 800; color: var(--text-main); }
+
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; z-index: 9999; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); }
+        .comm-link { text-decoration: none; font-size: 14px; margin-left: 4px; transition: transform 0.1s; display: inline-block; }
+        .comm-link:hover { transform: scale(1.15); }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <!-- Top Header Bar -->
+        <div class="header-bar">
+            <div class="brand-text"><span>📦</span> HARSIDHI LOGISTICS ERP</div>
+            <div class="user-profile"><span class="user-pill">Harsidhi Ventures</span></div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs-wrapper">
+            <div id="tabNav1" class="tab-item active" onclick="switchViewPage('scanView')"><span class="icon">📲</span><span class="title">Scan Console</span></div>
+            <div id="tabNav2" class="tab-item" onclick="switchViewPage('searchView')"><span class="icon">🔍</span><span class="title">Order Lookup</span></div>
+            <div id="tabNav3" class="tab-item" onclick="switchViewPage('exchangeView')"><span class="icon">🔄</span><span class="title">Exchange ERP</span></div>
+            <div id="tabNav4" class="tab-item" onclick="switchViewPage('boxdView')"><span class="icon">📊</span><span class="title">BoxD Sync</span></div>
+            <div id="tabNav5" class="tab-item" onclick="switchViewPage('bulkView')"><span class="icon">🚀</span><span class="title">Bulk Tracker</span></div>
+        </div>
+
+        <!-- Metrics Strip Bar -->
+        <div class="metrics-strip">
+            <div class="m-card"><span class="m-val" id="cntTodayPickup">0</span><span class="m-lbl">Today Pickup</span></div>
+            <div class="m-card"><span class="m-val" id="cntTodayReturn">0</span><span class="m-lbl">Today Return</span></div>
+            <div class="m-card"><span class="m-val" id="cntYestPickup">0</span><span class="m-lbl">Yest. Pickup</span></div>
+            <div class="m-card"><span class="m-val" id="cntYestReturn">0</span><span class="m-lbl">Yest. Return</span></div>
+            <div class="m-card"><span class="m-val" id="cntMonthTotal" style="color:var(--primary);">0</span><span class="m-lbl">This Month</span></div>
+            <div class="m-card"><span class="m-val" id="cntTotalLifetime" style="color:var(--success);">0</span><span class="m-lbl">Lifetime Total</span></div>
+        </div>
+
+        <!-- Main Viewport -->
+        <div class="view-viewport">
+
+            <!-- TAB 1: SCAN CONSOLE -->
+            <div id="scanView" class="view-page active">
+                <div class="recent-box-top">
+                    <div style="font-weight:700; font-size:11px; margin-bottom:4px; color:var(--text-sub);">📜 LAST SCANNED ITEMS</div>
+                    <div id="recentList"><div style="text-align:center; color:gray; font-size:11px; padding:4px;">No scans yet</div></div>
+                </div>
+
+                <div class="scan-card">
+                    <div style="font-weight:800; font-size:13px; color:var(--primary);">📲 OPERATIONAL SCAN CONSOLE</div>
+                    <div class="mode-row">
+                        <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
+                        <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
+                    </div>
+
+                    <div id="scanPanelBox" style="display:none; flex-direction:column; gap:10px;">
+                        <div class="action-row">
+                            <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Toggle Camera</button>
+                            <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
+                        </div>
+
+                        <div id="reader"></div>
+
+                        <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Enter Number">
+                        <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+
+                        <div id="resultPreview" style="display:none; padding:10px; background:#f8fafc; border-radius:8px; font-size:12px; border:1px solid var(--border);"></div>
+
+                        <div class="action-row">
+                            <button class="btn-act btn-save" onclick="saveEntry()">Next (Save Entry)</button>
+                            <button class="btn-act btn-reset" onclick="resetConsole()">Stop / Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SEARCH LOOKUP -->
+            <div id="searchView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">🔍 ORDER & AWB LOOKUP ENGINE</span>
+                    <input id="searchInput" class="input-box" placeholder="Type Order ID (e.g. 6373) or AWB Number..." oninput="onSearchTyping(this.value)">
+                    
+                    <div id="searchSuggestions" style="max-height:140px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:10px; display:none;"></div>
+
+                    <div id="searchResultDisplay" style="margin-top:8px;">
+                        <div style="text-align:center; color:gray; font-size:12px; padding:20px;">Type 4 digits or AWB above to look up Google Sheet records.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: EXCHANGE LIFECYCLE MANAGEMENT -->
+            <div id="exchangeView" class="view-page">
+                <div class="card-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <span style="font-weight:800; font-size:14px;">🔄 EXCHANGE REQUEST LIFECYCLE</span>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-act btn-save" style="padding:0 14px; height:36px;" onclick="openAddRequestModal()">➕ Add Request</button>
+                            <button class="btn-act" style="background:#0284c7; color:#fff; padding:0 12px; height:36px;" onclick="fetchExchangeData()">🔄 Refresh</button>
+                        </div>
+                    </div>
+
+                    <!-- Exchange Filter Tabs -->
+                    <div style="display:flex; gap:8px; overflow-x:auto; scrollbar-width:none;">
+                        <button id="exTabReq" class="btn-act" style="background:#d97706; color:#fff; font-size:11px; flex:1;" onclick="switchExTab('REQUESTED')">
+                            📩 New Requested (<span id="cntReq">0</span>)
+                        </button>
+                        <button id="exTabDisp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px; flex:1;" onclick="switchExTab('DISPATCH_PENDING')">
+                            🚚 Dispatch Pending (<span id="cntDisp">0</span>)
+                        </button>
+                        <button id="exTabComp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px; flex:1;" onclick="switchExTab('COMPLETED')">
+                            ✅ Completed (<span id="cntComp">0</span>)
+                        </button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr id="exTableHeader"></tr></thead>
+                            <tbody id="exTableBody"><tr><td colspan="7" style="text-align:center; padding:20px;">Loading exchange data...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: BOXD CSV RECONCILIATION -->
+            <div id="boxdView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">📊 BOXD RETURN RECONCILIATION</span>
+                    <div style="border:2px dashed var(--primary); padding:16px; border-radius:12px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="document.getElementById('csvInput').click()">
+                        <span id="csvLabel" style="font-weight:700; font-size:12px; color:var(--primary);">📁 Click or Drag & Drop BoxD CSV File</span>
+                        <input type="file" id="csvInput" accept=".csv" style="display:none;" onchange="uploadCsvFile(this)">
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button id="boxdTabPend" class="btn-act" style="background:var(--danger); color:#fff; font-size:11px;" onclick="switchBoxdTab('Pending')">❌ Pending Scan (<span id="boxdCountPending">0</span>)</button>
+                        <button id="boxdTabRec" class="btn-act" style="background:var(--success); color:#fff; font-size:11px;" onclick="switchBoxdTab('Received')">✅ Received (<span id="boxdCountReceived">0</span>)</button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Order ID</th><th>BoxD Ref</th><th>Name</th><th>City</th><th>AWB</th><th>Courier</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="boxdTableBody"><tr><td colspan="7" style="text-align:center; padding:20px;">No Data Compiled</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: LIVE BULK TRACKER -->
+            <div id="bulkView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">🚀 LIVE BULK PACKET DATA TRACKER</span>
+                    
+                    <div class="filter-section-bulk">
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-sub);">Select Date</label>
+                            <input type="date" id="bulkFilterDate" class="input-box" style="height:38px; margin-top:4px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-sub);">Packet Type</label>
+                            <select id="bulkPacketType" class="input-box" style="height:38px; margin-top:4px;">
+                                <option value="pickup">Pickup</option>
+                                <option value="return">Return</option>
+                            </select>
+                        </div>
+                        <button class="btn-act" id="bulkActionBtn" style="background:var(--primary); color:#fff; height:38px;" onclick="handleBulkButtonClick()">Fetch Data</button>
+                    </div>
+
+                    <!-- Bulk Stats Bar -->
+                    <div class="stats-grid-bulk" id="bulkStatsContainer" style="display:none;">
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--primary);">
+                            <h4>Total Packets</h4>
+                            <p id="bulkStatTotal">0</p>
+                        </div>
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--success);">
+                            <h4>Live Updated</h4>
+                            <p id="bulkStatSuccess" style="color:var(--success);">0</p>
+                        </div>
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--danger);">
+                            <h4>Failed / Skipped</h4>
+                            <p id="bulkStatFail" style="color:var(--danger);">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-bar-container" id="bulkProgressWrapper">
+                        <div class="progress-bar-fill" id="bulkProgressBar"></div>
+                    </div>
+
+                    <!-- Data Table -->
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Row</th><th>AWB Number</th><th>Order ID</th><th>Type</th><th>Old Status</th><th>Realtime Live Status</th></tr>
+                            </thead>
+                            <tbody id="bulkTableBody">
+                                <tr><td colspan="6" style="text-align:center; padding:20px; color:gray;">Select date & packet type to fetch bulk records.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: NEW EXCHANGE REQUEST -->
+    <div id="addModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:420px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:#0f172a;">➕ Add New Exchange Request</h3>
+            <input id="addOrderId" class="input-box" placeholder="Order ID (e.g. GS#6373)">
+            <input id="addMobile" class="input-box" placeholder="Customer Mobile Number (10 digits)">
+            <input id="addOriginalAwb" class="input-box" placeholder="Original AWB Number">
+            <textarea id="addDescription" class="input-box" style="height:60px; padding:8px;" placeholder="Reason / Description..."></textarea>
+            <div class="action-row">
+                <button class="btn-act btn-save" onclick="submitAddRequest()">Save Request</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MARK RETURN PICKUP -->
+    <div id="pickupModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:420px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:#0284c7;">📦 Mark Return Pickup Initiated</h3>
+            <p style="font-size:12px; color:var(--text-sub);">Original Order ID: <b id="pickupTargetOrder"></b></p>
+            <input type="hidden" id="pickupTargetRow">
+            <input id="pickupReturnOrderId" class="input-box" placeholder="Return Pickup Order ID">
+            <input id="pickupReturnAwb" class="input-box" placeholder="Return Pickup AWB Number">
+            <div class="action-row">
+                <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="submitReturnPickup()">Mark Pickup & Shift</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: COMPLETE DISPATCH -->
+    <div id="dispatchModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:420px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:var(--success);">🚀 Complete Exchange Dispatch</h3>
+            <p style="font-size:12px; color:var(--text-sub);">Return AWB: <b id="dispatchTargetAwb"></b></p>
+            <input type="hidden" id="dispatchTargetRow">
+            <input id="dispatchNewOrderId" class="input-box" placeholder="New Exchange Dispatch Order ID">
+            <input id="dispatchNewAwb" class="input-box" placeholder="New Dispatch AWB Number">
+            <div class="action-row">
+                <button class="btn-act btn-save" onclick="submitCompleteDispatch()">Complete Process</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: QUICK LIVE TRACKING POPUP -->
+    <div id="quickTrackModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:400px; display:flex; flex-direction:column; gap:12px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                <h3 style="font-size:14px; font-weight:800; color:var(--primary);">📡 Live Shipment Tracking</h3>
+                <button onclick="closeModals()" style="background:none; border:none; font-size:18px; cursor:pointer; color:var(--text-sub);">✕</button>
+            </div>
+            <div id="quickTrackContent" style="font-size:13px; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid var(--border);">
+                Fetching live details...
+            </div>
+            <button class="btn-act btn-reset" onclick="closeModals()">Close</button>
+        </div>
+    </div>
+
+    <!-- CIRCULAR PERCENTAGE LOADER -->
+    <div id="loaderContainer">
+        <div class="circle-loader-box">
+            <svg class="circle-svg">
+                <circle class="circle-bg" cx="30" cy="30" r="26"></circle>
+                <circle id="circleProgress" class="circle-progress" cx="30" cy="30" r="26"></circle>
+            </svg>
+            <div class="percent-text" id="percentText">0%</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbww7fMB4W8CqxyVLS8ip2iMVsMJAvYqaCby3xvf2U_v-4LpNcSDRq84A4lcIV1tZ6FG/exec"; // Apni Web App URL yahan check karein
+
+        let currentMode = "";
+        let currentTracking = null;
+        let html5QrCode = null;
+        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let boxdCache = { pending: [], received: [] };
+        let activeExTab = "REQUESTED";
+        let activeBoxdTab = "Pending";
+        let audioCtx = null;
+
+        /* BULK TRACKER VARIABLES */
+        let bulkRowsData = [];
+        let isBulkDataLoaded = false;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSuccessAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(587.33, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch(e) {}
+        }
+
+        function playDuplicateAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(164.81, now + 0.12);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch(e) {}
+        }
+
+        function switchViewPage(pageId) {
+            document.querySelectorAll('.view-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+
+            if (pageId === 'scanView') document.getElementById('tabNav1').classList.add('active');
+            if (pageId === 'searchView') document.getElementById('tabNav2').classList.add('active');
+            if (pageId === 'exchangeView') { document.getElementById('tabNav3').classList.add('active'); fetchExchangeData(); }
+            if (pageId === 'boxdView') { document.getElementById('tabNav4').classList.add('active'); fetchBoxdReport(); }
+            if (pageId === 'bulkView') document.getElementById('tabNav5').classList.add('active');
+        }
+
+        function showProgressLoader() {
+            document.getElementById("loaderContainer").style.display = "flex";
+            let p = 0;
+            const circle = document.getElementById("circleProgress");
+            const txt = document.getElementById("percentText");
+
+            const interval = setInterval(() => {
+                p += 15;
+                const offset = 200 - (200 * p) / 100;
+                circle.style.strokeDashoffset = offset;
+                txt.innerText = p + "%";
+
+                if (p >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => { document.getElementById("loaderContainer").style.display = "none"; }, 150);
+                }
+            }, 25);
+        }
+
+        function fetchDashboardData() {
+            showProgressLoader();
+            fetch(`${API_URL}?action=getDashboardCounts`)
+                .then(r => r.json())
+                .then(d => {
+                    if (d.success) {
+                        document.getElementById("cntTodayPickup").innerText = d.todayPickup || 0;
+                        document.getElementById("cntTodayReturn").innerText = d.todayReturn || 0;
+                        document.getElementById("cntYestPickup").innerText = d.yesterdayPickup || 0;
+                        document.getElementById("cntYestReturn").innerText = d.yesterdayReturn || 0;
+                        document.getElementById("cntMonthTotal").innerText = d.monthTotal || 0;
+                        document.getElementById("cntTotalLifetime").innerText = d.totalLifetime || 0;
+                        renderRecentList(d.recentScans || []);
+                    }
+                });
+        }
+
+        function renderRecentList(scans) {
+            const list = document.getElementById("recentList");
+            if (!scans || scans.length === 0) return;
+            list.innerHTML = scans.map(s => `
+                <div class="recent-item">
+                    <div><b>${s.awb}</b><br><span style="color:var(--text-sub);">${s.orderId || 'Manual'}</span></div>
+                    <div style="text-align:right;"><b>${s.type}</b><br><span style="color:var(--text-sub); font-size:9px;">${s.time}</span></div>
+                </div>
+            `).join('');
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById("scanPanelBox").style.display = "flex";
+            document.getElementById("btnPickup").classList.remove("active");
+            document.getElementById("btnReturn").classList.remove("active");
+
+            if (mode === 'Pickup') document.getElementById("btnPickup").classList.add("active");
+            else document.getElementById("btnReturn").classList.add("active");
+        }
+
+        function focusInput() { document.getElementById("awbInput").focus(); }
+
+        async function toggleCamera() {
+            try {
+                if (html5QrCode) { await stopCamera(); return; }
+                document.getElementById("reader").style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 25 },
+                    (decodedText) => {
+                        document.getElementById("awbInput").value = decodedText;
+                        stopCamera();
+                        trackShipment();
+                    }
+                );
+            } catch (e) { toast("Camera Access Failed"); }
+        }
+
+        async function stopCamera() {
+            if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; }
+            document.getElementById("reader").style.display = "none";
+        }
+
+        document.getElementById("awbInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); trackShipment(); }
+        });
+
+        async function trackShipment() {
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("Enter AWB");
+
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+                if (data && data.success) {
+                    currentTracking = data;
+                    document.getElementById("resultPreview").style.display = "block";
+                    document.getElementById("resultPreview").innerHTML = `✅ Verified: ${data.courier} | Order: ${data.orderId || 'N/A'}`;
+                    document.getElementById("orderInput").value = data.orderId || "";
+                } else {
+                    document.getElementById("resultPreview").style.display = "block";
+                    document.getElementById("resultPreview").innerHTML = `⚠️ Manual Entry Required`;
+                }
+                document.getElementById("orderInput").style.display = "block";
+            } catch (e) {}
+        }
+
+        async function saveEntry() {
+            if (!currentMode) return toast("Select Mode First!");
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("AWB Missing!");
+
+            showProgressLoader();
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "saveEntry",
+                        payload: {
+                            type: currentMode, awb, orderId: document.getElementById("orderInput").value.trim(),
+                            courier: currentTracking?.courier || "MANUAL", status: currentTracking?.status || "Pending"
+                        }
+                    })
+                });
+                const data = await res.json();
+                if (data.duplicate) {
+                    playDuplicateAudio();
+                    toast(data.message);
+                    return;
+                }
+                playSuccessAudio();
+                toast("🎉 Saved Successfully!");
+                resetConsole();
+                fetchDashboardData();
+            } catch (e) {}
+        }
+
+        function resetConsole() {
+            stopCamera();
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("resultPreview").style.display = "none";
+        }
+
+        /* SEARCH ENGINE */
+        async function onSearchTyping(val) {
+            val = val.trim();
+            const suggBox = document.getElementById("searchSuggestions");
+            if (val.length < 3) { suggBox.style.display = "none"; return; }
+
+            try {
+                const res = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(val)}`).then(r => r.json());
+                if (res.success && res.matches) {
+                    suggBox.style.display = "block";
+                    suggBox.innerHTML = res.matches.map(m => `
+                        <div style="padding:8px 12px; cursor:pointer; border-bottom:1px solid #f1f5f9;" onclick="selectSearchResult('${m.awb}')">
+                            <b>Order: ${m.orderId || 'N/A'}</b> | AWB: ${m.awb} (${m.type})
+                        </div>
+                    `).join('');
+                }
+            } catch(e) {}
+        }
+
+        async function selectSearchResult(awbKey) {
+            document.getElementById("searchSuggestions").style.display = "none";
+            document.getElementById("searchInput").value = awbKey;
+            showProgressLoader();
+
+            try {
+                const res = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(awbKey)}`).then(r => r.json());
+                if (res.success) { renderSearchRecordCard(res); }
+            } catch(e) {}
+        }
+
+        function renderSearchRecordCard(d) {
+            const display = document.getElementById("searchResultDisplay");
+            display.innerHTML = `
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; font-size:13px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-weight:800; color:var(--primary); font-size:14px; border-bottom:1px solid var(--border); padding-bottom:6px;">📋 Sheet Record Details</div>
+                    <div><b>Scan Date:</b> ${d.date} | <b>Type:</b> ${d.type}</div>
+                    <div><b>Order ID:</b> ${d.orderId || 'N/A'}</div>
+                    <div><b>AWB Number:</b> <code>${d.awb}</code></div>
+                    <div><b>Courier Partner:</b> ${d.courier || 'N/A'} | <b>Status:</b> ${d.status}</div>
+                    <div><b>Customer:</b> ${d.customer || 'N/A'} (${d.city || 'N/A'})</div>
+                    <button class="btn-act" style="background:var(--primary); color:#fff; margin-top:6px;" onclick="fetchLiveCourierTracking('${d.awb}')">🌐 Fetch Live Status</button>
+                    <div id="liveTrackingArea"></div>
+                </div>
+            `;
+        }
+
+        async function fetchLiveCourierTracking(awb) {
+            const area = document.getElementById("liveTrackingArea");
+            area.innerHTML = "<div style='color:gray; margin-top:8px;'>Hitting 3PL Gateway...</div>";
+            showProgressLoader();
+
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    area.innerHTML = `
+                        <div style="margin-top:10px; padding:10px; background:#fff; border:1px dashed var(--primary); border-radius:10px;">
+                            <div style="color:var(--success); font-weight:800;">🚚 Live Status: ${res.status}</div>
+                            <div style="margin-top:4px;">Courier: ${res.courierName || res.courier} | City: ${res.city || 'N/A'}</div>
+                            <button class="btn-act btn-save" style="margin-top:8px; width:100%;" onclick="syncLiveStatusToSheet('${res.awb}')">💾 Sync Status To Sheet</button>
+                        </div>
+                    `;
+                } else {
+                    area.innerHTML = "<div style='color:var(--danger); margin-top:8px;'>Live tracking details not found on active channels.</div>";
+                }
+            } catch(e) {}
+        }
+
+        async function syncLiveStatusToSheet(awb) {
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    toast(res.skipped ? `Skipped: Row locked (${res.reason})` : "🎉 Synced to Google Sheet!");
+                    selectSearchResult(awb);
+                }
+            } catch(e) {}
+        }
+
+        /* BOXD CSV SYNC */
+        function uploadCsvFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById("csvLabel").innerText = `Reading: ${file.name}...`;
+            showProgressLoader();
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const rows = parseCsvToArray(e.target.result);
+                if (rows.length <= 1) return toast("CSV appears empty.");
+
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "uploadBoxdCsv", payload: { rows: rows } })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    toast(`🎉 Added: ${res.uploaded}, Skipped Duplicates: ${res.duplicatesSkipped}`);
+                    document.getElementById("csvLabel").innerText = "📄 Upload BoxD CSV File";
+                    fetchBoxdReport();
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function parseCsvToArray(text) {
+            const lines = []; let row = []; let inQuotes = false; let currentCell = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i]; const nextChar = text[i+1];
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') { currentCell += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) { row.push(currentCell.trim()); currentCell = ''; }
+                else if ((char === '\r' || char === '\n') && !inQuotes) {
+                    if (char === '\r' && nextChar === '\n') i++;
+                    row.push(currentCell.trim());
+                    if (row.length > 1 || row[0] !== '') lines.push(row);
+                    row = []; currentCell = '';
+                } else currentCell += char;
+            }
+            if (row.length > 0 || currentCell !== '') { row.push(currentCell.trim()); lines.push(row); }
+            return lines;
+        }
+
+        async function fetchBoxdReport() {
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getBoxdReturnReport`).then(r => r.json());
+                if (res.success) {
+                    boxdCache = res;
+                    document.getElementById("boxdCountPending").innerText = res.pending ? res.pending.length : 0;
+                    document.getElementById("boxdCountReceived").innerText = res.received ? res.received.length : 0;
+                    renderBoxdTable();
+                }
+            } catch (e) {}
+        }
+
+        function renderBoxdTable() {
+            const tbody = document.getElementById("boxdTableBody");
+            let data = activeBoxdTab === 'Pending' ? boxdCache.pending : boxdCache.received;
+            if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No Data Compiled</td></tr>`; return; }
+
+            tbody.innerHTML = data.map(r => `
+                <tr>
+                    <td><b>${r.customerOrderNumber}</b></td>
+                    <td>${r.orderNumber || "N/A"}</td>
+                    <td>${r.customerName || "N/A"}</td>
+                    <td>${r.city || "N/A"}</td>
+                    <td><code>${r.awb || "N/A"}</code></td>
+                    <td>${r.courier || "N/A"}</td>
+                    <td><span class="badge ${activeBoxdTab === 'Pending' ? 'badge-req' : 'badge-comp'}">${r.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function switchBoxdTab(tab) {
+            activeBoxdTab = tab;
+            document.getElementById("boxdTabPend").classList.remove("active");
+            document.getElementById("boxdTabRec").classList.remove("active");
+
+            if (tab === "Pending") document.getElementById("boxdTabPend").classList.add("active");
+            else document.getElementById("boxdTabRec").classList.add("active");
+
+            renderBoxdTable();
+        }
+
+        /* BULK LIVE TRACKER MODULE */
+        function convertDateFormat(dateString) {
+            if (!dateString) return "";
+            const parts = dateString.split("-");
+            if (parts.length !== 3) return "";
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function handleBulkButtonClick() {
+            if (!isBulkDataLoaded) {
+                fetchBulkData();
+            } else {
+                getLiveRealtimeBulkData();
+            }
+        }
+
+        async function fetchBulkData() {
+            const rawDate = document.getElementById("bulkFilterDate").value;
+            const packetType = document.getElementById("bulkPacketType").value;
+
+            if (!rawDate) return toast("Select a valid Date!");
+            const formattedDate = convertDateFormat(rawDate);
+
+            showProgressLoader();
+            document.getElementById("bulkActionBtn").disabled = true;
+
+            try {
+                const reqUrl = `${API_URL}?action=getBulkRows&date=${encodeURIComponent(formattedDate)}&type=${encodeURIComponent(packetType)}`;
+                const res = await fetch(reqUrl).then(r => r.json());
+
+                document.getElementById("bulkActionBtn").disabled = false;
+
+                if (res.success && res.rows && res.rows.length > 0) {
+                    bulkRowsData = res.rows;
+                    isBulkDataLoaded = true;
+
+                    const actionBtn = document.getElementById("bulkActionBtn");
+                    actionBtn.innerText = "Get Live Realtime Data";
+                    actionBtn.style.background = "var(--success)";
+
+                    document.getElementById("bulkStatsContainer").style.display = "grid";
+                    document.getElementById("bulkStatTotal").innerText = bulkRowsData.length;
+                    document.getElementById("bulkStatSuccess").innerText = "0";
+                    document.getElementById("bulkStatFail").innerText = "0";
+
+                    const tableBody = document.getElementById("bulkTableBody");
+                    tableBody.innerHTML = "";
+
+                    bulkRowsData.forEach(item => {
+                        const tr = document.createElement("tr");
+                        tr.id = `bulk-row-${item.awb}`;
+                        tr.innerHTML = `
+                            <td><b>#${item.row}</b></td>
+                            <td><code>${item.awb || 'N/A'}</code></td>
+                            <td>${item.orderId || 'N/A'}</td>
+                            <td><span class="badge badge-req">${packetType}</span></td>
+                            <td>${item.status || 'N/A'}</td>
+                            <td id="bulk-live-${item.awb}" style="font-weight:700; color:var(--text-sub);">Pending Realtime Sync</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    toast("No records found for selected filters.");
+                    document.getElementById("bulkTableBody").innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:gray;">No records found for this date.</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById("bulkActionBtn").disabled = false;
+                toast("Failed to fetch bulk data.");
+            }
+        }
+
+        async function getLiveRealtimeBulkData() {
+            if (bulkRowsData.length === 0) return;
+
+            document.getElementById("bulkActionBtn").disabled = true;
+            document.getElementById("bulkProgressWrapper").style.display = "block";
+            document.getElementById("bulkProgressBar").style.width = "0%";
+
+            let successCount = 0;
+            let failCount = 0;
+            const totalPackets = bulkRowsData.length;
+
+            for (let i = 0; i < totalPackets; i++) {
+                const item = bulkRowsData[i];
+                const awbCell = document.getElementById(`bulk-live-${item.awb}`);
+
+                if (awbCell) {
+                    awbCell.innerText = "Tracking Live...";
+                    awbCell.style.color = "var(--primary)";
+                }
+
+                try {
+                    const liveUrl = `${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(item.awb)}`;
+                    const res = await fetch(liveUrl).then(r => r.json());
+
+                    if (res.success && (res.updated || res.skipped)) {
+                        successCount++;
+                        document.getElementById("bulkStatSuccess").innerText = successCount;
+                        if (awbCell) {
+                            awbCell.innerText = res.skipped ? `Skipped (${res.reason})` : "Successfully Updated!";
+                            awbCell.style.color = "var(--success)";
+                        }
+                    } else {
+                        failCount++;
+                        document.getElementById("bulkStatFail").innerText = failCount;
+                        if (awbCell) {
+                            awbCell.innerText = res.message || "Not Found / Error";
+                            awbCell.style.color = "var(--danger)";
+                        }
+                    }
+                } catch (err) {
+                    failCount++;
+                    document.getElementById("bulkStatFail").innerText = failCount;
+                    if (awbCell) {
+                        awbCell.innerText = "Network Error";
+                        awbCell.style.color = "var(--danger)";
+                    }
+                }
+
+                const progressPercent = Math.round(((i + 1) / totalPackets) * 100);
+                document.getElementById("bulkProgressBar").style.width = `${progressPercent}%`;
+
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            document.getElementById("bulkActionBtn").disabled = false;
+            toast("🎉 Bulk Realtime Tracking Completed!");
+
+            isBulkDataLoaded = false;
+            const actionBtn = document.getElementById("bulkActionBtn");
+            actionBtn.innerText = "Fetch Data";
+            actionBtn.style.background = "var(--primary)";
+        }
+
+        /* =====================================================
+           EXCHANGE MODULE WITH LIVE TRACKING & CUSTOMER MOBILE
+        ===================================================== */
+        async function fetchExchangeData() {
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_URL}?action=getExchangeReport`).then(r => r.json());
+                if (res.success) {
+                    exchangeCache = res;
+                    document.getElementById("cntReq").innerText = res.counts.requested || 0;
+                    document.getElementById("cntDisp").innerText = res.counts.dispatchPending || 0;
+                    document.getElementById("cntComp").innerText = res.counts.completed || 0;
+                    renderExTable();
+                }
+            } catch (e) {
+                toast("Error loading exchange data");
+            }
+        }
+
+        function renderExTable() {
+            const tbody = document.getElementById("exTableBody");
+            const thead = document.getElementById("exTableHeader");
+            let data = [];
+
+            if (activeExTab === "REQUESTED") {
+                data = exchangeCache.requested;
+                thead.innerHTML = `
+                    <th>Date</th>
+                    <th>Order ID</th>
+                    <th>Customer Mobile</th>
+                    <th>Original AWB & Tracking</th>
+                    <th>Reason / Notes</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                `;
+            } else if (activeExTab === "DISPATCH_PENDING") {
+                data = exchangeCache.dispatchPending;
+                thead.innerHTML = `
+                    <th>Req. Date</th>
+                    <th>Original Order</th>
+                    <th>Customer Mobile</th>
+                    <th>Return Order</th>
+                    <th>Return AWB & Tracking</th>
+                    <th>Pickup Date</th>
+                    <th>Action</th>
+                `;
+            } else {
+                data = exchangeCache.completed;
+                thead.innerHTML = `
+                    <th>Original Order</th>
+                    <th>Customer Mobile</th>
+                    <th>Return AWB & Tracking</th>
+                    <th>Dispatch AWB & Tracking</th>
+                    <th>Completed Date</th>
+                    <th>Status</th>
+                `;
+            }
+
+            if (!data || data.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:28px; color:#94a3b8; font-weight:600;">No exchange records in this queue.</td></tr>`; 
+                return; 
+            }
+
+            let html = "";
+            data.forEach(row => {
+                const cleanPhone = (row.mobile || "").replace(/[^0-9]/g, '');
+                const waLink = cleanPhone ? `https://wa.me/91${cleanPhone.slice(-10)}` : '#';
+                
+                const mobileDisplay = row.mobile ? `
+                    <div>
+                        <b>${row.mobile}</b> 
+                        <a href="${waLink}" target="_blank" class="comm-link" title="WhatsApp Chat">💬</a>
+                        <a href="tel:${row.mobile}" class="comm-link" title="Call">📞</a>
+                    </div>
+                ` : `<span style="color:#94a3b8;">N/A</span>`;
+
+                if (activeExTab === "REQUESTED") {
+                    html += `
+                        <tr>
+                            <td>${row.date}</td>
+                            <td><b>${row.orderId}</b></td>
+                            <td>${mobileDisplay}</td>
+                            <td>
+                                <code>${row.originalAwb || '-'}</code>
+                                ${row.originalAwb ? `<button class="btn-chip" onclick="quickTrackModal('${row.originalAwb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>${row.description || "-"}</td>
+                            <td><span class="badge badge-req">REQUESTED</span></td>
+                            <td><button class="btn-act" style="background:#0284c7; color:#fff;" onclick="openPickupModal(${row.rowId}, '${row.orderId}')">📦 Mark Return Pickup</button></td>
+                        </tr>`;
+                } else if (activeExTab === "DISPATCH_PENDING") {
+                    html += `
+                        <tr>
+                            <td>${row.date}</td>
+                            <td><b>${row.orderId}</b></td>
+                            <td>${mobileDisplay}</td>
+                            <td><b style="color:#0284c7;">${row.returnOrderId || "-"}</b></td>
+                            <td>
+                                <code>${row.returnAwb || '-'}</code>
+                                ${row.returnAwb ? `<button class="btn-chip" onclick="quickTrackModal('${row.returnAwb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>${row.returnMarkedDate}</td>
+                            <td><button class="btn-act btn-save" onclick="openDispatchModal(${row.rowId}, '${row.returnAwb}')">🚀 Complete Dispatch</button></td>
+                        </tr>`;
+                } else {
+                    html += `
+                        <tr>
+                            <td><b>${row.orderId}</b></td>
+                            <td>${mobileDisplay}</td>
+                            <td>
+                                <b>${row.returnOrderId || '-'}</b><br>
+                                <code>${row.returnAwb || '-'}</code>
+                                ${row.returnAwb ? `<button class="btn-chip" onclick="quickTrackModal('${row.returnAwb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>
+                                <b style="color:var(--success);">${row.dispatchOrderId || '-'}</b><br>
+                                <code>${row.dispatchAwb || '-'}</code>
+                                ${row.dispatchAwb ? `<button class="btn-chip" onclick="quickTrackModal('${row.dispatchAwb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>${row.completedDate}</td>
+                            <td><span class="badge badge-comp">COMPLETED</span></td>
+                        </tr>`;
+                }
+            });
+            tbody.innerHTML = html;
+        }
+
+        function switchExTab(tab) {
+            activeExTab = tab;
+            document.getElementById("exTabReq").style.background = "#e2e8f0";
+            document.getElementById("exTabReq").style.color = "#334155";
+            document.getElementById("exTabDisp").style.background = "#e2e8f0";
+            document.getElementById("exTabDisp").style.color = "#334155";
+            document.getElementById("exTabComp").style.background = "#e2e8f0";
+            document.getElementById("exTabComp").style.color = "#334155";
+
+            if (tab === "REQUESTED") {
+                document.getElementById("exTabReq").style.background = "#d97706";
+                document.getElementById("exTabReq").style.color = "#fff";
+            } else if (tab === "DISPATCH_PENDING") {
+                document.getElementById("exTabDisp").style.background = "#0284c7";
+                document.getElementById("exTabDisp").style.color = "#fff";
+            } else {
+                document.getElementById("exTabComp").style.background = "var(--success)";
+                document.getElementById("exTabComp").style.color = "#fff";
+            }
+
+            renderExTable();
+        }
+
+        async function quickTrackModal(awb) {
+            if (!awb || awb === "undefined" || awb === "-") return toast("No AWB found to track!");
+            document.getElementById("quickTrackModal").style.display = "flex";
+            const box = document.getElementById("quickTrackContent");
+            box.innerHTML = `<div style="text-align:center; padding:12px; color:#64748b;">🔄 Querying Logistics API for <b>${awb}</b>...</div>`;
+            
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    box.innerHTML = `
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div><b>AWB:</b> <code>${res.awb}</code></div>
+                            <div><b>Courier Partner:</b> ${res.courierName || res.courier}</div>
+                            <div><b>Live Status:</b> <span class="badge badge-comp" style="font-size:11px;">${res.status || 'Active'}</span></div>
+                            <div><b>Destination / City:</b> ${res.city || res.destination || 'N/A'}</div>
+                            ${res.expectedDate ? `<div><b>Expected Delivery:</b> ${res.expectedDate}</div>` : ''}
+                            ${res.deliveredDate ? `<div><b>Delivered On:</b> ${res.deliveredDate}</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    box.innerHTML = `<div style="color:var(--danger); text-align:center; padding:8px;">⚠️ Active tracking details not found on BoxD or Delhivery.</div>`;
+                }
+            } catch (e) {
+                box.innerHTML = `<div style="color:var(--danger); text-align:center;">Network error fetching tracking status.</div>`;
+            }
+        }
+
+        function openAddRequestModal() { document.getElementById("addModal").style.display = "flex"; }
+        function openPickupModal(rowId, orderId) {
+            document.getElementById("pickupTargetRow").value = rowId;
+            document.getElementById("pickupTargetOrder").innerText = orderId;
+            document.getElementById("pickupReturnOrderId").value = "";
+            document.getElementById("pickupReturnAwb").value = "";
+            document.getElementById("pickupModal").style.display = "flex";
+        }
+        function openDispatchModal(rowId, returnAwb) {
+            document.getElementById("dispatchTargetRow").value = rowId;
+            document.getElementById("dispatchTargetAwb").innerText = returnAwb;
+            document.getElementById("dispatchNewOrderId").value = "";
+            document.getElementById("dispatchNewAwb").value = "";
+            document.getElementById("dispatchModal").style.display = "flex";
+        }
+        function closeModals() {
+            document.getElementById("addModal").style.display = "none";
+            document.getElementById("pickupModal").style.display = "none";
+            document.getElementById("dispatchModal").style.display = "none";
+            document.getElementById("quickTrackModal").style.display = "none";
+        }
+
+        async function submitAddRequest() {
+            const orderId = document.getElementById("addOrderId").value.trim();
+            const mobile = document.getElementById("addMobile").value.trim();
+            const originalAwb = document.getElementById("addOriginalAwb").value.trim();
+            const description = document.getElementById("addDescription").value.trim();
+
+            if (!orderId || !mobile || !originalAwb) return toast("Fill all required fields!");
+            closeModals(); showProgressLoader();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "addExchangeRequest", payload: { orderId, mobile, originalAwb, description } })
+            });
+            toast("Request Saved!"); 
+            fetchExchangeData();
+        }
+
+        async function submitReturnPickup() {
+            const rowId = document.getElementById("pickupTargetRow").value;
+            const returnOrderId = document.getElementById("pickupReturnOrderId").value.trim();
+            const returnAwb = document.getElementById("pickupReturnAwb").value.trim();
+
+            if (!returnOrderId || !returnAwb) return toast("Please enter Return Order ID & AWB!");
+            closeModals(); showProgressLoader();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "markReturnPickup", payload: { rowId, returnOrderId, returnAwb } })
+            });
+            toast("Updated Return Pickup!"); 
+            fetchExchangeData();
+        }
+
+        async function submitCompleteDispatch() {
+            const rowId = document.getElementById("dispatchTargetRow").value;
+            const dispatchOrderId = document.getElementById("dispatchNewOrderId").value.trim();
+            const dispatchAwb = document.getElementById("dispatchNewAwb").value.trim();
+
+            if (!dispatchOrderId || !dispatchAwb) return toast("Please enter Dispatch Details!");
+            closeModals(); showProgressLoader();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "completeExchangeDispatch", payload: { rowId, dispatchOrderId, dispatchAwb } })
+            });
+            toast("Exchange Completed!"); 
+            fetchExchangeData();
+        }
+
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+        }
+
+        window.onload = function() {
+            fetchDashboardData();
+        };
+    </script>
+</body>
+
+</html>
