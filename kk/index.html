@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations & Logistics Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      padding: 20px 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .config-box {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .config-box input {
+      border: none;
+      outline: none;
+      font-size: 13px;
+      width: 250px;
+      color: var(--text-muted);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card .label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .stat-card .value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .form-group input, .form-group select {
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-sm);
+      background-color: var(--primary);
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #e2e8f0;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--card-bg);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      padding: 12px 14px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-pickup { background: #e0f2fe; color: #0284c7; }
+    .badge-return { background: #fee2e2; color: #dc2626; }
+    .badge-status { background: #f1f5f9; color: #475569; }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 500;
+      background: #0f172a;
+      color: #fff;
+      display: none;
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+    }
+
+    .status-alert {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 14px;
+      display: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <div class="brand-title">Operations & Scan Hub</div>
+      <div style="font-size: 13px; color: var(--text-muted);">Manage Shipments, Returns & Stock Logs</div>
+    </div>
+    <div class="config-box">
+      <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">API URL:</span>
+      <input type="text" id="scriptUrl" placeholder="Enter Apps Script Web App URL">
+      <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="saveApiUrl()">Save</button>
+    </div>
+  </header>
+
+  <!-- Metrics Overview -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="label">Today's Pickups</div>
+      <div class="value" id="statTodayPickup">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Today's Returns</div>
+      <div class="value" id="statTodayReturn" style="color: var(--danger);">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Yesterday Pickups</div>
+      <div class="value" id="statYesterdayPickup">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Month Count (<span id="statMonthName">--</span>)</div>
+      <div class="value" id="statMonthTotal">0</div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('scan-tab')">Daily Scan Entry</button>
+    <button class="tab-btn" onclick="switchTab('recent-tab')">Recent Logs</button>
+    <button class="tab-btn" onclick="switchTab('inventory-tab')">Inventory Engine</button>
+    <button class="tab-btn" onclick="switchTab('exchange-tab')">Exchange Portal</button>
+  </div>
+
+  <!-- TAB 1: Scan Operations -->
+  <div id="scan-tab" class="tab-content active">
+    <div class="card">
+      <h3 style="font-size: 16px; margin-bottom: 16px;">Quick Scan (Barcode / AWB)</h3>
+      <div id="scanAlert" class="status-alert"></div>
+      
+      <form id="scanForm" onsubmit="handleScanSubmit(event)">
+        <div class="form-row">
+          <div class="form-group" style="flex: 2;">
+            <label>Scan / Enter AWB Number</label>
+            <input type="text" id="scanAwb" placeholder="Track AWB or Barcode" required autofocus>
+          </div>
+          <div class="form-group">
+            <label>Operation Type</label>
+            <select id="scanType">
+              <option value="Pickup">Pickup</option>
+              <option value="Return">Return</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Order ID (Optional)</label>
+            <input type="text" id="scanOrderId" placeholder="e.g. #10523">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button type="submit" class="btn" id="btnSubmitScan">Save Entry</button>
+          <button type="button" class="btn btn-secondary" onclick="lookupLiveTracking()">Fetch Tracking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TAB 2: Recent Logs -->
+  <div id="recent-tab" class="tab-content">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 16px;">Recent 100 Shipments</h3>
+        <button class="btn btn-secondary" onclick="loadRecentRecords()">Refresh</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>AWB</th>
+              <th>Order ID</th>
+              <th>Courier</th>
+              <th>Status</th>
+              <th>City</th>
+            </tr>
+          </thead>
+          <tbody id="recentTableBody">
+            <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No records loaded.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: Inventory Engine -->
+  <div id="inventory-tab" class="tab-content">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 16px;">Stock Directory</h3>
+        <button class="btn btn-secondary" onclick="loadInventoryData()">Refresh Stock</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Opening</th>
+              <th>Inward</th>
+              <th>Sales</th>
+              <th>Returns</th>
+              <th>Current Stock</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">Click Refresh to load inventory.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: Exchange Portal -->
+  <div id="exchange-tab" class="tab-content">
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 16px;">Active Exchange Requests</h3>
+        <button class="btn btn-secondary" onclick="loadExchangeData()">Refresh List</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Order ID</th>
+              <th>Mobile</th>
+              <th>Original AWB</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="exchangeTableBody">
+            <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No exchange records found.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast">Message</div>
+
+<script>
+  const STORAGE_KEY = "https://script.google.com/macros/s/AKfycbwqyOh0iE1Cy9uHGA_3aR7kQyHrR37Jmj4MclT8gaThLSD8b7A2ZvTGGKxcpMBxsb2d7w/exec";
+
+  // URL initialization
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedUrl = localStorage.getItem(STORAGE_KEY) || "";
+    document.getElementById('scriptUrl').value = savedUrl;
+    if (savedUrl) {
+      loadDashboardCounts();
+      loadRecentRecords();
+    }
+  });
+
+  function saveApiUrl() {
+    const url = document.getElementById('scriptUrl').value.trim();
+    if (!url) {
+      showToast("Please enter a valid Google Apps Script Web App URL");
+      return;
+    }
+    localStorage.setItem(STORAGE_KEY, url);
+    showToast("API Endpoint saved!");
+    loadDashboardCounts();
+    loadRecentRecords();
+  }
+
+  function getApiUrl() {
+    return localStorage.getItem(STORAGE_KEY) || document.getElementById('scriptUrl').value.trim();
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.innerText = msg;
+    toast.style.display = 'block';
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+
+    if (tabId === 'inventory-tab') loadInventoryData();
+    if (tabId === 'exchange-tab') loadExchangeData();
+    if (tabId === 'recent-tab') loadRecentRecords();
+  }
+
+  // API Call Wrapper
+  async function apiCall(action, options = {}) {
+    const baseUrl = getApiUrl();
+    if (!baseUrl) {
+      showToast("Please enter your Apps Script URL first");
+      throw new Error("Missing API URL");
+    }
+
+    let url = `${baseUrl}?action=${action}`;
+    const fetchOptions = { method: options.method || 'GET' };
+
+    if (options.method === 'POST') {
+      fetchOptions.headers = { 'Content-Type': 'text/plain;charset=utf-8' };
+      fetchOptions.body = JSON.stringify({ action: action, payload: options.payload || {} });
+    } else if (options.params) {
+      const q = new URLSearchParams(options.params).toString();
+      url += `&${q}`;
+    }
+
+    const response = await fetch(url, fetchOptions);
+    return await response.json();
+  }
+
+  // Dashboard Metrics
+  async function loadDashboardCounts() {
+    try {
+      const res = await apiCall('getDashboardCounts');
+      if (res.success) {
+        document.getElementById('statTodayPickup').innerText = res.todayPickup || 0;
+        document.getElementById('statTodayReturn').innerText = res.todayReturn || 0;
+        document.getElementById('statYesterdayPickup').innerText = res.yesterdayPickup || 0;
+        document.getElementById('statMonthName').innerText = res.monthName || '--';
+        document.getElementById('statMonthTotal').innerText = (res.monthPickup || 0) + (res.monthReturn || 0);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Scan Submission
+  async function handleScanSubmit(e) {
+    e.preventDefault();
+    const awb = document.getElementById('scanAwb').value.trim();
+    const type = document.getElementById('scanType').value;
+    const orderId = document.getElementById('scanOrderId').value.trim();
+    const btn = document.getElementById('btnSubmitScan');
+    const alertBox = document.getElementById('scanAlert');
+
+    if (!awb) return;
+
+    btn.disabled = true;
+    btn.innerText = "Saving...";
+
+    try {
+      const res = await apiCall('saveEntry', {
+        method: 'POST',
+        payload: { awb, type, orderId }
+      });
+
+      if (res.success) {
+        alertBox.style.display = 'block';
+        alertBox.style.backgroundColor = 'var(--success-bg)';
+        alertBox.style.color = 'var(--success)';
+        alertBox.innerText = `Success: ${type} logged for AWB ${awb}`;
+
+        document.getElementById('scanAwb').value = "";
+        document.getElementById('scanOrderId').value = "";
+        document.getElementById('scanAwb').focus();
+
+        loadDashboardCounts();
+        loadRecentRecords();
+      } else {
+        alertBox.style.display = 'block';
+        alertBox.style.backgroundColor = 'var(--danger-bg)';
+        alertBox.style.color = 'var(--danger)';
+        alertBox.innerText = res.message || "Failed to record scan entry";
+      }
+    } catch (err) {
+      alertBox.style.display = 'block';
+      alertBox.style.backgroundColor = 'var(--danger-bg)';
+      alertBox.style.color = 'var(--danger)';
+      alertBox.innerText = "Network Error: Could not reach Google Apps Script";
+    } finally {
+      btn.disabled = false;
+      btn.innerText = "Save Entry";
+    }
+  }
+
+  // Live Tracking Quick Lookup
+  async function lookupLiveTracking() {
+    const awb = document.getElementById('scanAwb').value.trim();
+    if (!awb) {
+      showToast("Please enter an AWB to track");
+      return;
+    }
+    showToast("Searching live tracking...");
+    try {
+      const res = await apiCall('trackShipment', { params: { awb } });
+      if (res.success) {
+        if (res.orderId && !document.getElementById('scanOrderId').value) {
+          document.getElementById('scanOrderId').value = res.orderId;
+        }
+        showToast(`Tracking Found: ${res.courier} | Status: ${res.status}`);
+      } else {
+        showToast(res.message || "No tracking found on Boxd/Delhivery");
+      }
+    } catch (err) {
+      showToast("Tracking fetch error");
+    }
+  }
+
+  // Load Recent Logs
+  async function loadRecentRecords() {
+    try {
+      const res = await apiCall('getRecentRecords');
+      const tbody = document.getElementById('recentTableBody');
+      if (res.success && res.rows.length) {
+        tbody.innerHTML = res.rows.map(r => `
+          <tr>
+            <td>${r.date || ''}</td>
+            <td><span class="badge ${r.type === 'Pickup' ? 'badge-pickup' : 'badge-return'}">${r.type || ''}</span></td>
+            <td><strong>${r.awb || ''}</strong></td>
+            <td>${r.orderId || '-'}</td>
+            <td>${r.courier || '-'}</td>
+            <td><span class="badge badge-status">${r.status || 'Pending'}</span></td>
+            <td>${r.city || '-'}</td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No entries recorded yet.</td></tr>`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Load Inventory
+  async function loadInventoryData() {
+    try {
+      const res = await apiCall('inventoryProducts');
+      const tbody = document.getElementById('inventoryTableBody');
+      if (res.success && res.products.length) {
+        tbody.innerHTML = res.products.map(p => `
+          <tr>
+            <td><strong>${p.sku}</strong></td>
+            <td>${p.opening}</td>
+            <td>${p.inward}</td>
+            <td>${p.sales}</td>
+            <td>${p.salesReturn}</td>
+            <td style="font-weight: 700; color: ${p.stock <= 5 ? 'var(--danger)' : 'var(--text-main)'};">${p.stock}</td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No inventory found.</td></tr>`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // Load Exchanges
+  async function loadExchangeData() {
+    try {
+      const res = await apiCall('getExchangeReport');
+      const tbody = document.getElementById('exchangeTableBody');
+      if (res.success && res.requested && res.requested.length) {
+        tbody.innerHTML = res.requested.map(x => `
+          <tr>
+            <td>${x.exchangeId}</td>
+            <td>${x.date}</td>
+            <td>${x.orderId}</td>
+            <td>${x.mobile}</td>
+            <td>${x.originalAwb}</td>
+            <td><span class="badge badge-status">${x.status}</span></td>
+          </tr>
+        `).join('');
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No active exchange requests found.</td></tr>`;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+</script>
+
+</body>
+</html>
