@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Operational Scan Console</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: #2563eb;
+            --primary-soft: #eff6ff;
+            --success: #10b981;
+            --success-soft: #dcfce7;
+            --danger: #ef4444;
+            --danger-soft: #fee2e2;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 12px;
+        }
+
+        .scan-wrapper {
+            width: 100%;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 0 auto;
+        }
+
+        /* Top Bar */
+        .top-navbar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.2px;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .status-badge::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        /* Stats Row */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-val {
+            font-size: 18px;
+            font-weight: 800;
+            display: block;
+        }
+        .stat-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+            display: block;
+        }
+
+        /* Console Card */
+        .console-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .console-heading {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Mode Selector */
+        .mode-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: var(--radius-md);
+        }
+
+        .btn-mode {
+            height: 42px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-mode.active-pickup {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-mode.active-return {
+            background: var(--success);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        /* Action Toolbar */
+        .action-toolbar {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            flex: 1;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            color: var(--text-main);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+        .tool-btn:active { background: #e2e8f0; }
+
+        /* Camera Scanner Element */
+        #reader {
+            width: 100%;
+            height: 180px !important;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            display: none;
+            background: #000;
+        }
+        #reader video {
+            object-fit: cover !important;
+            height: 180px !important;
+            width: 100% !important;
+        }
+
+        /* Inputs */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 46px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        /* Preview Badge */
+        .preview-box {
+            display: none;
+            padding: 10px 14px;
+            background: var(--primary-soft);
+            border: 1px solid #bfdbfe;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e40af;
+        }
+
+        /* Submit Buttons */
+        .submit-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .btn-action {
+            flex: 1;
+            height: 46px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-submit { background: var(--success); color: #ffffff; }
+        .btn-reset { background: #64748b; color: #ffffff; flex: 0.45; }
+
+        /* Recent Scan Feed */
+        .recent-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .recent-header {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--text-sub);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 190px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+        }
+        .recent-item.pickup-border { border-left: 3px solid var(--primary); }
+        .recent-item.return-border { border-left: 3px solid var(--success); }
+
+        .item-main {
+            display: flex;
+            flex-direction: column;
+        }
+        .item-awb {
+            font-weight: 800;
+            color: var(--text-main);
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .item-order {
+            font-size: 11px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+        .item-meta {
+            text-align: right;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        /* Toast Popup */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            pointer-events: none;
+            animation: fadeInOut 2.8s ease forwards;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, 15px); }
+            12% { opacity: 1; transform: translate(-50%, 0); }
+            85% { opacity: 1; transform: translate(-50%, 0); }
+            100% { opacity: 0; transform: translate(-50%, -10px); }
+        }
+
+        /* Fullscreen Spinner */
+        #loaderOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-md);
+        }
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid #e2e8f0;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<body>
+
+    <div class="scan-wrapper">
+
+        <!-- Header -->
+        <div class="top-navbar">
+            <div class="brand-title">
+                <span>📲</span> SCAN CONSOLE
+            </div>
+            <div class="status-badge" id="onlineBadge">Active Engine</div>
+        </div>
+
+        <!-- Metrics Strip -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-val" id="cntTodayPickup" style="color:var(--primary);">0</span>
+                <span class="stat-lbl">Today Pickup</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val" id="cntTodayReturn" style="color:var(--success);">0</span>
+                <span class="stat-lbl">Today Return</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val" id="cntTotalToday" style="color:var(--text-main);">0</span>
+                <span class="stat-lbl">Total Scans</span>
+            </div>
+        </div>
+
+        <!-- Operational Console -->
+        <div class="console-card">
+            
+            <div class="console-header">
+                <div class="console-heading">
+                    <span>⚡</span> SELECT WORKFLOW MODE
+                </div>
+                <span id="activeModeText" style="font-size:11px; font-weight:800; color:var(--text-sub);">NOT SELECTED</span>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="mode-container">
+                <button id="btnPickup" class="btn-mode" onclick="setMode('Pickup')">
+                    📦 Pickup Mode
+                </button>
+                <button id="btnReturn" class="btn-mode" onclick="setMode('Return')">
+                    ↩️ Return Mode
+                </button>
+            </div>
+
+            <!-- Scanning Controls & Input -->
+            <div id="interactiveConsole" style="display:none; flex-direction:column; gap:12px;">
+                
+                <div class="action-toolbar">
+                    <button class="tool-btn" onclick="toggleCamera()">
+                        <span>📷</span> <span id="camBtnText">Start Camera</span>
+                    </button>
+                    <button class="tool-btn" onclick="focusInput()">
+                        <span>⌨️</span> Focus Barcode
+                    </button>
+                </div>
+
+                <!-- Camera Element -->
+                <div id="reader"></div>
+
+                <!-- Input Fields -->
+                <div class="input-group">
+                    <input id="awbInput" class="input-field" placeholder="Scan Barcode / Enter AWB Number..." autocomplete="off">
+                    <input id="orderInput" class="input-field" placeholder="Shopify Order ID (Auto or Manual)" style="display:none;">
+                </div>
+
+                <div id="previewCard" class="preview-box"></div>
+
+                <div class="submit-row">
+                    <button class="btn-action btn-submit" onclick="saveEntry()">
+                        <span>💾</span> Save Entry
+                    </button>
+                    <button class="btn-action btn-reset" onclick="resetConsole()">
+                        Reset
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Scanned Feed -->
+        <div class="recent-card">
+            <div class="recent-header">
+                <span>📋 Recent Scans Queue</span>
+                <span style="cursor:pointer; color:var(--primary);" onclick="fetchDashboardData()">🔄 Refresh</span>
+            </div>
+            <div class="recent-list" id="recentList">
+                <div style="text-align:center; color:var(--text-sub); font-size:12px; padding:16px;">
+                    No recent scans found for today.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Spinner Modal -->
+    <div id="loaderOverlay">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <span style="font-size:12px; font-weight:700; color:var(--text-main);">Processing...</span>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "-"; // Apni Web App URL yahan paste karein
+
+        let currentMode = "";
+        let currentTracking = null;
+        let html5QrCode = null;
+        let isCameraActive = false;
+        let audioCtx = null;
+
+        /* SOUND FEEDBACK ENGINE */
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSuccessAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(587.33, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } catch(e) {}
+        }
+
+        function playDuplicateAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(164.81, now + 0.12);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch(e) {}
+        }
+
+        function showLoader(show) {
+            document.getElementById("loaderOverlay").style.display = show ? "flex" : "none";
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            const interactive = document.getElementById("interactiveConsole");
+            interactive.style.display = "flex";
+
+            const btnP = document.getElementById("btnPickup");
+            const btnR = document.getElementById("btnReturn");
+            const modeText = document.getElementById("activeModeText");
+
+            btnP.className = "btn-mode";
+            btnR.className = "btn-mode";
+
+            if (mode === 'Pickup') {
+                btnP.classList.add("active-pickup");
+                modeText.innerText = "ACTIVE: PICKUP";
+                modeText.style.color = "var(--primary)";
+            } else {
+                btnR.classList.add("active-return");
+                modeText.innerText = "ACTIVE: RETURN";
+                modeText.style.color = "var(--success)";
+            }
+
+            focusInput();
+        }
+
+        function focusInput() {
+            const inp = document.getElementById("awbInput");
+            inp.focus();
+        }
+
+        /* CAMERA SCANNER ENGINE */
+        async function toggleCamera() {
+            const readerDiv = document.getElementById("reader");
+            const btnText = document.getElementById("camBtnText");
+
+            if (isCameraActive) {
+                await stopCamera();
+                return;
+            }
+
+            try {
+                readerDiv.style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+                btnText.innerText = "Stop Camera";
+                isCameraActive = true;
+
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 20, qrbox: { width: 250, height: 140 } },
+                    (decodedText) => {
+                        document.getElementById("awbInput").value = decodedText;
+                        stopCamera();
+                        trackShipment();
+                    }
+                );
+            } catch (err) {
+                toast("Camera error or permission denied");
+                stopCamera();
+            }
+        }
+
+        async function stopCamera() {
+            if (html5QrCode) {
+                try { await html5QrCode.stop(); } catch(e){}
+                html5QrCode = null;
+            }
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("camBtnText").innerText = "Start Camera";
+            isCameraActive = false;
+        }
+
+        /* AUTO-TRACK / FETCH ON ENTER */
+        document.getElementById("awbInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                trackShipment();
+            }
+        });
+
+        async function trackShipment() {
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("Please scan or enter AWB!");
+
+            showLoader(true);
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+                showLoader(false);
+
+                const prevBox = document.getElementById("previewCard");
+                const ordInp = document.getElementById("orderInput");
+
+                if (data && data.success) {
+                    currentTracking = data;
+                    prevBox.style.display = "block";
+                    prevBox.style.background = "var(--primary-soft)";
+                    prevBox.style.borderColor = "#bfdbfe";
+                    prevBox.style.color = "#1e40af";
+                    prevBox.innerHTML = `✅ ${data.courier || 'Verified'} | Order: ${data.orderId || 'N/A'}`;
+                    ordInp.value = data.orderId || "";
+                } else {
+                    currentTracking = null;
+                    prevBox.style.display = "block";
+                    prevBox.style.background = "#fff7ed";
+                    prevBox.style.borderColor = "#fed7aa";
+                    prevBox.style.color = "#9a3412";
+                    prevBox.innerHTML = `⚠️ Manual Entry Mode (API details not found)`;
+                }
+
+                ordInp.style.display = "block";
+            } catch (err) {
+                showLoader(false);
+                document.getElementById("orderInput").style.display = "block";
+            }
+        }
+
+        /* SAVE ENTRY ENGINE */
+        async function saveEntry() {
+            if (!currentMode) return toast("Select Pickup or Return mode first!");
+
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("AWB Number is required!");
+
+            const orderId = document.getElementById("orderInput").value.trim();
+
+            showLoader(true);
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "saveEntry",
+                        payload: {
+                            type: currentMode,
+                            awb: awb,
+                            orderId: orderId,
+                            courier: currentTracking?.courier || "MANUAL",
+                            status: currentTracking?.status || "Pending",
+                            customerName: currentTracking?.customerName || "",
+                            city: currentTracking?.city || "",
+                            state: currentTracking?.state || "",
+                            destination: currentTracking?.destination || "",
+                            pickupDate: currentTracking?.pickupDate || "",
+                            deliveredDate: currentTracking?.deliveredDate || "",
+                            expectedDate: currentTracking?.expectedDate || "",
+                            isRTO: currentTracking?.isRTO || false
+                        }
+                    })
+                });
+
+                const data = await res.json();
+                showLoader(false);
+
+                if (data.duplicate) {
+                    playDuplicateAudio();
+                    toast(data.message || "❌ Duplicate scan detected!");
+                    return;
+                }
+
+                if (data.success) {
+                    playSuccessAudio();
+                    toast("🎉 Saved Successfully!");
+                    resetConsole();
+                    fetchDashboardData();
+                } else {
+                    toast(data.message || "Failed to save entry");
+                }
+            } catch (err) {
+                showLoader(false);
+                toast("Server communication failed");
+            }
+        }
+
+        function resetConsole() {
+            stopCamera();
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("previewCard").style.display = "none";
+            currentTracking = null;
+            focusInput();
+        }
+
+        /* FETCH LIVE COUNTS & RECENT SCANS */
+        async function fetchDashboardData() {
+            try {
+                const res = await fetch(`${API_URL}?action=getDashboardCounts`).then(r => r.json());
+                if (res && res.success) {
+                    document.getElementById("cntTodayPickup").innerText = res.todayPickup || 0;
+                    document.getElementById("cntTodayReturn").innerText = res.todayReturn || 0;
+                    document.getElementById("cntTotalToday").innerText = res.totalToday || 0;
+                    renderRecentList(res.recentScans || []);
+                }
+            } catch (e) {}
+        }
+
+        function renderRecentList(scans) {
+            const list = document.getElementById("recentList");
+            if (!scans || scans.length === 0) {
+                list.innerHTML = `<div style="text-align:center; color:var(--text-sub); font-size:12px; padding:16px;">No recent scans today.</div>`;
+                return;
+            }
+
+            list.innerHTML = scans.map(s => {
+                const isPickup = (s.type || '').toLowerCase() === 'pickup';
+                return `
+                    <div class="recent-item ${isPickup ? 'pickup-border' : 'return-border'}">
+                        <div class="item-main">
+                            <span class="item-awb">${s.awb}</span>
+                            <span class="item-order">${s.orderId ? '#' + s.orderId : 'Manual Entry'}</span>
+                        </div>
+                        <div class="item-meta">
+                            <b style="color:${isPickup ? 'var(--primary)' : 'var(--success)'};">${s.type}</b>
+                            <div>${s.time || ''}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toast(msg) {
+            const existing = document.querySelector(".toast");
+            if (existing) existing.remove();
+
+            const t = document.createElement("div");
+            t.className = "toast";
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => { if (t.parentNode) t.remove(); }, 2800);
+        }
+
+        window.onload = function() {
+            fetchDashboardData();
+        };
+    </script>
+</body>
+
+</html>
