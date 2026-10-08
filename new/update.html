@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Logistics Operations & Exchange Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: #2563eb;
+            --primary-soft: #eff6ff;
+            --success: #10b981;
+            --success-soft: #dcfce7;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 12px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 580px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin: 0 auto;
+        }
+
+        /* Top Bar */
+        .top-navbar {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+        }
+
+        /* Stats Strip */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-val { font-size: 18px; font-weight: 800; display: block; }
+        .stat-lbl { font-size: 10px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-top: 2px; }
+
+        /* Unified Card Style */
+        .module-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .module-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Mode Selector */
+        .mode-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: var(--radius-md);
+        }
+
+        .btn-mode {
+            height: 42px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-mode.active-pickup {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-mode.active-return {
+            background: var(--success);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+        }
+
+        .action-toolbar { display: flex; gap: 8px; }
+        .tool-btn {
+            flex: 1;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        #reader {
+            width: 100%;
+            height: 180px !important;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            display: none;
+            background: #000;
+        }
+        #reader video { object-fit: cover !important; height: 180px !important; width: 100% !important; }
+
+        .input-box {
+            width: 100%;
+            height: 44px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 0 14px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            background: #fff;
+            transition: all 0.2s;
+        }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+
+        .btn-act {
+            height: 44px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.15s;
+        }
+        .btn-act:active { transform: scale(0.98); }
+        .btn-save { background: var(--success); color: #fff; flex: 1; }
+        .btn-reset { background: #64748b; color: #fff; flex: 0.45; }
+
+        /* Search Suggest Box */
+        .suggest-dropdown {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+        .suggest-item {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .suggest-item:hover { background: #f8fafc; }
+
+        /* Exchange Navigation Tabs */
+        .ex-nav {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .ex-tab-btn {
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sub);
+            cursor: pointer;
+        }
+        .ex-tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* Queue Card Items */
+        .queue-item {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-block;
+        }
+        .badge-req { background: #fef3c7; color: #b45309; }
+        .badge-disp { background: #e0f2fe; color: #0369a1; }
+        .badge-comp { background: #dcfce7; color: #15803d; }
+
+        .btn-chip {
+            background: #eff6ff;
+            color: #0284c7;
+            border: 1px solid #bae6fd;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0f172a;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            z-index: 99999;
+        }
+
+        /* Modal Backdrop */
+        .modal-wrap {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(3px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: var(--shadow-md);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-container">
+
+        <!-- Top Header -->
+        <div class="top-navbar">
+            <div class="brand-title">
+                <span>📲</span> SCAN CONSOLE
+            </div>
+            <div class="status-badge">ERP v2.4</div>
+        </div>
+
+        <!-- Metrics Strip -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-val" id="cntTodayPickup" style="color:var(--primary);">0</span>
+                <span class="stat-lbl">Today Pickup</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val" id="cntTodayReturn" style="color:var(--success);">0</span>
+                <span class="stat-lbl">Today Return</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-val" id="cntTotalToday" style="color:var(--text-main);">0</span>
+                <span class="stat-lbl">Total Scans</span>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             MODULE 1: OPERATIONAL SCAN CONSOLE
+        ============================================== -->
+        <div class="module-card">
+            <div class="module-header">
+                <div class="module-title"><span>⚡</span> OPERATIONAL SCANNER</div>
+                <span id="activeModeText" style="font-size:11px; font-weight:800; color:var(--text-sub);">SELECT MODE</span>
+            </div>
+
+            <div class="mode-container">
+                <button id="btnPickup" class="btn-mode" onclick="setMode('Pickup')">📦 Pickup Mode</button>
+                <button id="btnReturn" class="btn-mode" onclick="setMode('Return')">↩️ Return Mode</button>
+            </div>
+
+            <div id="interactiveConsole" style="display:none; flex-direction:column; gap:10px;">
+                <div class="action-toolbar">
+                    <button class="tool-btn" onclick="toggleCamera()">
+                        <span>📷</span> <span id="camBtnText">Start Camera</span>
+                    </button>
+                    <button class="tool-btn" onclick="focusInput()">
+                        <span>⌨️</span> Focus Barcode
+                    </button>
+                </div>
+
+                <div id="reader"></div>
+
+                <input id="awbInput" class="input-box" placeholder="Scan Barcode / Enter AWB Number..." autocomplete="off">
+                <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+
+                <div id="previewCard" style="display:none; padding:10px; border-radius:8px; font-size:12px; font-weight:700;"></div>
+
+                <div style="display:flex; gap:8px;">
+                    <button class="btn-act btn-save" onclick="saveEntry()">💾 Save Entry</button>
+                    <button class="btn-act btn-reset" onclick="resetConsole()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             MODULE 2: SMART SEARCH (SHEET + LIVE GATEWAY)
+        ============================================== -->
+        <div class="module-card">
+            <div class="module-header">
+                <div class="module-title"><span>🔍</span> SMART SEARCH & LIVE GATEWAY</div>
+            </div>
+
+            <input id="searchInput" class="input-box" placeholder="Search by Order ID, AWB or Name..." oninput="onSearchTyping(this.value)">
+            <div id="searchSuggestions" class="suggest-dropdown"></div>
+
+            <div id="searchResultDisplay" style="font-size:12px; color:var(--text-sub); text-align:center; padding:10px;">
+                Type at least 3 characters to search records.
+            </div>
+        </div>
+
+        <!-- ==============================================
+             MODULE 3: ADVANCED EXCHANGE LIFECYCLE
+        ============================================== -->
+        <div class="module-card">
+            <div class="module-header">
+                <div class="module-title"><span>🔄</span> EXCHANGE LIFECYCLE ERP</div>
+                <button class="btn-chip" style="font-size:11px;" onclick="openAddRequestModal()">➕ New Request</button>
+            </div>
+
+            <div class="ex-nav">
+                <button id="exTabReq" class="ex-tab-btn active" onclick="switchExTab('REQUESTED')">New (<span id="cntReq">0</span>)</button>
+                <button id="exTabDisp" class="ex-tab-btn" onclick="switchExTab('DISPATCH_PENDING')">Pending (<span id="cntDisp">0</span>)</button>
+                <button id="exTabComp" class="ex-tab-btn" onclick="switchExTab('COMPLETED')">Done (<span id="cntComp">0</span>)</button>
+            </div>
+
+            <div id="exchangeQueueList" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;">
+                <div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">Loading Exchange Requests...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL: ADD EXCHANGE REQUEST -->
+    <div id="addModal" class="modal-wrap">
+        <div class="modal-content">
+            <h3 style="font-size:14px; font-weight:800;">➕ Add Exchange Request</h3>
+            <input id="addOrderId" class="input-box" placeholder="Original Order ID (e.g. #6373)">
+            <input id="addMobile" class="input-box" placeholder="Customer Mobile (10 Digits)">
+            <input id="addOriginalAwb" class="input-box" placeholder="Original AWB Number">
+            <textarea id="addDescription" class="input-box" style="height:60px; padding:8px;" placeholder="Reason (e.g. Size M to L replacement)"></textarea>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-act btn-save" onclick="submitAddRequest()">Save Request</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: MARK RETURN PICKUP -->
+    <div id="pickupModal" class="modal-wrap">
+        <div class="modal-content">
+            <h3 style="font-size:14px; font-weight:800; color:var(--primary);">📦 Step 2: Mark Return Pickup</h3>
+            <div style="font-size:12px; color:var(--text-sub);">Order ID: <b id="pickupTargetOrder"></b></div>
+            <input type="hidden" id="pickupTargetRow">
+            <input id="pickupReturnOrderId" class="input-box" placeholder="Return Order ID">
+            <input id="pickupReturnAwb" class="input-box" placeholder="Return Pickup AWB Number">
+            <div style="display:flex; gap:8px;">
+                <button class="btn-act btn-save" onclick="submitReturnPickup()">Update Step</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: COMPLETE EXCHANGE DISPATCH -->
+    <div id="dispatchModal" class="modal-wrap">
+        <div class="modal-content">
+            <h3 style="font-size:14px; font-weight:800; color:var(--success);">🚀 Step 3: Complete Dispatch</h3>
+            <div style="font-size:12px; color:var(--text-sub);">Return AWB: <b id="dispatchTargetAwb"></b></div>
+            <input type="hidden" id="dispatchTargetRow">
+            <input id="dispatchNewOrderId" class="input-box" placeholder="New Dispatch Order ID">
+            <input id="dispatchNewAwb" class="input-box" placeholder="New Replacement AWB">
+            <div style="display:flex; gap:8px;">
+                <button class="btn-act btn-save" onclick="submitCompleteDispatch()">Complete Exchange</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: QUICK LIVE 3PL POPUP -->
+    <div id="quickTrackModal" class="modal-wrap">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:13px; font-weight:800;">📡 Live Tracking Status</h3>
+                <span onclick="closeModals()" style="cursor:pointer; font-weight:800;">✕</span>
+            </div>
+            <div id="quickTrackContent" style="font-size:12px; background:#f8fafc; padding:12px; border-radius:8px;">
+                Fetching 3PL details...
+            </div>
+            <button class="btn-act btn-reset" style="flex:1;" onclick="closeModals()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbzS3P6kRw8z2TqE8-EKmN7b7lbFNt5dsK3d63FuiFej0azPG1KZA36y-yTct-VN3Cfj/exec"; // Apni Web App URL yahan paste karein
+
+        let currentMode = "";
+        let currentTracking = null;
+        let html5QrCode = null;
+        let isCameraActive = false;
+        let audioCtx = null;
+        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let activeExTab = "REQUESTED";
+
+        /* AUDIO FEEDBACK */
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSuccessAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(587.33, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } catch(e) {}
+        }
+
+        function playDuplicateAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(164.81, now + 0.12);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch(e) {}
+        }
+
+        /* WORKFLOW SCANNER */
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById("interactiveConsole").style.display = "flex";
+
+            const btnP = document.getElementById("btnPickup");
+            const btnR = document.getElementById("btnReturn");
+            const modeText = document.getElementById("activeModeText");
+
+            btnP.className = "btn-mode";
+            btnR.className = "btn-mode";
+
+            if (mode === 'Pickup') {
+                btnP.classList.add("active-pickup");
+                modeText.innerText = "ACTIVE: PICKUP";
+                modeText.style.color = "var(--primary)";
+            } else {
+                btnR.classList.add("active-return");
+                modeText.innerText = "ACTIVE: RETURN";
+                modeText.style.color = "var(--success)";
+            }
+            focusInput();
+        }
+
+        function focusInput() { document.getElementById("awbInput").focus(); }
+
+        async function toggleCamera() {
+            const readerDiv = document.getElementById("reader");
+            const btnText = document.getElementById("camBtnText");
+
+            if (isCameraActive) {
+                await stopCamera();
+                return;
+            }
+
+            try {
+                readerDiv.style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+                btnText.innerText = "Stop Camera";
+                isCameraActive = true;
+
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 20, qrbox: { width: 250, height: 140 } },
+                    (decodedText) => {
+                        document.getElementById("awbInput").value = decodedText;
+                        stopCamera();
+                        trackShipment();
+                    }
+                );
+            } catch (err) {
+                toast("Camera error / permission denied");
+                stopCamera();
+            }
+        }
+
+        async function stopCamera() {
+            if (html5QrCode) {
+                try { await html5QrCode.stop(); } catch(e){}
+                html5QrCode = null;
+            }
+            document.getElementById("reader").style.display = "none";
+            document.getElementById("camBtnText").innerText = "Start Camera";
+            isCameraActive = false;
+        }
+
+        document.getElementById("awbInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); trackShipment(); }
+        });
+
+        async function trackShipment() {
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("Enter AWB Number!");
+
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+
+                const prevBox = document.getElementById("previewCard");
+                const ordInp = document.getElementById("orderInput");
+
+                if (data && data.success) {
+                    currentTracking = data;
+                    prevBox.style.display = "block";
+                    prevBox.style.background = "var(--primary-soft)";
+                    prevBox.style.color = "#1e40af";
+                    prevBox.innerHTML = `✅ ${data.courier || 'Verified'} | Order: ${data.orderId || 'N/A'}`;
+                    ordInp.value = data.orderId || "";
+                } else {
+                    currentTracking = null;
+                    prevBox.style.display = "block";
+                    prevBox.style.background = "#fff7ed";
+                    prevBox.style.color = "#9a3412";
+                    prevBox.innerHTML = `⚠️ Manual Entry Required`;
+                }
+                ordInp.style.display = "block";
+            } catch (err) {
+                document.getElementById("orderInput").style.display = "block";
+            }
+        }
+
+        async function saveEntry() {
+            if (!currentMode) return toast("Select Mode First!");
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("AWB Missing!");
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "saveEntry",
+                        payload: {
+                            type: currentMode,
+                            awb: awb,
+                            orderId: document.getElementById("orderInput").value.trim(),
+                            courier: currentTracking?.courier || "MANUAL",
+                            status: currentTracking?.status || "Pending",
+                            customerName: currentTracking?.customerName || "",
+                            city: currentTracking?.city || "",
+                            state: currentTracking?.state || "",
+                            destination: currentTracking?.destination || "",
+                            pickupDate: currentTracking?.pickupDate || "",
+                            deliveredDate: currentTracking?.deliveredDate || "",
+                            expectedDate: currentTracking?.expectedDate || "",
+                            isRTO: currentTracking?.isRTO || false
+                        }
+                    })
+                });
+
+                const data = await res.json();
+                if (data.duplicate) {
+                    playDuplicateAudio();
+                    toast(data.message);
+                    return;
+                }
+
+                if (data.success) {
+                    playSuccessAudio();
+                    toast("🎉 Saved Successfully!");
+                    resetConsole();
+                    fetchDashboardData();
+                } else {
+                    toast(data.message || "Failed to save");
+                }
+            } catch(e) { toast("Server error"); }
+        }
+
+        function resetConsole() {
+            stopCamera();
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("previewCard").style.display = "none";
+            currentTracking = null;
+            focusInput();
+        }
+
+        /* SMART SEARCH MODULE */
+        async function onSearchTyping(val) {
+            val = val.trim();
+            const suggBox = document.getElementById("searchSuggestions");
+            if (val.length < 3) { suggBox.style.display = "none"; return; }
+
+            try {
+                const res = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(val)}`).then(r => r.json());
+                if (res.success && res.matches) {
+                    suggBox.style.display = "block";
+                    suggBox.innerHTML = res.matches.map(m => `
+                        <div class="suggest-item" onclick="selectSearchResult('${m.awb}')">
+                            <b>Order: ${m.orderId || 'N/A'}</b> | AWB: ${m.awb} (${m.type})
+                        </div>
+                    `).join('');
+                } else {
+                    suggBox.style.display = "none";
+                }
+            } catch(e) {}
+        }
+
+        async function selectSearchResult(awbKey) {
+            document.getElementById("searchSuggestions").style.display = "none";
+            document.getElementById("searchInput").value = awbKey;
+
+            try {
+                const res = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(awbKey)}`).then(r => r.json());
+                if (res.success) {
+                    renderSearchRecordCard(res);
+                }
+            } catch(e) {}
+        }
+
+        function renderSearchRecordCard(d) {
+            const display = document.getElementById("searchResultDisplay");
+            display.innerHTML = `
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:12px; text-align:left; display:flex; flex-direction:column; gap:6px;">
+                    <div style="font-weight:800; color:var(--primary); border-bottom:1px solid var(--border); padding-bottom:4px;">📋 Sheet Record Details</div>
+                    <div><b>Date:</b> ${d.date} | <b>Type:</b> ${d.type}</div>
+                    <div><b>Order:</b> ${d.orderId || 'N/A'} | <b>AWB:</b> <code>${d.awb}</code></div>
+                    <div><b>Courier:</b> ${d.courier} | <b>Sheet Status:</b> ${d.status}</div>
+                    <div><b>Location:</b> ${d.city || '-'} ${d.state ? `(\${d.state})` : ''}</div>
+                    <button class="btn-act" style="background:var(--primary); color:#fff; height:36px; margin-top:4px;" onclick="fetchLiveCourierTracking('${d.awb}')">🌐 Query Live 3PL Status</button>
+                    <div id="liveTrackingArea"></div>
+                </div>
+            `;
+        }
+
+        async function fetchLiveCourierTracking(awb) {
+            const area = document.getElementById("liveTrackingArea");
+            area.innerHTML = "<div style='color:var(--text-sub); margin-top:6px;'>Querying 3PL gateway...</div>";
+
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    area.innerHTML = `
+                        <div style="margin-top:8px; padding:8px; background:#fff; border:1px dashed var(--primary); border-radius:8px;">
+                            <div style="color:var(--success); font-weight:800;">🚚 Live Status: ${res.status}</div>
+                            <div>Courier: ${res.courierName || res.courier} | City: ${res.city || 'N/A'}</div>
+                            <button class="btn-act btn-save" style="margin-top:6px; height:32px; width:100%; font-size:11px;" onclick="syncLiveStatusToSheet('${res.awb}')">💾 Sync Status To Sheet</button>
+                        </div>
+                    `;
+                } else {
+                    area.innerHTML = "<div style='color:var(--danger); margin-top:6px;'>Live tracking not available.</div>";
+                }
+            } catch(e) {}
+        }
+
+        async function syncLiveStatusToSheet(awb) {
+            try {
+                const res = await fetch(`${API_URL}?action=updateSingleAWB&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    toast(res.skipped ? `Row Locked (${res.reason})` : "🎉 Synced to Sheet!");
+                    selectSearchResult(awb);
+                }
+            } catch(e) {}
+        }
+
+        /* ADVANCED EXCHANGE ERP */
+        async function fetchExchangeData() {
+            try {
+                const res = await fetch(`${API_URL}?action=getExchangeReport`).then(r => r.json());
+                if (res.success) {
+                    exchangeCache = res;
+                    document.getElementById("cntReq").innerText = res.counts.requested || 0;
+                    document.getElementById("cntDisp").innerText = res.counts.dispatchPending || 0;
+                    document.getElementById("cntComp").innerText = res.counts.completed || 0;
+                    renderExchangeList();
+                }
+            } catch(e) {}
+        }
+
+        function switchExTab(tab) {
+            activeExTab = tab;
+            document.querySelectorAll(".ex-tab-btn").forEach(b => b.classList.remove("active"));
+            if (tab === "REQUESTED") document.getElementById("exTabReq").classList.add("active");
+            if (tab === "DISPATCH_PENDING") document.getElementById("exTabDisp").classList.add("active");
+            if (tab === "COMPLETED") document.getElementById("exTabComp").classList.add("active");
+            renderExchangeList();
+        }
+
+        function renderExchangeList() {
+            const list = document.getElementById("exchangeQueueList");
+            let data = [];
+            if (activeExTab === "REQUESTED") data = exchangeCache.requested;
+            else if (activeExTab === "DISPATCH_PENDING") data = exchangeCache.dispatchPending;
+            else data = exchangeCache.completed;
+
+            if (!data || data.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">No requests in this queue.</div>`;
+                return;
+            }
+
+            list.innerHTML = data.map(r => {
+                const cleanPhone = (r.mobile || "").replace(/[^0-9]/g, '');
+                const waLink = cleanPhone ? `https://wa.me/91${cleanPhone.slice(-10)}` : '#';
+
+                let actionHtml = '';
+                if (activeExTab === "REQUESTED") {
+                    actionHtml = `<button class="btn-act" style="background:var(--primary); color:#fff; height:32px; font-size:11px;" onclick="openPickupModal(${r.rowId}, '${r.orderId}')">📦 Mark Return Pickup</button>`;
+                } else if (activeExTab === "DISPATCH_PENDING") {
+                    actionHtml = `<button class="btn-act btn-save" style="height:32px; font-size:11px;" onclick="openDispatchModal(${r.rowId}, '${r.returnAwb}')">🚀 Complete Dispatch</button>`;
+                }
+
+                return `
+                    <div class="queue-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b>#${r.orderId}</b>
+                            <span class="badge ${activeExTab === 'REQUESTED' ? 'badge-req' : (activeExTab === 'DISPATCH_PENDING' ? 'badge-disp' : 'badge-comp')}">${r.status}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span>📱 ${r.mobile || 'N/A'}</span>
+                            <div>
+                                ${cleanPhone ? `<a href="\${waLink}" target="_blank" style="text-decoration:none; margin-right:6px;">💬 WhatsApp</a>` : ''}
+                                ${cleanPhone ? `<a href="tel:\${r.mobile}" style="text-decoration:none;">📞 Call</a>` : ''}
+                            </div>
+                        </div>
+                        <div>
+                            AWB: <code>${r.originalAwb || '-'}</code>
+                            ${r.originalAwb ? `<button class="btn-chip" onclick="quickTrackModal('\${r.originalAwb}')">📡 Track</button>` : ''}
+                        </div>
+                        ${r.returnAwb ? `<div>Return AWB: <code>\${r.returnAwb}</code> <button class="btn-chip" onclick="quickTrackModal('\${r.returnAwb}')">📡 Track</button></div>` : ''}
+                        ${r.dispatchAwb ? `<div>Dispatch AWB: <code>\${r.dispatchAwb}</code> <button class="btn-chip" onclick="quickTrackModal('\${r.dispatchAwb}')">📡 Track</button></div>` : ''}
+                        ${r.description ? `<div style="color:var(--text-sub); font-size:11px;">Note: \${r.description}</div>` : ''}
+                        ${actionHtml}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function quickTrackModal(awb) {
+            document.getElementById("quickTrackModal").style.display = "flex";
+            const box = document.getElementById("quickTrackContent");
+            box.innerHTML = `Querying 3PL API for <b>${awb}</b>...`;
+
+            try {
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    box.innerHTML = `
+                        <div><b>AWB:</b> <code>${res.awb}</code></div>
+                        <div><b>Partner:</b> ${res.courierName || res.courier}</div>
+                        <div><b>Status:</b> <span class="badge badge-comp">${res.status || 'Active'}</span></div>
+                        <div><b>Location:</b> ${res.city || res.destination || 'N/A'}</div>
+                    `;
+                } else {
+                    box.innerHTML = "<span style='color:var(--danger);'>Tracking not available</span>";
+                }
+            } catch(e) { box.innerHTML = "Error fetching tracking"; }
+        }
+
+        function openAddRequestModal() { document.getElementById("addModal").style.display = "flex"; }
+        function openPickupModal(rowId, orderId) {
+            document.getElementById("pickupTargetRow").value = rowId;
+            document.getElementById("pickupTargetOrder").innerText = orderId;
+            document.getElementById("pickupReturnOrderId").value = "";
+            document.getElementById("pickupReturnAwb").value = "";
+            document.getElementById("pickupModal").style.display = "flex";
+        }
+        function openDispatchModal(rowId, returnAwb) {
+            document.getElementById("dispatchTargetRow").value = rowId;
+            document.getElementById("dispatchTargetAwb").innerText = returnAwb;
+            document.getElementById("dispatchNewOrderId").value = "";
+            document.getElementById("dispatchNewAwb").value = "";
+            document.getElementById("dispatchModal").style.display = "flex";
+        }
+        function closeModals() {
+            document.querySelectorAll(".modal-wrap").forEach(m => m.style.display = "none");
+        }
+
+        async function submitAddRequest() {
+            const orderId = document.getElementById("addOrderId").value.trim();
+            const mobile = document.getElementById("addMobile").value.trim();
+            const originalAwb = document.getElementById("addOriginalAwb").value.trim();
+            const description = document.getElementById("addDescription").value.trim();
+
+            if (!orderId || !mobile || !originalAwb) return toast("Fill all required fields!");
+            closeModals();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "addExchangeRequest", payload: { orderId, mobile, originalAwb, description } })
+            });
+            toast("Request Saved!");
+            fetchExchangeData();
+        }
+
+        async function submitReturnPickup() {
+            const rowId = document.getElementById("pickupTargetRow").value;
+            const returnOrderId = document.getElementById("pickupReturnOrderId").value.trim();
+            const returnAwb = document.getElementById("pickupReturnAwb").value.trim();
+
+            if (!returnOrderId || !returnAwb) return toast("Enter Return Details!");
+            closeModals();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "markReturnPickup", payload: { rowId, returnOrderId, returnAwb } })
+            });
+            toast("Pickup Updated!");
+            fetchExchangeData();
+        }
+
+        async function submitCompleteDispatch() {
+            const rowId = document.getElementById("dispatchTargetRow").value;
+            const dispatchOrderId = document.getElementById("dispatchNewOrderId").value.trim();
+            const dispatchAwb = document.getElementById("dispatchNewAwb").value.trim();
+
+            if (!dispatchOrderId || !dispatchAwb) return toast("Enter Dispatch Details!");
+            closeModals();
+
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "completeExchangeDispatch", payload: { rowId, dispatchOrderId, dispatchAwb } })
+            });
+            toast("Exchange Completed!");
+            fetchExchangeData();
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const res = await fetch(`${API_URL}?action=getDashboardCounts`).then(r => r.json());
+                if (res && res.success) {
+                    document.getElementById("cntTodayPickup").innerText = res.todayPickup || 0;
+                    document.getElementById("cntTodayReturn").innerText = res.todayReturn || 0;
+                    document.getElementById("cntTotalToday").innerText = res.totalToday || 0;
+                }
+            } catch (e) {}
+        }
+
+        function toast(msg) {
+            const existing = document.querySelector(".toast");
+            if (existing) existing.remove();
+            const t = document.createElement("div");
+            t.className = "toast";
+            t.innerText = msg;
+            document.body.appendChild(t);
+            setTimeout(() => { if (t.parentNode) t.remove(); }, 2600);
+        }
+
+        window.onload = function() {
+            fetchDashboardData();
+            fetchExchangeData();
+        };
+    </script>
+</body>
+
+</html>
