@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Enterprise Operations & Logistics Suite</title>
+    <title>Enterprise Scan ERP Console</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -16,16 +16,21 @@
             --text-sub: #64748b;
             --primary: #2563eb;
             --primary-soft: #eff6ff;
+            --primary-glow: rgba(37, 99, 235, 0.15);
             --success: #10b981;
             --success-soft: #dcfce7;
             --danger: #ef4444;
+            --danger-soft: #fee2e2;
             --warning: #f59e0b;
+            --warning-soft: #fef3c7;
             --border: #e2e8f0;
-            --radius-lg: 16px;
+            --border-hover: #cbd5e1;
+            --radius-lg: 18px;
             --radius-md: 12px;
             --radius-sm: 8px;
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-            --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
+            --shadow-glow: 0 10px 25px -5px rgba(37, 99, 235, 0.2);
         }
 
         * {
@@ -44,6 +49,7 @@
             justify-content: center;
             align-items: flex-start;
             padding: 12px;
+            padding-bottom: 40px;
         }
 
         .app-container {
@@ -55,12 +61,13 @@
             margin: 0 auto;
         }
 
-        /* Top Bar */
+        /* Top Header Navbar */
         .top-navbar {
-            background: var(--card-bg);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 12px 16px;
+            padding: 12px 18px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -68,25 +75,38 @@
         }
 
         .brand-title {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 800;
             color: var(--primary);
             display: flex;
             align-items: center;
             gap: 8px;
+            letter-spacing: -0.3px;
         }
 
         .status-badge {
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             padding: 4px 10px;
-            border-radius: 20px;
+            border-radius: 30px;
             background: var(--primary-soft);
             color: var(--primary);
             border: 1px solid #bfdbfe;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: pulse 1.8s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.75); } }
 
-        /* Stats Strip */
+        /* Metrics Strip */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -97,15 +117,16 @@
             background: var(--card-bg);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 10px 12px;
+            padding: 12px;
             text-align: center;
             box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
         }
-
-        .stat-val { font-size: 18px; font-weight: 800; display: block; }
+        .stat-card:active { transform: scale(0.98); }
+        .stat-val { font-size: 20px; font-weight: 800; display: block; letter-spacing: -0.5px; }
         .stat-lbl { font-size: 10px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-top: 2px; }
 
-        /* Unified Card Style */
+        /* Module Card Base */
         .module-card {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -122,7 +143,7 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
+            padding-bottom: 10px;
         }
 
         .module-title {
@@ -131,7 +152,8 @@
             color: var(--text-main);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
+            letter-spacing: -0.2px;
         }
 
         .header-actions {
@@ -144,19 +166,19 @@
             background: #f1f5f9;
             color: var(--text-sub);
             border: 1px solid var(--border);
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 4px 8px;
-            border-radius: 6px;
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-        .btn-reset-module:hover {
-            background: #e2e8f0;
-            color: var(--danger);
-        }
+        .btn-reset-module:hover { background: #fee2e2; color: var(--danger); border-color: #fca5a5; }
 
-        /* Mode Selector */
+        /* Mode Buttons */
         .mode-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -167,15 +189,15 @@
         }
 
         .btn-mode {
-            height: 42px;
+            height: 44px;
             border-radius: var(--radius-sm);
             border: none;
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-sub);
             background: transparent;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -185,58 +207,62 @@
         .btn-mode.active-pickup {
             background: var(--primary);
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
         }
 
         .btn-mode.active-return {
             background: var(--success);
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
         }
 
+        /* Tool Action Bar */
         .action-toolbar { display: flex; gap: 8px; }
         .tool-btn {
             flex: 1;
-            height: 38px;
+            height: 40px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border);
             background: #f8fafc;
             font-size: 12px;
             font-weight: 700;
+            color: var(--text-main);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
+            transition: all 0.15s;
         }
+        .tool-btn:active { background: #e2e8f0; }
 
         #reader {
             width: 100%;
-            height: 180px !important;
+            height: 190px !important;
             border-radius: var(--radius-md);
             overflow: hidden;
             border: 2px solid var(--primary);
             display: none;
             background: #000;
         }
-        #reader video { object-fit: cover !important; height: 180px !important; width: 100% !important; }
+        #reader video { object-fit: cover !important; height: 190px !important; width: 100% !important; }
 
         .input-box {
             width: 100%;
-            height: 44px;
+            height: 48px;
             border: 1.5px solid var(--border);
             border-radius: var(--radius-md);
             padding: 0 14px;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             outline: none;
             background: #fff;
             transition: all 0.2s;
         }
-        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-glow); }
 
         .btn-act {
-            height: 44px;
+            height: 46px;
             border-radius: var(--radius-md);
             border: none;
             font-size: 13px;
@@ -246,70 +272,106 @@
             align-items: center;
             justify-content: center;
             gap: 6px;
-            transition: 0.15s;
+            transition: transform 0.15s;
         }
         .btn-act:active { transform: scale(0.98); }
         .btn-save { background: var(--success); color: #fff; flex: 1; }
         .btn-reset { background: #64748b; color: #fff; flex: 0.45; }
 
-        /* Search Suggest Box */
-        .suggest-dropdown {
-            max-height: 150px;
-            overflow-y: auto;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+        /* Floating Finding / Timeout Modal */
+        #searchStatusModal {
             display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(4px);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
-        .suggest-item {
-            padding: 8px 12px;
-            border-bottom: 1px solid #f1f5f9;
-            cursor: pointer;
-            font-size: 12px;
+        .search-modal-card {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: var(--shadow-glow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
         }
-        .suggest-item:hover { background: #f8fafc; }
+        .timer-circle {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Navigation Segmented Controls */
+        /* Save Success Card Animation */
+        .save-indicator-banner {
+            display: none;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            background: var(--success-soft);
+            border: 1px solid #86efac;
+            color: #166534;
+            font-size: 13px;
+            font-weight: 800;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Segmented Nav */
         .seg-nav {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
         }
         .seg-btn {
-            height: 36px;
+            height: 38px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border);
             background: #f8fafc;
             font-size: 11px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-sub);
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s;
         }
         .seg-btn.active {
             background: var(--primary);
             color: #fff;
             border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
         }
 
-        /* Queue Card Items */
+        /* Queue List Items */
         .queue-item {
             background: #f8fafc;
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 10px 12px;
+            padding: 12px;
             font-size: 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            transition: transform 0.15s;
         }
+        .queue-item:hover { background: #fff; border-color: var(--border-hover); }
 
         .badge {
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 6px;
             font-size: 10px;
             font-weight: 800;
             display: inline-block;
+            letter-spacing: 0.3px;
         }
         .badge-req { background: #fef3c7; color: #b45309; }
         .badge-disp { background: #e0f2fe; color: #0369a1; }
@@ -320,12 +382,28 @@
             background: #eff6ff;
             color: #0284c7;
             border: 1px solid #bae6fd;
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 800;
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 6px;
             cursor: pointer;
         }
+
+        .suggest-dropdown {
+            max-height: 150px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+        .suggest-item {
+            padding: 9px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .suggest-item:hover { background: #f8fafc; }
 
         /* Toast */
         .toast {
@@ -340,7 +418,7 @@
             font-size: 12px;
             font-weight: 700;
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-            z-index: 99999;
+            z-index: 999999;
         }
 
         /* Modal Backdrop */
@@ -378,7 +456,7 @@
             <div class="brand-title">
                 <span>📲</span> SCAN CONSOLE
             </div>
-            <div class="status-badge">ERP v2.5 Suite</div>
+            <div class="status-badge">Ultra Fast Engine</div>
         </div>
 
         <!-- Metrics Strip -->
@@ -409,12 +487,14 @@
                 </div>
             </div>
 
+            <!-- Mode Selector -->
             <div class="mode-container">
                 <button id="btnPickup" class="btn-mode" onclick="setMode('Pickup')">📦 Pickup Mode</button>
                 <button id="btnReturn" class="btn-mode" onclick="setMode('Return')">↩️ Return Mode</button>
             </div>
 
-            <div id="interactiveConsole" style="display:none; flex-direction:column; gap:10px;">
+            <!-- Scanner Workspace -->
+            <div id="interactiveConsole" style="display:none; flex-direction:column; gap:12px;">
                 <div class="action-toolbar">
                     <button class="tool-btn" onclick="toggleCamera()">
                         <span>📷</span> <span id="camBtnText">Start Camera</span>
@@ -427,12 +507,18 @@
                 <div id="reader"></div>
 
                 <input id="awbInput" class="input-box" placeholder="Scan Barcode / Enter AWB Number..." autocomplete="off">
-                <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+                <input id="orderInput" class="input-box" placeholder="Shopify Order ID (Auto-fetched or Manual)" style="display:none;">
 
-                <div id="previewCard" style="display:none; padding:10px; border-radius:8px; font-size:12px; font-weight:700;"></div>
+                <!-- Real-time Verification Card -->
+                <div id="previewCard" style="display:none; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:800;"></div>
+
+                <!-- Instant Save Banner -->
+                <div id="saveSuccessBanner" class="save-indicator-banner">
+                    <span>✅</span> Data Saved to Google Sheet Successfully! Screen ready for next scan.
+                </div>
 
                 <div style="display:flex; gap:8px;">
-                    <button class="btn-act btn-save" onclick="saveEntry()">💾 Save Entry</button>
+                    <button class="btn-act btn-save" id="btnSaveSubmit" onclick="saveEntry()">💾 Save Entry</button>
                     <button class="btn-act btn-reset" onclick="resetScannerModule()">Reset</button>
                 </div>
             </div>
@@ -503,6 +589,17 @@
 
     </div>
 
+    <!-- 10 SECONDS TIMEOUT FIND POPUP -->
+    <div id="searchStatusModal">
+        <div class="search-modal-card">
+            <div class="timer-circle" id="modalSpinner"></div>
+            <h3 style="font-size:15px; font-weight:800;" id="searchModalHeading">Finding Shipment Data...</h3>
+            <p style="font-size:12px; color:var(--text-sub);" id="searchModalDesc">Querying 3PL gateway (Auto abort in 10s)</p>
+            <div style="font-size:18px; font-weight:800; color:var(--primary);" id="countdownTimer">10s</div>
+            <button class="btn-act btn-reset" style="width:100%; height:38px; display:none;" id="btnAbortManual" onclick="closeFindModal()">Continue Manually</button>
+        </div>
+    </div>
+
     <!-- MODAL: ADD EXCHANGE REQUEST -->
     <div id="addModal" class="modal-wrap">
         <div class="modal-content">
@@ -563,7 +660,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzuybVBoe3az-aFhk0nPDz1356Df-NFRv6XbeXdBVUXzUva8z5GdFtUEO-nmtdTkDKM/exec"; // Apni Web App URL yahan paste karein
+        const API_URL = "https://script.google.com/macros/s/AKfycbx2geerQ4nJ9oM_xL6hFi4FIVhhKlgH_x21NuFHGGwaoe1D4sBic4zNOTRK1pz4eaJP/exec"; // Apni Web App URL yahan paste karein
 
         let currentMode = "";
         let currentTracking = null;
@@ -575,7 +672,10 @@
         let activeExTab = "REQUESTED";
         let activeRtoTab = "PENDING";
 
-        /* AUDIO FEEDBACK */
+        let findAbortController = null;
+        let findInterval = null;
+
+        /* WEB AUDIO ENGINE */
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
@@ -616,15 +716,14 @@
             } catch(e) {}
         }
 
-        /* =====================================================
-           INDIVIDUAL RESET FUNCTIONS FOR ALL 4 MODULES
-        ===================================================== */
+        /* RESET MODULES */
         function resetScannerModule() {
             stopCamera();
             document.getElementById("awbInput").value = "";
             document.getElementById("orderInput").value = "";
             document.getElementById("orderInput").style.display = "none";
             document.getElementById("previewCard").style.display = "none";
+            document.getElementById("saveSuccessBanner").style.display = "none";
             currentTracking = null;
             currentMode = "";
             document.getElementById("btnPickup").className = "btn-mode";
@@ -656,9 +755,7 @@
             toast("RTO reconciliation audited");
         }
 
-        /* =====================================================
-           MODULE 1: WORKFLOW SCANNER
-        ===================================================== */
+        /* MODULE 1: SCANNER CONTROLS */
         function setMode(mode) {
             currentMode = mode;
             document.getElementById("interactiveConsole").style.display = "flex";
@@ -705,7 +802,7 @@
                     (decodedText) => {
                         document.getElementById("awbInput").value = decodedText;
                         stopCamera();
-                        trackShipment();
+                        trackShipmentWithTimeout();
                     }
                 );
             } catch (err) {
@@ -725,16 +822,46 @@
         }
 
         document.getElementById("awbInput").addEventListener("keydown", (e) => {
-            if (e.key === "Enter") { e.preventDefault(); trackShipment(); }
+            if (e.key === "Enter") { 
+                e.preventDefault(); 
+                trackShipmentWithTimeout(); 
+            }
         });
 
-        async function trackShipment() {
+        /* 10 SECONDS TIMEOUT FIND POPUP ENGINE */
+        async function trackShipmentWithTimeout() {
             const awb = document.getElementById("awbInput").value.trim();
-            if (!awb) return toast("Enter AWB Number!");
+            if (!awb) return toast("Enter or Scan AWB first!");
+
+            document.getElementById("searchStatusModal").style.display = "flex";
+            document.getElementById("searchModalHeading").innerText = "Finding Shipment Data...";
+            document.getElementById("searchModalDesc").innerText = `Querying 3PL gateway for ${awb}`;
+            document.getElementById("btnAbortManual").style.display = "none";
+            document.getElementById("modalSpinner").style.display = "block";
+
+            let countdown = 10;
+            document.getElementById("countdownTimer").innerText = countdown + "s";
+
+            findAbortController = new AbortController();
+
+            clearInterval(findInterval);
+            findInterval = setInterval(() => {
+                countdown--;
+                document.getElementById("countdownTimer").innerText = countdown + "s";
+                if (countdown <= 0) {
+                    clearInterval(findInterval);
+                    handleFindTimeout();
+                }
+            }, 1000);
 
             try {
-                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const res = await fetch(`${API_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`, {
+                    signal: findAbortController.signal
+                });
                 const data = await res.json();
+                
+                clearInterval(findInterval);
+                closeFindModal();
 
                 const prevBox = document.getElementById("previewCard");
                 const ordInp = document.getElementById("orderInput");
@@ -744,25 +871,54 @@
                     prevBox.style.display = "block";
                     prevBox.style.background = "var(--primary-soft)";
                     prevBox.style.color = "#1e40af";
-                    prevBox.innerHTML = `✅ ${data.courier || 'Verified'} | Order: ${data.orderId || 'N/A'}`;
+                    prevBox.innerHTML = `✅ Found: ${data.courier || 'Verified'} | Order: ${data.orderId || 'N/A'} | Status: ${data.status || 'Active'}`;
                     ordInp.value = data.orderId || "";
                 } else {
                     currentTracking = null;
                     prevBox.style.display = "block";
                     prevBox.style.background = "#fff7ed";
                     prevBox.style.color = "#9a3412";
-                    prevBox.innerHTML = `⚠️ Manual Entry Required`;
+                    prevBox.innerHTML = `⚠️ Manual Entry Mode (Courier data not available)`;
                 }
                 ordInp.style.display = "block";
+                document.getElementById("btnSaveSubmit").focus();
             } catch (err) {
-                document.getElementById("orderInput").style.display = "block";
+                if (err.name === 'AbortError') return;
+                clearInterval(findInterval);
+                handleFindTimeout();
             }
         }
 
+        function handleFindTimeout() {
+            if (findAbortController) findAbortController.abort();
+            document.getElementById("modalSpinner").style.display = "none";
+            document.getElementById("searchModalHeading").innerText = "⚠️ 10s Time Expired!";
+            document.getElementById("searchModalDesc").innerText = "API took too long. Screen unlocked for manual entry.";
+            document.getElementById("countdownTimer").innerText = "Failed";
+            document.getElementById("btnAbortManual").style.display = "block";
+
+            document.getElementById("orderInput").style.display = "block";
+            const prevBox = document.getElementById("previewCard");
+            prevBox.style.display = "block";
+            prevBox.style.background = "#fee2e2";
+            prevBox.style.color = "#991b1b";
+            prevBox.innerHTML = "⚠️ API Timeout (10s limit exceeded). Proceeding with Manual Entry.";
+        }
+
+        function closeFindModal() {
+            clearInterval(findInterval);
+            document.getElementById("searchStatusModal").style.display = "none";
+        }
+
+        /* FAST SAVE ENTRY & SCREEN FREE ENGINE */
         async function saveEntry() {
-            if (!currentMode) return toast("Select Mode First!");
+            if (!currentMode) return toast("Select Mode (Pickup/Return) first!");
             const awb = document.getElementById("awbInput").value.trim();
             if (!awb) return toast("AWB Missing!");
+
+            const saveBtn = document.getElementById("btnSaveSubmit");
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Saving Data...";
 
             try {
                 const res = await fetch(API_URL, {
@@ -789,6 +945,9 @@
                 });
 
                 const data = await res.json();
+                saveBtn.disabled = false;
+                saveBtn.innerText = "💾 Save Entry";
+
                 if (data.duplicate) {
                     playDuplicateAudio();
                     toast(data.message);
@@ -797,19 +956,34 @@
 
                 if (data.success) {
                     playSuccessAudio();
-                    toast("🎉 Saved Successfully!");
-                    resetScannerModule();
+                    
+                    // Show Instant Save Screenfree Banner
+                    const banner = document.getElementById("saveSuccessBanner");
+                    banner.style.display = "flex";
+                    setTimeout(() => { banner.style.display = "none"; }, 3500);
+
+                    // Instant Screen Reset for Next Work
+                    document.getElementById("awbInput").value = "";
+                    document.getElementById("orderInput").value = "";
+                    document.getElementById("orderInput").style.display = "none";
+                    document.getElementById("previewCard").style.display = "none";
+                    currentTracking = null;
+                    focusInput();
+
+                    // Background Sync Updates
                     fetchDashboardData();
                     fetchRtoData();
                 } else {
                     toast(data.message || "Failed to save");
                 }
-            } catch(e) { toast("Server communication error"); }
+            } catch(e) {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "💾 Save Entry";
+                toast("Server communication failed");
+            }
         }
 
-        /* =====================================================
-           MODULE 2: SMART SEARCH
-        ===================================================== */
+        /* MODULE 2: SEARCH ENGINE */
         async function onSearchTyping(val) {
             val = val.trim();
             const suggBox = document.getElementById("searchSuggestions");
@@ -836,9 +1010,7 @@
 
             try {
                 const res = await fetch(`${API_URL}?action=searchOrder&keyword=${encodeURIComponent(awbKey)}`).then(r => r.json());
-                if (res.success) {
-                    renderSearchRecordCard(res);
-                }
+                if (res.success) renderSearchRecordCard(res);
             } catch(e) {}
         }
 
@@ -888,9 +1060,7 @@
             } catch(e) {}
         }
 
-        /* =====================================================
-           MODULE 3: ADVANCED EXCHANGE ERP
-        ===================================================== */
+        /* MODULE 3: EXCHANGE MANAGEMENT */
         async function fetchExchangeData() {
             try {
                 const res = await fetch(`${API_URL}?action=getExchangeReport`).then(r => r.json());
@@ -955,16 +1125,13 @@
                         </div>
                         ${r.returnAwb ? `<div>Return AWB: <code>\${r.returnAwb}</code> <button class="btn-chip" onclick="quickTrackModal('\${r.returnAwb}')">📡 Track</button></div>` : ''}
                         ${r.dispatchAwb ? `<div>Dispatch AWB: <code>\${r.dispatchAwb}</code> <button class="btn-chip" onclick="quickTrackModal('\${r.dispatchAwb}')">📡 Track</button></div>` : ''}
-                        ${r.description ? `<div style="color:var(--text-sub); font-size:11px;">Note: \${r.description}</div>` : ''}
                         ${actionHtml}
                     </div>
                 `;
             }).join('');
         }
 
-        /* =====================================================
-           MODULE 4: RTO RECONCILIATION ENGINE
-        ===================================================== */
+        /* MODULE 4: RTO RECONCILIATION */
         async function fetchRtoData() {
             try {
                 const res = await fetch(`${API_URL}?action=getRtoReconciliation`).then(r => r.json());
@@ -997,11 +1164,11 @@
             list.innerHTML = data.map(r => {
                 const isPending = activeRtoTab === "PENDING";
                 return `
-                    <div class="queue-item" style="border-left: 3px solid ${isPending ? 'var(--danger)' : 'var(--success)'};">
+                    <div class="queue-item" style="border-left: 3.5px solid ${isPending ? 'var(--danger)' : 'var(--success)'};">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <b>#${r.orderId || 'Manual'}</b>
                             <span class="badge ${isPending ? 'badge-danger' : 'badge-comp'}">
-                                ${isPending ? '⏳ Awaiting Warehouse' : '✅ Received Scan'}
+                                ${isPending ? '⏳ Awaiting Warehouse' : '✅ In Warehouse'}
                             </span>
                         </div>
                         <div>
@@ -1045,18 +1212,16 @@
                 const data = await res.json();
                 if (data.success) {
                     playSuccessAudio();
-                    toast("🎉 Marked Return in Sheet!");
+                    toast("🎉 Marked Return in Warehouse!");
                     fetchDashboardData();
                     fetchRtoData();
                 } else {
                     toast(data.message || "Failed to mark return");
                 }
-            } catch(e) {
-                toast("Network Error");
-            }
+            } catch(e) { toast("Network Error"); }
         }
 
-        /* 3PL POPUP */
+        /* QUICK 3PL MODAL */
         async function quickTrackModal(awb) {
             document.getElementById("quickTrackModal").style.display = "flex";
             const box = document.getElementById("quickTrackContent");
