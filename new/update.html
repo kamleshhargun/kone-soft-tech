@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Logistics Operations & Exchange Suite</title>
+    <title>Enterprise Operations & Logistics Suite</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -134,6 +134,28 @@
             gap: 6px;
         }
 
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reset-module {
+            background: #f1f5f9;
+            color: var(--text-sub);
+            border: 1px solid var(--border);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-reset-module:hover {
+            background: #e2e8f0;
+            color: var(--danger);
+        }
+
         /* Mode Selector */
         .mode-container {
             display: grid;
@@ -247,13 +269,13 @@
         }
         .suggest-item:hover { background: #f8fafc; }
 
-        /* Exchange Navigation Tabs */
-        .ex-nav {
+        /* Navigation Segmented Controls */
+        .seg-nav {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
         }
-        .ex-tab-btn {
+        .seg-btn {
             height: 36px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border);
@@ -262,8 +284,9 @@
             font-weight: 700;
             color: var(--text-sub);
             cursor: pointer;
+            transition: 0.2s;
         }
-        .ex-tab-btn.active {
+        .seg-btn.active {
             background: var(--primary);
             color: #fff;
             border-color: var(--primary);
@@ -291,6 +314,7 @@
         .badge-req { background: #fef3c7; color: #b45309; }
         .badge-disp { background: #e0f2fe; color: #0369a1; }
         .badge-comp { background: #dcfce7; color: #15803d; }
+        .badge-danger { background: #fee2e2; color: #b91c1c; }
 
         .btn-chip {
             background: #eff6ff;
@@ -354,7 +378,7 @@
             <div class="brand-title">
                 <span>📲</span> SCAN CONSOLE
             </div>
-            <div class="status-badge">ERP v2.4</div>
+            <div class="status-badge">ERP v2.5 Suite</div>
         </div>
 
         <!-- Metrics Strip -->
@@ -376,10 +400,13 @@
         <!-- ==============================================
              MODULE 1: OPERATIONAL SCAN CONSOLE
         ============================================== -->
-        <div class="module-card">
+        <div class="module-card" id="moduleScanner">
             <div class="module-header">
-                <div class="module-title"><span>⚡</span> OPERATIONAL SCANNER</div>
-                <span id="activeModeText" style="font-size:11px; font-weight:800; color:var(--text-sub);">SELECT MODE</span>
+                <div class="module-title"><span>⚡</span> 1. OPERATIONAL SCANNER</div>
+                <div class="header-actions">
+                    <span id="activeModeText" style="font-size:11px; font-weight:800; color:var(--text-sub);">SELECT MODE</span>
+                    <button class="btn-reset-module" onclick="resetScannerModule()" title="Reset Scanner">🔄 Reset</button>
+                </div>
             </div>
 
             <div class="mode-container">
@@ -406,7 +433,7 @@
 
                 <div style="display:flex; gap:8px;">
                     <button class="btn-act btn-save" onclick="saveEntry()">💾 Save Entry</button>
-                    <button class="btn-act btn-reset" onclick="resetConsole()">Reset</button>
+                    <button class="btn-act btn-reset" onclick="resetScannerModule()">Reset</button>
                 </div>
             </div>
         </div>
@@ -414,12 +441,13 @@
         <!-- ==============================================
              MODULE 2: SMART SEARCH (SHEET + LIVE GATEWAY)
         ============================================== -->
-        <div class="module-card">
+        <div class="module-card" id="moduleSearch">
             <div class="module-header">
-                <div class="module-title"><span>🔍</span> SMART SEARCH & LIVE GATEWAY</div>
+                <div class="module-title"><span>🔍</span> 2. SMART SEARCH & GATEWAY</div>
+                <button class="btn-reset-module" onclick="resetSearchModule()" title="Clear Search">🔄 Reset</button>
             </div>
 
-            <input id="searchInput" class="input-box" placeholder="Search by Order ID, AWB or Name..." oninput="onSearchTyping(this.value)">
+            <input id="searchInput" class="input-box" placeholder="Search Order ID, AWB or Customer..." oninput="onSearchTyping(this.value)">
             <div id="searchSuggestions" class="suggest-dropdown"></div>
 
             <div id="searchResultDisplay" style="font-size:12px; color:var(--text-sub); text-align:center; padding:10px;">
@@ -430,20 +458,46 @@
         <!-- ==============================================
              MODULE 3: ADVANCED EXCHANGE LIFECYCLE
         ============================================== -->
-        <div class="module-card">
+        <div class="module-card" id="moduleExchange">
             <div class="module-header">
-                <div class="module-title"><span>🔄</span> EXCHANGE LIFECYCLE ERP</div>
-                <button class="btn-chip" style="font-size:11px;" onclick="openAddRequestModal()">➕ New Request</button>
+                <div class="module-title"><span>🔄</span> 3. EXCHANGE LIFECYCLE ERP</div>
+                <div class="header-actions">
+                    <button class="btn-chip" onclick="openAddRequestModal()">➕ Add</button>
+                    <button class="btn-reset-module" onclick="resetExchangeModule()" title="Refresh Exchange">🔄 Reset</button>
+                </div>
             </div>
 
-            <div class="ex-nav">
-                <button id="exTabReq" class="ex-tab-btn active" onclick="switchExTab('REQUESTED')">New (<span id="cntReq">0</span>)</button>
-                <button id="exTabDisp" class="ex-tab-btn" onclick="switchExTab('DISPATCH_PENDING')">Pending (<span id="cntDisp">0</span>)</button>
-                <button id="exTabComp" class="ex-tab-btn" onclick="switchExTab('COMPLETED')">Done (<span id="cntComp">0</span>)</button>
+            <div class="seg-nav">
+                <button id="exTabReq" class="seg-btn active" onclick="switchExTab('REQUESTED')">New (<span id="cntReq">0</span>)</button>
+                <button id="exTabDisp" class="seg-btn" onclick="switchExTab('DISPATCH_PENDING')">Pending (<span id="cntDisp">0</span>)</button>
+                <button id="exTabComp" class="seg-btn" onclick="switchExTab('COMPLETED')">Done (<span id="cntComp">0</span>)</button>
             </div>
 
             <div id="exchangeQueueList" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;">
                 <div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">Loading Exchange Requests...</div>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             MODULE 4: RTO RECONCILIATION ENGINE
+        ============================================== -->
+        <div class="module-card" id="moduleRto">
+            <div class="module-header">
+                <div class="module-title"><span>📦</span> 4. RTO RECONCILIATION</div>
+                <button class="btn-reset-module" onclick="resetRtoModule()" title="Refresh RTO">🔄 Reset</button>
+            </div>
+
+            <div class="seg-nav" style="grid-template-columns: 1fr 1fr;">
+                <button id="rtoTabPending" class="seg-btn active" onclick="switchRtoTab('PENDING')">
+                    ⏳ Pending Arrival (<span id="cntRtoPending">0</span>)
+                </button>
+                <button id="rtoTabReceived" class="seg-btn" onclick="switchRtoTab('RECEIVED')">
+                    ✅ In Warehouse (<span id="cntRtoReceived">0</span>)
+                </button>
+            </div>
+
+            <div id="rtoQueueList" style="display:flex; flex-direction:column; gap:8px; max-height:280px; overflow-y:auto;">
+                <div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">Compiling RTO audit records...</div>
             </div>
         </div>
 
@@ -509,7 +563,7 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzS3P6kRw8z2TqE8-EKmN7b7lbFNt5dsK3d63FuiFej0azPG1KZA36y-yTct-VN3Cfj/exec"; // Apni Web App URL yahan paste karein
+        const API_URL = "https://script.google.com/macros/s/AKfycbzuybVBoe3az-aFhk0nPDz1356Df-NFRv6XbeXdBVUXzUva8z5GdFtUEO-nmtdTkDKM/exec"; // Apni Web App URL yahan paste karein
 
         let currentMode = "";
         let currentTracking = null;
@@ -517,7 +571,9 @@
         let isCameraActive = false;
         let audioCtx = null;
         let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let rtoCache = { pending: [], received: [] };
         let activeExTab = "REQUESTED";
+        let activeRtoTab = "PENDING";
 
         /* AUDIO FEEDBACK */
         function initAudio() {
@@ -560,7 +616,49 @@
             } catch(e) {}
         }
 
-        /* WORKFLOW SCANNER */
+        /* =====================================================
+           INDIVIDUAL RESET FUNCTIONS FOR ALL 4 MODULES
+        ===================================================== */
+        function resetScannerModule() {
+            stopCamera();
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("previewCard").style.display = "none";
+            currentTracking = null;
+            currentMode = "";
+            document.getElementById("btnPickup").className = "btn-mode";
+            document.getElementById("btnReturn").className = "btn-mode";
+            document.getElementById("activeModeText").innerText = "SELECT MODE";
+            document.getElementById("activeModeText").style.color = "var(--text-sub)";
+            document.getElementById("interactiveConsole").style.display = "none";
+            toast("Scanner console reset");
+        }
+
+        function resetSearchModule() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("searchSuggestions").style.display = "none";
+            document.getElementById("searchResultDisplay").innerHTML = "Type at least 3 characters to search records.";
+            toast("Search console cleared");
+        }
+
+        function resetExchangeModule() {
+            document.getElementById("addOrderId").value = "";
+            document.getElementById("addMobile").value = "";
+            document.getElementById("addOriginalAwb").value = "";
+            document.getElementById("addDescription").value = "";
+            fetchExchangeData();
+            toast("Exchange queue refreshed");
+        }
+
+        function resetRtoModule() {
+            fetchRtoData();
+            toast("RTO reconciliation audited");
+        }
+
+        /* =====================================================
+           MODULE 1: WORKFLOW SCANNER
+        ===================================================== */
         function setMode(mode) {
             currentMode = mode;
             document.getElementById("interactiveConsole").style.display = "flex";
@@ -700,25 +798,18 @@
                 if (data.success) {
                     playSuccessAudio();
                     toast("🎉 Saved Successfully!");
-                    resetConsole();
+                    resetScannerModule();
                     fetchDashboardData();
+                    fetchRtoData();
                 } else {
                     toast(data.message || "Failed to save");
                 }
-            } catch(e) { toast("Server error"); }
+            } catch(e) { toast("Server communication error"); }
         }
 
-        function resetConsole() {
-            stopCamera();
-            document.getElementById("awbInput").value = "";
-            document.getElementById("orderInput").value = "";
-            document.getElementById("orderInput").style.display = "none";
-            document.getElementById("previewCard").style.display = "none";
-            currentTracking = null;
-            focusInput();
-        }
-
-        /* SMART SEARCH MODULE */
+        /* =====================================================
+           MODULE 2: SMART SEARCH
+        ===================================================== */
         async function onSearchTyping(val) {
             val = val.trim();
             const suggBox = document.getElementById("searchSuggestions");
@@ -792,11 +883,14 @@
                 if (res.success) {
                     toast(res.skipped ? `Row Locked (${res.reason})` : "🎉 Synced to Sheet!");
                     selectSearchResult(awb);
+                    fetchRtoData();
                 }
             } catch(e) {}
         }
 
-        /* ADVANCED EXCHANGE ERP */
+        /* =====================================================
+           MODULE 3: ADVANCED EXCHANGE ERP
+        ===================================================== */
         async function fetchExchangeData() {
             try {
                 const res = await fetch(`${API_URL}?action=getExchangeReport`).then(r => r.json());
@@ -812,7 +906,7 @@
 
         function switchExTab(tab) {
             activeExTab = tab;
-            document.querySelectorAll(".ex-tab-btn").forEach(b => b.classList.remove("active"));
+            document.querySelectorAll("#moduleExchange .seg-btn").forEach(b => b.classList.remove("active"));
             if (tab === "REQUESTED") document.getElementById("exTabReq").classList.add("active");
             if (tab === "DISPATCH_PENDING") document.getElementById("exTabDisp").classList.add("active");
             if (tab === "COMPLETED") document.getElementById("exTabComp").classList.add("active");
@@ -868,6 +962,101 @@
             }).join('');
         }
 
+        /* =====================================================
+           MODULE 4: RTO RECONCILIATION ENGINE
+        ===================================================== */
+        async function fetchRtoData() {
+            try {
+                const res = await fetch(`${API_URL}?action=getRtoReconciliation`).then(r => r.json());
+                if (res.success) {
+                    rtoCache = res;
+                    document.getElementById("cntRtoPending").innerText = res.counts.pending || 0;
+                    document.getElementById("cntRtoReceived").innerText = res.counts.received || 0;
+                    renderRtoList();
+                }
+            } catch(e) {}
+        }
+
+        function switchRtoTab(tab) {
+            activeRtoTab = tab;
+            document.querySelectorAll("#moduleRto .seg-btn").forEach(b => b.classList.remove("active"));
+            if (tab === "PENDING") document.getElementById("rtoTabPending").classList.add("active");
+            if (tab === "RECEIVED") document.getElementById("rtoTabReceived").classList.add("active");
+            renderRtoList();
+        }
+
+        function renderRtoList() {
+            const list = document.getElementById("rtoQueueList");
+            const data = activeRtoTab === "PENDING" ? rtoCache.pending : rtoCache.received;
+
+            if (!data || data.length === 0) {
+                list.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-sub); font-size:12px;">No records in ${activeRtoTab.toLowerCase()} RTO queue.</div>`;
+                return;
+            }
+
+            list.innerHTML = data.map(r => {
+                const isPending = activeRtoTab === "PENDING";
+                return `
+                    <div class="queue-item" style="border-left: 3px solid ${isPending ? 'var(--danger)' : 'var(--success)'};">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b>#${r.orderId || 'Manual'}</b>
+                            <span class="badge ${isPending ? 'badge-danger' : 'badge-comp'}">
+                                ${isPending ? '⏳ Awaiting Warehouse' : '✅ Received Scan'}
+                            </span>
+                        </div>
+                        <div>
+                            AWB: <code>${r.awb}</code>
+                            <button class="btn-chip" onclick="quickTrackModal('${r.awb}')">📡 Track</button>
+                        </div>
+                        <div style="font-size:11px; color:var(--text-sub);">
+                            Courier: <b>${r.courier || 'N/A'}</b> | Status: <b>${r.status}</b> | ${r.city || ''}
+                        </div>
+                        ${isPending ? `
+                            <button class="btn-act btn-save" style="height:32px; font-size:11px; margin-top:2px;" onclick="quickMarkRtoReceived('${r.awb}', '${r.orderId}', '${r.courier}', '${r.city}')">
+                                📥 Mark Return Scanned
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function quickMarkRtoReceived(awb, orderId, courier, city) {
+            if (!confirm(`Save AWB ${awb} as RETURN in Warehouse?`)) return;
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "saveEntry",
+                        payload: {
+                            type: "Return",
+                            awb: awb,
+                            orderId: orderId,
+                            courier: courier || "MANUAL",
+                            status: "RTO Received",
+                            city: city || "",
+                            isRTO: true
+                        }
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    playSuccessAudio();
+                    toast("🎉 Marked Return in Sheet!");
+                    fetchDashboardData();
+                    fetchRtoData();
+                } else {
+                    toast(data.message || "Failed to mark return");
+                }
+            } catch(e) {
+                toast("Network Error");
+            }
+        }
+
+        /* 3PL POPUP */
         async function quickTrackModal(awb) {
             document.getElementById("quickTrackModal").style.display = "flex";
             const box = document.getElementById("quickTrackContent");
@@ -983,6 +1172,7 @@
         window.onload = function() {
             fetchDashboardData();
             fetchExchangeData();
+            fetchRtoData();
         };
     </script>
 </body>
