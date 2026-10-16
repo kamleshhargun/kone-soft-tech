@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Harsidhi Logistics Enterprise ERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: #2563eb;
+            --primary-soft: #eff6ff;
+            --success: #10b981;
+            --success-soft: #dcfce7;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        html, body { height: 100%; width: 100vw; background: var(--bg-body); color: var(--text-main); overflow: hidden; }
+        .app-shell { display: flex; flex-direction: column; height: 100%; width: 100%; max-width: 1280px; margin: 0 auto; background: #fff; }
+
+        .header-bar { background: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .brand-text { font-weight: 800; font-size: 16px; color: var(--primary); letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+        .user-pill { background: var(--primary-soft); border: 1px solid #bfdbfe; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: var(--primary); }
+
+        .nav-tabs-wrapper { background: #fff; padding: 8px 16px; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--border); flex-shrink: 0; justify-content: space-between; }
+        .nav-tabs-wrapper::-webkit-scrollbar { display: none; }
+        .tab-item { flex: 1; min-width: 130px; max-width: 220px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.2s ease; }
+        .tab-item .icon { font-size: 16px; }
+        .tab-item .title { font-size: 12px; font-weight: 700; color: var(--text-sub); white-space: nowrap; }
+        .tab-item.active { background: var(--primary-soft); border-color: var(--primary); box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12); }
+        .tab-item.active .title { color: var(--primary); }
+
+        .metrics-strip { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; scrollbar-width: none; flex-shrink: 0; background: #f8fafc; border-bottom: 1px solid var(--border); }
+        .metrics-strip::-webkit-scrollbar { display: none; }
+        .m-card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; min-width: 105px; flex: 1; display: flex; flex-direction: column; box-shadow: var(--shadow); }
+        .m-val { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .m-lbl { font-size: 10px; font-weight: 600; color: var(--text-sub); margin-top: 2px; text-transform: uppercase; }
+
+        .view-viewport { flex: 1; position: relative; overflow: hidden; width: 100%; padding: 12px; background: #f8fafc; }
+        .view-page { position: absolute; inset: 12px; display: none; flex-direction: column; gap: 12px; height: calc(100% - 24px); width: calc(100% - 24px); }
+        .view-page.active { display: flex; }
+
+        .scan-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; display: flex; flex-direction: column; gap: 10px; width: 100%; box-shadow: var(--shadow); }
+        .mode-row { display: flex; gap: 10px; width: 100%; }
+        .btn-mode { flex: 1; height: 44px; border-radius: 10px; border: 2px solid; font-weight: 800; font-size: 13px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-pickup { border-color: var(--primary); color: var(--primary); }
+        .btn-return { border-color: var(--success); color: var(--success); }
+        .btn-pickup.active { background: var(--primary); color: #fff; }
+        .btn-return.active { background: var(--success); color: #fff; }
+
+        .input-box { width: 100%; height: 42px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; font-size: 13px; outline: none; background: #fff; font-weight: 600; color: var(--text-main); }
+        .input-box:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12); }
+
+        #reader { width: 100%; height: 140px !important; border-radius: 10px; overflow: hidden; border: 2px solid var(--primary); display: none; background: #000; }
+        #reader video { object-fit: cover !important; height: 140px !important; width: 100% !important; }
+
+        .action-row { display: flex; gap: 10px; width: 100%; }
+        .btn-act { flex: 1; height: 40px; border-radius: 8px; border: none; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; transition: 0.15s; }
+        .btn-act:hover { opacity: 0.92; }
+        .btn-save { background: var(--success); color: #fff; }
+        .btn-reset { background: #94a3b8; color: #fff; }
+
+        .btn-chip { background: #eff6ff; color: #0284c7; border: 1px solid #bae6fd; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; vertical-align: middle; margin-left: 4px; }
+        .btn-chip:hover { background: #0284c7; color: #fff; }
+
+        .recent-box-top { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; max-height: 100px; overflow-y: auto; width: 100%; box-shadow: var(--shadow); }
+        .recent-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; background: #f8fafc; border-radius: 6px; font-size: 12px; margin-bottom: 4px; border-left: 3px solid var(--primary); }
+
+        .card-panel { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; height: 100%; overflow-y: auto; box-shadow: var(--shadow); }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; }
+        .data-table th, .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .data-table th { color: var(--text-sub); font-weight: 700; font-size: 11px; text-transform: uppercase; background: #f8fafc; position: sticky; top: 0; z-index: 10; letter-spacing: 0.3px; }
+
+        .badge { padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-block; letter-spacing: 0.3px; }
+        .badge-req { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-disp { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-comp { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+
+        .filter-section-bulk { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 10px; align-items: flex-end; }
+        .stats-grid-bulk { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+        .stat-card-bulk { background: #fff; border: 1px solid var(--border); padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-card-bulk h4 { font-size: 11px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
+        .stat-card-bulk p { font-size: 20px; font-weight: 800; margin-top: 4px; }
+
+        .progress-bar-container { width: 100%; background: #e2e8f0; border-radius: 8px; height: 8px; overflow: hidden; display: none; }
+        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+
+        #loaderContainer { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.35); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .circle-loader-box { background: #fff; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .percent-text { font-size: 13px; font-weight: 800; color: var(--text-main); }
+
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 10px 20px; border-radius: 20px; font-weight: 700; font-size: 12px; z-index: 9999; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); }
+        .comm-link { text-decoration: none; font-size: 14px; margin-left: 4px; display: inline-block; }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <div class="header-bar">
+            <div class="brand-text"><span>📦</span> HARSIDHI LOGISTICS ERP (SUPABASE CLOUD)</div>
+            <div class="user-profile"><span class="user-pill">Active Live Database</span></div>
+        </div>
+
+        <div class="nav-tabs-wrapper">
+            <div id="tabNav1" class="tab-item active" onclick="switchViewPage('scanView')"><span class="icon">📲</span><span class="title">Scan Console</span></div>
+            <div id="tabNav2" class="tab-item" onclick="switchViewPage('searchView')"><span class="icon">🔍</span><span class="title">Order Lookup</span></div>
+            <div id="tabNav3" class="tab-item" onclick="switchViewPage('exchangeView')"><span class="icon">🔄</span><span class="title">Exchange ERP</span></div>
+            <div id="tabNav4" class="tab-item" onclick="switchViewPage('boxdView')"><span class="icon">📊</span><span class="title">BoxD Sync</span></div>
+            <div id="tabNav5" class="tab-item" onclick="switchViewPage('bulkView')"><span class="icon">🚀</span><span class="title">Bulk Tracker</span></div>
+        </div>
+
+        <!-- Metrics Strip Bar -->
+        <div class="metrics-strip">
+            <div class="m-card"><span class="m-val" id="cntTodayPickup">0</span><span class="m-lbl">Today Pickup</span></div>
+            <div class="m-card"><span class="m-val" id="cntTodayReturn">0</span><span class="m-lbl">Today Return</span></div>
+            <div class="m-card"><span class="m-val" id="cntYestPickup">0</span><span class="m-lbl">Yest. Pickup</span></div>
+            <div class="m-card"><span class="m-val" id="cntYestReturn">0</span><span class="m-lbl">Yest. Return</span></div>
+            <div class="m-card"><span class="m-val" id="cntMonthTotal" style="color:var(--primary);">0</span><span class="m-lbl">This Month</span></div>
+            <div class="m-card"><span class="m-val" id="cntTotalLifetime" style="color:var(--success);">0</span><span class="m-lbl">Lifetime Total</span></div>
+        </div>
+
+        <div class="view-viewport">
+
+            <!-- TAB 1: SCAN CONSOLE -->
+            <div id="scanView" class="view-page active">
+                <div class="recent-box-top">
+                    <div style="font-weight:700; font-size:11px; margin-bottom:4px; color:var(--text-sub);">📜 LAST SCANNED ITEMS</div>
+                    <div id="recentList"><div style="text-align:center; color:gray; font-size:11px; padding:4px;">No scans yet</div></div>
+                </div>
+
+                <div class="scan-card">
+                    <div style="font-weight:800; font-size:13px; color:var(--primary);">📲 OPERATIONAL SCAN CONSOLE</div>
+                    <div class="mode-row">
+                        <button id="btnPickup" class="btn-mode btn-pickup" onclick="setMode('Pickup')">📦 Pickup Mode</button>
+                        <button id="btnReturn" class="btn-mode btn-return" onclick="setMode('Return')">↩️ Return Mode</button>
+                    </div>
+
+                    <div id="scanPanelBox" style="display:none; flex-direction:column; gap:10px;">
+                        <div class="action-row">
+                            <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="toggleCamera()">📷 Toggle Camera</button>
+                            <button class="btn-act" style="background:#475569; color:#fff;" onclick="focusInput()">⌨ Focus Keyboard</button>
+                        </div>
+
+                        <div id="reader"></div>
+
+                        <input id="awbInput" class="input-box" placeholder="Scan AWB Barcode / Enter Number">
+                        <input id="orderInput" class="input-box" placeholder="Shopify Order ID" style="display:none;">
+
+                        <div id="resultPreview" style="display:none; padding:10px; background:#f8fafc; border-radius:8px; font-size:12px; border:1px solid var(--border);"></div>
+
+                        <div class="action-row">
+                            <button class="btn-act btn-save" onclick="saveEntry()">Next (Save Entry)</button>
+                            <button class="btn-act btn-reset" onclick="resetConsole()">Stop / Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: SEARCH LOOKUP -->
+            <div id="searchView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">🔍 ORDER & AWB LOOKUP ENGINE</span>
+                    <input id="searchInput" class="input-box" placeholder="Type Order ID (e.g. 6373) or AWB Number..." oninput="onSearchTyping(this.value)">
+                    
+                    <div id="searchSuggestions" style="max-height:140px; overflow-y:auto; background:#fff; border:1px solid var(--border); border-radius:10px; display:none;"></div>
+
+                    <div id="searchResultDisplay" style="margin-top:8px;">
+                        <div style="text-align:center; color:gray; font-size:12px; padding:20px;">Type Order ID or AWB to search Supabase database.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: EXCHANGE LIFECYCLE MANAGEMENT -->
+            <div id="exchangeView" class="view-page">
+                <div class="card-panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                        <span style="font-weight:800; font-size:14px;">🔄 EXCHANGE REQUEST LIFECYCLE</span>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-act btn-save" style="padding:0 14px; height:36px;" onclick="openAddRequestModal()">➕ Add Request</button>
+                            <button class="btn-act" style="background:#0284c7; color:#fff; padding:0 12px; height:36px;" onclick="fetchExchangeData()">🔄 Refresh</button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:8px; overflow-x:auto; scrollbar-width:none;">
+                        <button id="exTabReq" class="btn-act" style="background:#d97706; color:#fff; font-size:11px; flex:1;" onclick="switchExTab('REQUESTED')">
+                            📩 New Requested (<span id="cntReq">0</span>)
+                        </button>
+                        <button id="exTabDisp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px; flex:1;" onclick="switchExTab('RETURN_PICKUP_MARKED')">
+                            🚚 Dispatch Pending (<span id="cntDisp">0</span>)
+                        </button>
+                        <button id="exTabComp" class="btn-act" style="background:#e2e8f0; color:#334155; font-size:11px; flex:1;" onclick="switchExTab('COMPLETED')">
+                            ✅ Completed (<span id="cntComp">0</span>)
+                        </button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead><tr id="exTableHeader"></tr></thead>
+                            <tbody id="exTableBody"><tr><td colspan="7" style="text-align:center; padding:20px;">Loading exchange data...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: BOXD CSV RECONCILIATION -->
+            <div id="boxdView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">📊 BOXD RETURN RECONCILIATION</span>
+                    <div style="border:2px dashed var(--primary); padding:16px; border-radius:12px; text-align:center; background:#f8fafc; cursor:pointer;" onclick="document.getElementById('csvInput').click()">
+                        <span id="csvLabel" style="font-weight:700; font-size:12px; color:var(--primary);">📁 Click to Upload BoxD CSV (Direct Supabase Sync)</span>
+                        <input type="file" id="csvInput" accept=".csv" style="display:none;" onchange="uploadCsvFile(this)">
+                    </div>
+
+                    <div style="display:flex; gap:10px;">
+                        <button id="boxdTabPend" class="btn-act" style="background:var(--danger); color:#fff; font-size:11px;" onclick="switchBoxdTab('Pending')">❌ Pending Scan (<span id="boxdCountPending">0</span>)</button>
+                        <button id="boxdTabRec" class="btn-act" style="background:var(--success); color:#fff; font-size:11px;" onclick="switchBoxdTab('Received')">✅ Received (<span id="boxdCountReceived">0</span>)</button>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Order ID</th><th>BoxD Ref</th><th>Name</th><th>City</th><th>AWB</th><th>Courier</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="boxdTableBody"><tr><td colspan="7" style="text-align:center; padding:20px;">No Data Compiled</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: LIVE BULK TRACKER -->
+            <div id="bulkView" class="view-page">
+                <div class="card-panel">
+                    <span style="font-weight:800; font-size:14px;">🚀 LIVE BULK PACKET DATA TRACKER</span>
+                    
+                    <div class="filter-section-bulk">
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-sub);">Select Date</label>
+                            <input type="date" id="bulkFilterDate" class="input-box" style="height:38px; margin-top:4px;">
+                        </div>
+                        <div>
+                            <label style="font-size:11px; font-weight:700; color:var(--text-sub);">Packet Type</label>
+                            <select id="bulkPacketType" class="input-box" style="height:38px; margin-top:4px;">
+                                <option value="Pickup">Pickup</option>
+                                <option value="Return">Return</option>
+                            </select>
+                        </div>
+                        <button class="btn-act" id="bulkActionBtn" style="background:var(--primary); color:#fff; height:38px;" onclick="handleBulkButtonClick()">Fetch Data</button>
+                    </div>
+
+                    <div class="stats-grid-bulk" id="bulkStatsContainer" style="display:none;">
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--primary);">
+                            <h4>Total Packets</h4>
+                            <p id="bulkStatTotal">0</p>
+                        </div>
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--success);">
+                            <h4>Live Updated</h4>
+                            <p id="bulkStatSuccess" style="color:var(--success);">0</p>
+                        </div>
+                        <div class="stat-card-bulk" style="border-left:4px solid var(--danger);">
+                            <h4>Failed / Skipped</h4>
+                            <p id="bulkStatFail" style="color:var(--danger);">0</p>
+                        </div>
+                    </div>
+
+                    <div class="progress-bar-container" id="bulkProgressWrapper">
+                        <div class="progress-bar-fill" id="bulkProgressBar"></div>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>ID</th><th>AWB Number</th><th>Order ID</th><th>Type</th><th>Old Status</th><th>Realtime Live Status</th></tr>
+                            </thead>
+                            <tbody id="bulkTableBody">
+                                <tr><td colspan="6" style="text-align:center; padding:20px; color:gray;">Select date & packet type to fetch records from Supabase.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: NEW EXCHANGE REQUEST -->
+    <div id="addModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:420px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:#0f172a;">➕ Add New Exchange Request</h3>
+            <input id="addOrderId" class="input-box" placeholder="Order ID (e.g. GS#6373)">
+            <input id="addMobile" class="input-box" placeholder="Customer Mobile Number (10 digits)">
+            <input id="addOriginalAwb" class="input-box" placeholder="Original AWB Number">
+            <textarea id="addDescription" class="input-box" style="height:60px; padding:8px;" placeholder="Reason / Description..."></textarea>
+            <div class="action-row">
+                <button class="btn-act btn-save" onclick="submitAddRequest()">Save Request</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MARK RETURN PICKUP -->
+    <div id="pickupModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:420px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:#0284c7;">📦 Mark Return Pickup Initiated</h3>
+            <p style="font-size:12px; color:var(--text-sub);">Original Order ID: <b id="pickupTargetOrder"></b></p>
+            <input type="hidden" id="pickupTargetId">
+            <input id="pickupReturnOrderId" class="input-box" placeholder="Return Pickup Order ID">
+            <input id="pickupReturnAwb" class="input-box" placeholder="Return Pickup AWB Number">
+            <div class="action-row">
+                <button class="btn-act" style="background:#0284c7; color:#fff;" onclick="submitReturnPickup()">Mark Pickup & Shift</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: COMPLETE DISPATCH -->
+    <div id="dispatchModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:420px; display:flex; flex-direction:column; gap:12px;">
+            <h3 style="font-size:16px; font-weight:800; color:var(--success);">🚀 Complete Exchange Dispatch</h3>
+            <p style="font-size:12px; color:var(--text-sub);">Return AWB: <b id="dispatchTargetAwb"></b></p>
+            <input type="hidden" id="dispatchTargetId">
+            <input id="dispatchNewOrderId" class="input-box" placeholder="New Exchange Dispatch Order ID">
+            <input id="dispatchNewAwb" class="input-box" placeholder="New Dispatch AWB Number">
+            <div class="action-row">
+                <button class="btn-act btn-save" onclick="submitCompleteDispatch()">Complete Process</button>
+                <button class="btn-act btn-reset" onclick="closeModals()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: QUICK LIVE TRACKING POPUP -->
+    <div id="quickTrackModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter:blur(4px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+        <div style="background:#fff; border-radius:16px; padding:20px; width:100%; max-width:400px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); padding-bottom:8px;">
+                <h3 style="font-size:14px; font-weight:800; color:var(--primary);">📡 Live Shipment Tracking</h3>
+                <button onclick="closeModals()" style="background:none; border:none; font-size:18px; cursor:pointer; color:var(--text-sub);">✕</button>
+            </div>
+            <div id="quickTrackContent" style="font-size:13px; padding:12px; background:#f8fafc; border-radius:10px; border:1px solid var(--border);">
+                Fetching live details...
+            </div>
+            <button class="btn-act btn-reset" onclick="closeModals()">Close</button>
+        </div>
+    </div>
+
+    <!-- LOADER -->
+    <div id="loaderContainer">
+        <div class="circle-loader-box">
+            <div class="percent-text">Loading Supabase Data...</div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. SUPABASE & 3PL CREDENTIALS
+        // ==========================================
+        const SUPABASE_URL = "https://yyzvpjmejzbblunkyadp.supabase.co"; // Apna Supabase URL dalein
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5enZwam1lanpiYmx1bmt5YWRwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUyMTU5NjcsImV4cCI6MjEwMDc5MTk2N30.S5XXzQBQQp6bo0jGGe0KBxdGoSdjzGjRFUqjK3y8KCM";          // Apni Anon Key dalein
+        const API_TRACKING_URL = "https://script.google.com/macros/s/AKfycbyJUmYR7-E_z1mx0C3lPzn13fJfJJgrLyqsn5qWFhCXQ-GI2ttlF_T92QMtRLKBbksv/exec"; // Apps Script Proxy URL
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentMode = "";
+        let currentTracking = null;
+        let html5QrCode = null;
+        let exchangeCache = { requested: [], dispatchPending: [], completed: [] };
+        let boxdCache = { pending: [], received: [] };
+        let activeExTab = "REQUESTED";
+        let activeBoxdTab = "Pending";
+        let audioCtx = null;
+        let bulkRowsData = [];
+        let isBulkDataLoaded = false;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playSuccessAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(587.33, now);
+                osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch(e) {}
+        }
+
+        function playDuplicateAudio() {
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(164.81, now + 0.12);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } catch(e) {}
+        }
+
+        function showProgressLoader() { document.getElementById("loaderContainer").style.display = "flex"; }
+        function hideProgressLoader() { document.getElementById("loaderContainer").style.display = "none"; }
+
+        function switchViewPage(pageId) {
+            document.querySelectorAll('.view-page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active');
+            if (pageId === 'scanView') document.getElementById('tabNav1').classList.add('active');
+            if (pageId === 'searchView') document.getElementById('tabNav2').classList.add('active');
+            if (pageId === 'exchangeView') { document.getElementById('tabNav3').classList.add('active'); fetchExchangeData(); }
+            if (pageId === 'boxdView') { document.getElementById('tabNav4').classList.add('active'); fetchBoxdReport(); }
+            if (pageId === 'bulkView') document.getElementById('tabNav5').classList.add('active');
+        }
+
+        // ==========================================
+        // 2. DASHBOARD COUNTS (SUPABASE QUERIES)
+        // ==========================================
+        async function fetchDashboardData() {
+            showProgressLoader();
+            try {
+                const now = new Date();
+                const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+                const yestStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1).toISOString();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+                // 1. Today Pickup
+                const { count: todayPickup } = await supabaseClient.from('DailyScans').select('*', { count: 'exact', head: true }).eq('type', 'Pickup').gte('created_at', todayStart);
+                // 2. Today Return
+                const { count: todayReturn } = await supabaseClient.from('DailyScans').select('*', { count: 'exact', head: true }).eq('type', 'Return').gte('created_at', todayStart);
+                // 3. Yesterday Pickup
+                const { count: yestPickup } = await supabaseClient.from('DailyScans').select('*', { count: 'exact', head: true }).eq('type', 'Pickup').gte('created_at', yestStart).lt('created_at', todayStart);
+                // 4. Yesterday Return
+                const { count: yestReturn } = await supabaseClient.from('DailyScans').select('*', { count: 'exact', head: true }).eq('type', 'Return').gte('created_at', yestStart).lt('created_at', todayStart);
+                // 5. Month Total
+                const { count: monthTotal } = await supabaseClient.from('DailyScans').select('*', { count: 'exact', head: true }).gte('created_at', monthStart);
+                // 6. Lifetime Total
+                const { count: totalLifetime } = await supabaseClient.from('DailyScans').select('*', { count: 'exact', head: true });
+
+                // 7. Recent 5 Scans
+                const { data: recentScans } = await supabaseClient.from('DailyScans').select('awb, order_id, type, created_at').order('id', { ascending: false }).limit(5);
+
+                document.getElementById("cntTodayPickup").innerText = todayPickup || 0;
+                document.getElementById("cntTodayReturn").innerText = todayReturn || 0;
+                document.getElementById("cntYestPickup").innerText = yestPickup || 0;
+                document.getElementById("cntYestReturn").innerText = yestReturn || 0;
+                document.getElementById("cntMonthTotal").innerText = monthTotal || 0;
+                document.getElementById("cntTotalLifetime").innerText = totalLifetime || 0;
+
+                renderRecentList(recentScans || []);
+            } catch (err) {
+                console.error("Dashboard error:", err);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        function renderRecentList(scans) {
+            const list = document.getElementById("recentList");
+            if (!scans || scans.length === 0) {
+                list.innerHTML = `<div style="text-align:center; color:gray; font-size:11px; padding:4px;">No scans yet</div>`;
+                return;
+            }
+            list.innerHTML = scans.map(s => {
+                const time = new Date(s.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                return `
+                <div class="recent-item">
+                    <div><b>${s.awb}</b><br><span style="color:var(--text-sub);">${s.order_id || 'Manual'}</span></div>
+                    <div style="text-align:right;"><b>${s.type}</b><br><span style="color:var(--text-sub); font-size:9px;">${time}</span></div>
+                </div>`;
+            }).join('');
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById("scanPanelBox").style.display = "flex";
+            document.getElementById("btnPickup").classList.remove("active");
+            document.getElementById("btnReturn").classList.remove("active");
+            if (mode === 'Pickup') document.getElementById("btnPickup").classList.add("active");
+            else document.getElementById("btnReturn").classList.add("active");
+        }
+
+        function focusInput() { document.getElementById("awbInput").focus(); }
+
+        async function toggleCamera() {
+            try {
+                if (html5QrCode) { await stopCamera(); return; }
+                document.getElementById("reader").style.display = "block";
+                html5QrCode = new Html5Qrcode("reader");
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 25 },
+                    (decodedText) => {
+                        document.getElementById("awbInput").value = decodedText;
+                        stopCamera();
+                        trackShipment();
+                    }
+                );
+            } catch (e) { toast("Camera Access Failed"); }
+        }
+
+        async function stopCamera() {
+            if (html5QrCode) { await html5QrCode.stop(); html5QrCode = null; }
+            document.getElementById("reader").style.display = "none";
+        }
+
+        document.getElementById("awbInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); trackShipment(); }
+        });
+
+        async function trackShipment() {
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("Enter AWB");
+
+            showProgressLoader();
+            try {
+                const res = await fetch(`${API_TRACKING_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`);
+                const data = await res.json();
+                if (data && data.success) {
+                    currentTracking = data;
+                    document.getElementById("resultPreview").style.display = "block";
+                    document.getElementById("resultPreview").innerHTML = `✅ Verified: ${data.courier} | Order: ${data.orderId || 'N/A'}`;
+                    document.getElementById("orderInput").value = data.orderId || "";
+                } else {
+                    currentTracking = null;
+                    document.getElementById("resultPreview").style.display = "block";
+                    document.getElementById("resultPreview").innerHTML = `⚠️ Manual Entry Required`;
+                }
+                document.getElementById("orderInput").style.display = "block";
+            } catch (e) {
+                console.error(e);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        // ==========================================
+        // 3. SAVE ENTRY (7-DAYS DUPLICATE CHECK)
+        // ==========================================
+        async function saveEntry() {
+            if (!currentMode) return toast("Select Mode First!");
+            const awb = document.getElementById("awbInput").value.trim();
+            if (!awb) return toast("AWB Missing!");
+
+            showProgressLoader();
+            try {
+                // Check 7 Days duplicate in Supabase
+                const sevenDaysAgo = new Date();
+                sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+                const { data: duplicates } = await supabaseClient
+                    .from('DailyScans')
+                    .select('id')
+                    .eq('awb', awb)
+                    .ilike('type', currentMode)
+                    .gte('created_at', sevenDaysAgo.toISOString())
+                    .limit(1);
+
+                if (duplicates && duplicates.length > 0) {
+                    hideProgressLoader();
+                    playDuplicateAudio();
+                    toast(`❌ Blocked: Duplicate ${currentMode} AWB detected in last 7 days!`);
+                    return;
+                }
+
+                const payload = {
+                    type: currentMode,
+                    awb: awb,
+                    order_id: document.getElementById("orderInput").value.trim(),
+                    courier: currentTracking?.courier || "MANUAL",
+                    status: currentTracking?.status || "Pending",
+                    customer_name: currentTracking?.customerName || "",
+                    city: currentTracking?.city || "",
+                    state: currentTracking?.state || "",
+                    destination: currentTracking?.destination || "",
+                    pickup_date: currentTracking?.pickupDate || "",
+                    delivered_date: currentTracking?.deliveredDate || "",
+                    expected_date: currentTracking?.expectedDate || "",
+                    is_rto: currentTracking?.isRTO || false,
+                    updated_at: new Date().toISOString()
+                };
+
+                const { error } = await supabaseClient.from('DailyScans').insert([payload]);
+                if (error) throw error;
+
+                playSuccessAudio();
+                toast("🎉 Saved to Supabase Successfully!");
+                resetConsole();
+                fetchDashboardData();
+            } catch (err) {
+                alert("Error saving scan: " + err.message);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        function resetConsole() {
+            stopCamera();
+            currentTracking = null;
+            document.getElementById("awbInput").value = "";
+            document.getElementById("orderInput").value = "";
+            document.getElementById("orderInput").style.display = "none";
+            document.getElementById("resultPreview").style.display = "none";
+        }
+
+        // ==========================================
+        // 4. SEARCH ORDER & AWB ENGINE
+        // ==========================================
+        async function onSearchTyping(val) {
+            val = val.trim();
+            const suggBox = document.getElementById("searchSuggestions");
+            if (val.length < 3) { suggBox.style.display = "none"; return; }
+
+            try {
+                const { data: matches } = await supabaseClient
+                    .from('DailyScans')
+                    .select('*')
+                    .or(`awb.ilike.%${val}%,order_id.ilike.%${val}%`)
+                    .order('id', { ascending: false })
+                    .limit(8);
+
+                if (matches && matches.length > 0) {
+                    suggBox.style.display = "block";
+                    suggBox.innerHTML = matches.map(m => `
+                        <div style="padding:8px 12px; cursor:pointer; border-bottom:1px solid #f1f5f9;" onclick="renderSearchRecordCard(${JSON.stringify(m).replace(/"/g, '&quot;')})">
+                            <b>Order: ${m.order_id || 'N/A'}</b> | AWB: ${m.awb} (${m.type})
+                        </div>
+                    `).join('');
+                } else {
+                    suggBox.style.display = "none";
+                }
+            } catch(e) {}
+        }
+
+        function renderSearchRecordCard(d) {
+            document.getElementById("searchSuggestions").style.display = "none";
+            const display = document.getElementById("searchResultDisplay");
+            const scanDate = new Date(d.created_at).toLocaleDateString('en-IN');
+
+            display.innerHTML = `
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:12px; padding:14px; font-size:13px; display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-weight:800; color:var(--primary); font-size:14px; border-bottom:1px solid var(--border); padding-bottom:6px;">📋 Supabase Record Details</div>
+                    <div><b>Scan Date:</b> ${scanDate} | <b>Type:</b> ${d.type}</div>
+                    <div><b>Order ID:</b> ${d.order_id || 'N/A'}</div>
+                    <div><b>AWB Number:</b> <code>${d.awb}</code></div>
+                    <div><b>Courier Partner:</b> ${d.courier || 'N/A'} | <b>Status:</b> ${d.status}</div>
+                    <div><b>Customer:</b> ${d.customer_name || 'N/A'} (${d.city || 'N/A'})</div>
+                    <button class="btn-act" style="background:var(--primary); color:#fff; margin-top:6px;" onclick="fetchLiveCourierTracking('${d.awb}', ${d.id})">🌐 Fetch Live Status</button>
+                    <div id="liveTrackingArea"></div>
+                </div>
+            `;
+        }
+
+        async function fetchLiveCourierTracking(awb, recordId) {
+            const area = document.getElementById("liveTrackingArea");
+            area.innerHTML = "<div style='color:gray; margin-top:8px;'>Hitting 3PL Gateway...</div>";
+            showProgressLoader();
+
+            try {
+                const res = await fetch(`${API_TRACKING_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    area.innerHTML = `
+                        <div style="margin-top:10px; padding:10px; background:#fff; border:1px dashed var(--primary); border-radius:10px;">
+                            <div style="color:var(--success); font-weight:800;">🚚 Live Status: ${res.status}</div>
+                            <div style="margin-top:4px;">Courier: ${res.courierName || res.courier} | City: ${res.city || 'N/A'}</div>
+                            <button class="btn-act btn-save" style="margin-top:8px; width:100%;" onclick="syncLiveStatusToSupabase('${res.awb}', ${recordId}, '${res.status}', '${res.courierName || res.courier}', '${res.city || ''}')">💾 Sync Status To Supabase</button>
+                        </div>
+                    `;
+                } else {
+                    area.innerHTML = "<div style='color:var(--danger); margin-top:8px;'>Tracking details not found.</div>";
+                }
+            } catch(e) {}
+            finally { hideProgressLoader(); }
+        }
+
+        async function syncLiveStatusToSupabase(awb, recordId, status, courier, city) {
+            showProgressLoader();
+            try {
+                const { error } = await supabaseClient
+                    .from('DailyScans')
+                    .update({ status: status, courier: courier, city: city, updated_at: new Date().toISOString() })
+                    .eq('id', recordId);
+
+                if (error) throw error;
+                toast("🎉 Synced to Supabase!");
+                document.getElementById("liveTrackingArea").innerHTML = `<div style="color:var(--success); font-weight:700;">Synced Successfully!</div>`;
+            } catch(e) {
+                alert(e.message);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        // ==========================================
+        // 5. BOXD RETURN RECONCILIATION
+        // ==========================================
+        function uploadCsvFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById("csvLabel").innerText = `Reading: ${file.name}...`;
+            showProgressLoader();
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const rows = parseCsvToArray(e.target.result);
+                if (rows.length <= 1) { hideProgressLoader(); return toast("CSV appears empty."); }
+
+                const headers = rows[0].map(h => String(h).trim().toLowerCase());
+                let awbIdx = headers.indexOf("awb_number");
+                if (awbIdx === -1) awbIdx = headers.indexOf("awb");
+                if (awbIdx === -1) awbIdx = 4;
+
+                let custOrderIdx = headers.indexOf("customer_order_number");
+                if (custOrderIdx === -1) custOrderIdx = headers.indexOf("order_number");
+                if (custOrderIdx === -1) custOrderIdx = 0;
+
+                let refOrderIdx = headers.indexOf("order_number");
+                if (refOrderIdx === -1) refOrderIdx = 1;
+
+                let nameIdx = headers.indexOf("customer_name");
+                if (nameIdx === -1) nameIdx = 2;
+
+                let cityIdx = headers.indexOf("city");
+                if (cityIdx === -1) cityIdx = 3;
+
+                let courierIdx = headers.indexOf("courier_name");
+                if (courierIdx === -1) courierIdx = 5;
+
+                // Existing AWBs nikal kar duplicate rokein
+                const { data: existingAwbsData } = await supabaseClient.from('BoxDReturns').select('awb_number');
+                const existingSet = new Set((existingAwbsData || []).map(x => String(x.awb_number).trim().toLowerCase()));
+
+                const newRecords = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (!row || row.length === 0) continue;
+                    const awb = String(row[awbIdx] || "").trim();
+                    if (!awb || existingSet.has(awb.toLowerCase())) continue;
+
+                    existingSet.add(awb.toLowerCase());
+                    newRecords.push({
+                        customer_order_number: String(row[custOrderIdx] || "").trim(),
+                        order_number: String(row[refOrderIdx] || "").trim(),
+                        customer_name: String(row[nameIdx] || "").trim(),
+                        city: String(row[cityIdx] || "").trim(),
+                        awb_number: awb,
+                        courier: String(row[courierIdx] || "").trim()
+                    });
+                }
+
+                if (newRecords.length > 0) {
+                    await supabaseClient.from('BoxDReturns').insert(newRecords);
+                }
+
+                toast(`🎉 Added ${newRecords.length} records to Supabase!`);
+                document.getElementById("csvLabel").innerText = "📁 Click to Upload BoxD CSV";
+                fetchBoxdReport();
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        function parseCsvToArray(text) {
+            const lines = []; let row = []; let inQuotes = false; let currentCell = '';
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i]; const nextChar = text[i+1];
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') { currentCell += '"'; i++; }
+                    else inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) { row.push(currentCell.trim()); currentCell = ''; }
+                else if ((char === '\r' || char === '\n') && !inQuotes) {
+                    if (char === '\r' && nextChar === '\n') i++;
+                    row.push(currentCell.trim());
+                    if (row.length > 1 || row[0] !== '') lines.push(row);
+                    row = []; currentCell = '';
+                } else currentCell += char;
+            }
+            if (row.length > 0 || currentCell !== '') { row.push(currentCell.trim()); lines.push(row); }
+            return lines;
+        }
+
+        async function fetchBoxdReport() {
+            showProgressLoader();
+            try {
+                const { data: boxdData } = await supabaseClient.from('BoxDReturns').select('*').order('id', { ascending: false });
+                const { data: dailyReturns } = await supabaseClient.from('DailyScans').select('awb').ilike('type', 'Return');
+
+                const scannedAwbSet = new Set((dailyReturns || []).map(x => String(x.awb).trim().toLowerCase()));
+
+                const pending = [];
+                const received = [];
+
+                (boxdData || []).forEach(item => {
+                    const awbKey = String(item.awb_number || "").trim().toLowerCase();
+                    if (awbKey && scannedAwbSet.has(awbKey)) {
+                        item.status = "RECEIVED";
+                        received.push(item);
+                    } else {
+                        item.status = "PENDING SCAN";
+                        pending.push(item);
+                    }
+                });
+
+                boxdCache = { pending, received };
+                document.getElementById("boxdCountPending").innerText = pending.length;
+                document.getElementById("boxdCountReceived").innerText = received.length;
+                renderBoxdTable();
+            } catch(e) {
+                console.error(e);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        function renderBoxdTable() {
+            const tbody = document.getElementById("boxdTableBody");
+            let data = activeBoxdTab === 'Pending' ? boxdCache.pending : boxdCache.received;
+            if (!data || data.length === 0) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">No Data Compiled</td></tr>`; return; }
+
+            tbody.innerHTML = data.map(r => `
+                <tr>
+                    <td><b>${r.customer_order_number}</b></td>
+                    <td>${r.order_number || "N/A"}</td>
+                    <td>${r.customer_name || "N/A"}</td>
+                    <td>${r.city || "N/A"}</td>
+                    <td><code>${r.awb_number || "N/A"}</code></td>
+                    <td>${r.courier || "N/A"}</td>
+                    <td><span class="badge ${activeBoxdTab === 'Pending' ? 'badge-req' : 'badge-comp'}">${r.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function switchBoxdTab(tab) {
+            activeBoxdTab = tab;
+            document.getElementById("boxdTabPend").classList.remove("active");
+            document.getElementById("boxdTabRec").classList.remove("active");
+            if (tab === "Pending") document.getElementById("boxdTabPend").classList.add("active");
+            else document.getElementById("boxdTabRec").classList.add("active");
+            renderBoxdTable();
+        }
+
+        // ==========================================
+        // 6. BULK LIVE TRACKER MODULE (SUPABASE)
+        // ==========================================
+        function handleBulkButtonClick() {
+            if (!isBulkDataLoaded) fetchBulkData();
+            else getLiveRealtimeBulkData();
+        }
+
+        async function fetchBulkData() {
+            const rawDate = document.getElementById("bulkFilterDate").value;
+            const packetType = document.getElementById("bulkPacketType").value;
+
+            if (!rawDate) return toast("Select a valid Date!");
+            showProgressLoader();
+
+            try {
+                const startDate = new Date(rawDate + "T00:00:00").toISOString();
+                const endDate = new Date(rawDate + "T23:59:59").toISOString();
+
+                const { data: rows, error } = await supabaseClient
+                    .from('DailyScans')
+                    .select('*')
+                    .ilike('type', packetType)
+                    .gte('created_at', startDate)
+                    .lte('created_at', endDate);
+
+                if (error) throw error;
+
+                if (rows && rows.length > 0) {
+                    bulkRowsData = rows;
+                    isBulkDataLoaded = true;
+
+                    const actionBtn = document.getElementById("bulkActionBtn");
+                    actionBtn.innerText = "Get Live Realtime Data";
+                    actionBtn.style.background = "var(--success)";
+
+                    document.getElementById("bulkStatsContainer").style.display = "grid";
+                    document.getElementById("bulkStatTotal").innerText = bulkRowsData.length;
+                    document.getElementById("bulkStatSuccess").innerText = "0";
+                    document.getElementById("bulkStatFail").innerText = "0";
+
+                    const tableBody = document.getElementById("bulkTableBody");
+                    tableBody.innerHTML = "";
+
+                    bulkRowsData.forEach(item => {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td><b>#${item.id}</b></td>
+                            <td><code>${item.awb || 'N/A'}</code></td>
+                            <td>${item.order_id || 'N/A'}</td>
+                            <td><span class="badge badge-req">${packetType}</span></td>
+                            <td>${item.status || 'N/A'}</td>
+                            <td id="bulk-live-${item.awb}" style="font-weight:700; color:var(--text-sub);">Pending Realtime Sync</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    toast("No records found for selected date.");
+                    document.getElementById("bulkTableBody").innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:gray;">No records found.</td></tr>`;
+                }
+            } catch(e) {
+                alert(e.message);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        async function getLiveRealtimeBulkData() {
+            if (bulkRowsData.length === 0) return;
+
+            document.getElementById("bulkActionBtn").disabled = true;
+            document.getElementById("bulkProgressWrapper").style.display = "block";
+            document.getElementById("bulkProgressBar").style.width = "0%";
+
+            let successCount = 0;
+            let failCount = 0;
+            const totalPackets = bulkRowsData.length;
+
+            for (let i = 0; i < totalPackets; i++) {
+                const item = bulkRowsData[i];
+                const awbCell = document.getElementById(`bulk-live-${item.awb}`);
+                if (awbCell) {
+                    awbCell.innerText = "Tracking Live...";
+                    awbCell.style.color = "var(--primary)";
+                }
+
+                try {
+                    const res = await fetch(`${API_TRACKING_URL}?action=trackShipment&awb=${encodeURIComponent(item.awb)}`).then(r => r.json());
+                    if (res && res.success) {
+                        await supabaseClient
+                            .from('DailyScans')
+                            .update({ status: res.status, courier: res.courierName || res.courier, city: res.city || '', updated_at: new Date().toISOString() })
+                            .eq('id', item.id);
+
+                        successCount++;
+                        document.getElementById("bulkStatSuccess").innerText = successCount;
+                        if (awbCell) {
+                            awbCell.innerText = res.status;
+                            awbCell.style.color = "var(--success)";
+                        }
+                    } else {
+                        failCount++;
+                        document.getElementById("bulkStatFail").innerText = failCount;
+                        if (awbCell) {
+                            awbCell.innerText = "Not Found";
+                            awbCell.style.color = "var(--danger)";
+                        }
+                    }
+                } catch(e) {
+                    failCount++;
+                    document.getElementById("bulkStatFail").innerText = failCount;
+                }
+
+                const progressPercent = Math.round(((i + 1) / totalPackets) * 100);
+                document.getElementById("bulkProgressBar").style.width = `${progressPercent}%`;
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            document.getElementById("bulkActionBtn").disabled = false;
+            toast("🎉 Bulk Realtime Tracking Completed!");
+            isBulkDataLoaded = false;
+            document.getElementById("bulkActionBtn").innerText = "Fetch Data";
+            document.getElementById("bulkActionBtn").style.background = "var(--primary)";
+        }
+
+        // ==========================================
+        // 7. EXCHANGE MANAGEMENT (SUPABASE)
+        // ==========================================
+        async function fetchExchangeData() {
+            showProgressLoader();
+            try {
+                const { data: list, error } = await supabaseClient.from('ExchangeRequests').select('*').order('id', { ascending: false });
+                if (error) throw error;
+
+                const requested = list.filter(x => x.status === 'REQUESTED');
+                const dispatchPending = list.filter(x => x.status === 'RETURN_PICKUP_MARKED');
+                const completed = list.filter(x => x.status === 'COMPLETED');
+
+                exchangeCache = { requested, dispatchPending, completed };
+                document.getElementById("cntReq").innerText = requested.length;
+                document.getElementById("cntDisp").innerText = dispatchPending.length;
+                document.getElementById("cntComp").innerText = completed.length;
+                renderExTable();
+            } catch(e) {
+                console.error(e);
+            } finally {
+                hideProgressLoader();
+            }
+        }
+
+        function renderExTable() {
+            const tbody = document.getElementById("exTableBody");
+            const thead = document.getElementById("exTableHeader");
+            let data = [];
+
+            if (activeExTab === "REQUESTED") {
+                data = exchangeCache.requested;
+                thead.innerHTML = `
+                    <th>Date</th><th>Order ID</th><th>Customer Mobile</th><th>Original AWB & Tracking</th><th>Reason / Notes</th><th>Status</th><th>Action</th>
+                `;
+            } else if (activeExTab === "RETURN_PICKUP_MARKED") {
+                data = exchangeCache.dispatchPending;
+                thead.innerHTML = `
+                    <th>Req. Date</th><th>Original Order</th><th>Customer Mobile</th><th>Return Order</th><th>Return AWB & Tracking</th><th>Pickup Date</th><th>Action</th>
+                `;
+            } else {
+                data = exchangeCache.completed;
+                thead.innerHTML = `
+                    <th>Original Order</th><th>Customer Mobile</th><th>Return AWB & Tracking</th><th>Dispatch AWB & Tracking</th><th>Completed Date</th><th>Status</th>
+                `;
+            }
+
+            if (!data || data.length === 0) { 
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:28px; color:#94a3b8; font-weight:600;">No exchange records in this queue.</td></tr>`; 
+                return; 
+            }
+
+            let html = "";
+            data.forEach(row => {
+                const cleanPhone = (row.mobile || "").replace(/[^0-9]/g, '');
+                const waLink = cleanPhone ? `https://wa.me/91${cleanPhone.slice(-10)}` : '#';
+                const createdDate = new Date(row.created_at).toLocaleDateString('en-IN');
+                
+                const mobileDisplay = row.mobile ? `
+                    <div>
+                        <b>${row.mobile}</b> 
+                        <a href="${waLink}" target="_blank" class="comm-link" title="WhatsApp Chat">💬</a>
+                        <a href="tel:${row.mobile}" class="comm-link" title="Call">📞</a>
+                    </div>
+                ` : `<span style="color:#94a3b8;">N/A</span>`;
+
+                if (activeExTab === "REQUESTED") {
+                    html += `
+                        <tr>
+                            <td>${createdDate}</td>
+                            <td><b>${row.order_id}</b></td>
+                            <td>${mobileDisplay}</td>
+                            <td>
+                                <code>${row.original_awb || '-'}</code>
+                                ${row.original_awb ? `<button class="btn-chip" onclick="quickTrackModal('\${row.original_awb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>${row.description || "-"}</td>
+                            <td><span class="badge badge-req">REQUESTED</span></td>
+                            <td><button class="btn-act" style="background:#0284c7; color:#fff;" onclick="openPickupModal(${row.id}, '${row.order_id}')">📦 Mark Return Pickup</button></td>
+                        </tr>`;
+                } else if (activeExTab === "RETURN_PICKUP_MARKED") {
+                    const pickupDate = row.return_marked_date ? new Date(row.return_marked_date).toLocaleDateString('en-IN') : '-';
+                    html += `
+                        <tr>
+                            <td>${createdDate}</td>
+                            <td><b>${row.order_id}</b></td>
+                            <td>${mobileDisplay}</td>
+                            <td><b style="color:#0284c7;">${row.return_order_id || "-"}</b></td>
+                            <td>
+                                <code>${row.return_awb || '-'}</code>
+                                ${row.return_awb ? `<button class="btn-chip" onclick="quickTrackModal('\${row.return_awb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>${pickupDate}</td>
+                            <td><button class="btn-act btn-save" onclick="openDispatchModal(${row.id}, '${row.return_awb}')">🚀 Complete Dispatch</button></td>
+                        </tr>`;
+                } else {
+                    const compDate = row.completed_date ? new Date(row.completed_date).toLocaleDateString('en-IN') : '-';
+                    html += `
+                        <tr>
+                            <td><b>${row.order_id}</b></td>
+                            <td>${mobileDisplay}</td>
+                            <td>
+                                <b>${row.return_order_id || '-'}</b><br>
+                                <code>${row.return_awb || '-'}</code>
+                                ${row.return_awb ? `<button class="btn-chip" onclick="quickTrackModal('\${row.return_awb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>
+                                <b style="color:var(--success);">${row.dispatch_order_id || '-'}</b><br>
+                                <code>${row.dispatch_awb || '-'}</code>
+                                ${row.dispatch_awb ? `<button class="btn-chip" onclick="quickTrackModal('\${row.dispatch_awb}')">📡 Track</button>` : ''}
+                            </td>
+                            <td>${compDate}</td>
+                            <td><span class="badge badge-comp">COMPLETED</span></td>
+                        </tr>`;
+                }
+            });
+            tbody.innerHTML = html;
+        }
+
+        function switchExTab(tab) {
+            activeExTab = tab;
+            document.getElementById("exTabReq").style.background = "#e2e8f0";
+            document.getElementById("exTabReq").style.color = "#334155";
+            document.getElementById("exTabDisp").style.background = "#e2e8f0";
+            document.getElementById("exTabDisp").style.color = "#334155";
+            document.getElementById("exTabComp").style.background = "#e2e8f0";
+            document.getElementById("exTabComp").style.color = "#334155";
+
+            if (tab === "REQUESTED") {
+                document.getElementById("exTabReq").style.background = "#d97706";
+                document.getElementById("exTabReq").style.color = "#fff";
+            } else if (tab === "RETURN_PICKUP_MARKED") {
+                document.getElementById("exTabDisp").style.background = "#0284c7";
+                document.getElementById("exTabDisp").style.color = "#fff";
+            } else {
+                document.getElementById("exTabComp").style.background = "var(--success)";
+                document.getElementById("exTabComp").style.color = "#fff";
+            }
+            renderExTable();
+        }
+
+        async function quickTrackModal(awb) {
+            if (!awb || awb === "undefined" || awb === "-") return toast("No AWB found to track!");
+            document.getElementById("quickTrackModal").style.display = "flex";
+            const box = document.getElementById("quickTrackContent");
+            box.innerHTML = `<div style="text-align:center; padding:12px; color:#64748b;">🔄 Querying Logistics API for <b>${awb}</b>...</div>`;
+            
+            try {
+                const res = await fetch(`${API_TRACKING_URL}?action=trackShipment&awb=${encodeURIComponent(awb)}`).then(r => r.json());
+                if (res.success) {
+                    box.innerHTML = `
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div><b>AWB:</b> <code>${res.awb}</code></div>
+                            <div><b>Courier:</b> ${res.courierName || res.courier}</div>
+                            <div><b>Status:</b> <span class="badge badge-comp">${res.status || 'Active'}</span></div>
+                            <div><b>City:</b> ${res.city || res.destination || 'N/A'}</div>
+                            ${res.expectedDate ? `<div><b>Expected Delivery:</b> \${res.expectedDate}</div>` : ''}
+                        </div>
+                    `;
+                } else {
+                    box.innerHTML = `<div style="color:var(--danger); text-align:center; padding:8px;">⚠️ Active tracking details not found.</div>`;
+                }
+            } catch (e) {
+                box.innerHTML = `<div style="color:var(--danger); text-align:center;">Network error.</div>`;
+            }
+        }
+
+        function openAddRequestModal() { document.getElementById("addModal").style.display = "flex"; }
+        function openPickupModal(id, orderId) {
+            document.getElementById("pickupTargetId").value = id;
+            document.getElementById("pickupTargetOrder").innerText = orderId;
+            document.getElementById("pickupReturnOrderId").value = "";
+            document.getElementById("pickupReturnAwb").value = "";
+            document.getElementById("pickupModal").style.display = "flex";
+        }
+        function openDispatchModal(id, returnAwb) {
+            document.getElementById("dispatchTargetId").value = id;
+            document.getElementById("dispatchTargetAwb").innerText = returnAwb;
+            document.getElementById("dispatchNewOrderId").value = "";
+            document.getElementById("dispatchNewAwb").value = "";
+            document.getElementById("dispatchModal").style.display = "flex";
+        }
+        function closeModals() {
+            document.getElementById("addModal").style.display = "none";
+            document.getElementById("pickupModal").style.display = "none";
+            document.getElementById("dispatchModal").style.display = "none";
+            document.getElementById("quickTrackModal").style.display = "none";
+        }
+
+        async function submitAddRequest() {
+            const orderId = document.getElementById("addOrderId").value.trim();
+            const mobile = document.getElementById("addMobile").value.trim();
+            const originalAwb = document.getElementById("addOriginalAwb").value.trim();
+            const description = document.getElementById("addDescription").value.trim();
+
+            if (!orderId || !mobile || !originalAwb) return toast("Fill all required fields!");
+            closeModals(); showProgressLoader();
+
+            await supabaseClient.from('ExchangeRequests').insert([{
+                exchange_id: "EX-" + Date.now(),
+                order_id: orderId,
+                mobile: mobile,
+                original_awb: originalAwb,
+                description: description,
+                status: "REQUESTED"
+            }]);
+
+            toast("Exchange Request Saved!"); 
+            fetchExchangeData();
+        }
+
+        async function submitReturnPickup() {
+            const id = document.getElementById("pickupTargetId").value;
+            const returnOrderId = document.getElementById("pickupReturnOrderId").value.trim();
+            const returnAwb = document.getElementById("pickupReturnAwb").value.trim();
+
+            if (!returnOrderId || !returnAwb) return toast("Enter Return Order ID & AWB!");
+            closeModals(); showProgressLoader();
+
+            await supabaseClient.from('ExchangeRequests').update({
+                status: "RETURN_PICKUP_MARKED",
+                return_order_id: returnOrderId,
+                return_awb: returnAwb,
+                return_marked_date: new Date().toISOString()
+            }).eq('id', id);
+
+            toast("Marked Return Pickup!"); 
+            fetchExchangeData();
+        }
+
+        async function submitCompleteDispatch() {
+            const id = document.getElementById("dispatchTargetId").value;
+            const dispatchOrderId = document.getElementById("dispatchNewOrderId").value.trim();
+            const dispatchAwb = document.getElementById("dispatchNewAwb").value.trim();
+
+            if (!dispatchOrderId || !dispatchAwb) return toast("Enter Dispatch Details!");
+            closeModals(); showProgressLoader();
+
+            await supabaseClient.from('ExchangeRequests').update({
+                status: "COMPLETED",
+                dispatch_order_id: dispatchOrderId,
+                dispatch_awb: dispatchAwb,
+                completed_date: new Date().toISOString()
+            }).eq('id', id);
+
+            toast("Exchange Completed Successfully!"); 
+            fetchExchangeData();
+        }
+
+        function toast(msg) {
+            const t = document.createElement("div"); t.className = "toast"; t.innerText = msg;
+            document.body.appendChild(t); setTimeout(() => t.remove(), 2500);
+        }
+
+        window.onload = function() {
+            fetchDashboardData();
+        };
+    </script>
+</body>
+
+</html>
